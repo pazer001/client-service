@@ -1,33 +1,35 @@
-import { PrimeReactProvider } from "primereact/api";
-import "primereact/resources/primereact.css";
-import "primereact/resources/themes/lara-dark-blue/theme.css";
-import { PrimeReactContext } from "primereact/api";
+import { Button, List } from "@arco-design/web-react";
+import { useEffect } from "react";
+import { create } from "zustand";
 
-import { Button } from "primereact/button";
-import { useContext, useEffect } from "react";
-const value = {
-  ripple: true,
-};
-function App() {
-  return (
-    <PrimeReactProvider value={value}>
-      <div>
-        <SubComponent />
-      </div>
-    </PrimeReactProvider>
-  );
+interface IMainStore {
+  symbols: string[];
+  addStock: (stock: string) => void;
+  removeAllStocks: () => void;
 }
 
-const SubComponent = () => {
-  const { setRipple } = useContext(PrimeReactContext);
+const useMainStore = create<IMainStore>((set) => ({
+  symbols: ["AAPL", "GOOGL", "AMZN"],
+  addStock: (stock: string) =>
+    set((state) => ({ symbols: [...state.symbols, stock] })),
+  removeAllStocks: () => set({ symbols: [] }),
+}));
 
+function App() {
+  const mainStore = useMainStore();
   useEffect(() => {
-    if (setRipple) {
-      setRipple(true);
-    }
-  }, [setRipple]);
-
-  return <Button label="Click" />;
-};
+    document.body.setAttribute("arco-theme", "dark");
+  }, []);
+  return (
+    <>
+      <List
+        header="Symbols"
+        dataSource={mainStore.symbols}
+        render={(item, index) => <List.Item key={index}>{item}</List.Item>}
+      />
+      <Button onClick={() => mainStore.addStock("TSLA")}>Add TSLA</Button>
+    </>
+  );
+}
 
 export default App;
