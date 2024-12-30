@@ -27,7 +27,9 @@ function App() {
         dataSource={mainStore.symbols}
         render={(item, index) => <List.Item key={index}>{item}</List.Item>}
       />
-      <Button onClick={() => mainStore.addStock("TSLA")}>Add TSLA</Button>
+      <Button type="primary" onClick={() => mainStore.addStock("TSLA")}>
+        Add TSLA
+      </Button>
     </>
   );
 }
