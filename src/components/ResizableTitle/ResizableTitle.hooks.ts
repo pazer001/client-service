@@ -1,13 +1,13 @@
 import { TableProps } from 'antd'
 import { useState } from 'react'
-import { ISymbolTableItem } from '../SymbolTable/SymbolTable.types'
+import { ISymbol } from '../../stores/symbolStore'
 
 interface IReturnUseResizableTitle {
-  columns: TableProps<ISymbolTableItem>['columns']
+  columns: TableProps<ISymbol>['columns']
 }
 
-export const useResizableTitle = (originColumns: TableProps<ISymbolTableItem>['columns']): IReturnUseResizableTitle => {
-  const [columns, setColumns] = useState<TableProps<ISymbolTableItem>['columns']>(
+export const useResizableTitle = (originColumns: TableProps<ISymbol>['columns']): IReturnUseResizableTitle => {
+  const [columns, setColumns] = useState<TableProps<ISymbol>['columns']>(
     originColumns?.map((column, index) => {
       if (column.width) {
         return {
