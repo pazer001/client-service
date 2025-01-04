@@ -34,7 +34,6 @@ const originColumns: TableColumnProps[] = [
   },
 ];
 
-
 const components = {
   header: {
     th: ResizableTitle,
