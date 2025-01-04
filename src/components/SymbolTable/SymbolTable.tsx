@@ -1,69 +1,68 @@
-import { useState } from 'react';
-import { Avatar, Table, TableColumnProps } from '@arco-design/web-react';
-import { ISymbol } from '../../stores/symbolStore';
-import { ResizableTitle } from '../ResizableTitle/ResizableTitle';
-import { useResizableTitle } from '../ResizableTitle/ResizableTitle.hooks';
-import { useSymbolTable } from './SymbolTable.hooks';
-import { RowSelectionProps } from '@arco-design/web-react/es/Table';
-import { ISymbolTableItem } from './SymbolTable.types';
+// import { useState } from "react";
+import { ISymbol } from '../../stores/symbolStore'
+import { ResizableTitle } from '../ResizableTitle/ResizableTitle'
+import { useResizableTitle } from '../ResizableTitle/ResizableTitle.hooks'
+import { useSymbolTable } from './SymbolTable.hooks'
+import { ISymbolTableItem } from './SymbolTable.types'
 
-import './SymbolTable.css';
+import { Space, Table, Avatar, Typography } from 'antd'
+import type { TableProps } from 'antd'
 
-const originColumns: TableColumnProps[] = [
+import './SymbolTable.css'
+
+const originColumns: TableProps<ISymbolTableItem>['columns'] = [
   {
+    key: 'symbol',
     title: 'Symbol',
     dataIndex: 'symbol',
-    width: 100,
+    width: 120,
     ellipsis: true,
+    render(_col, { logo, symbol }: ISymbol) {
+      return (
+        <Space>
+          <Avatar size={24}>
+            <img src={logo !== '' ? logo : undefined} alt={symbol} />
+          </Avatar>
+          <Typography.Text ellipsis>{symbol}</Typography.Text>
+        </Space>
+      )
+    },
   },
   {
-    title: 'Logo',
-    render: (_col, {logo, symbol}: ISymbol) => <Avatar size={24}><img src={logo} alt={symbol} /></Avatar>,
-    dataIndex: 'logo',
-    width: 100,
-  },
-  {
+    key: 'marketCapitalization',
     title: 'Market Cap',
     dataIndex: 'marketCapitalization',
     width: 100,
     ellipsis: true,
   },
   {
+    key: 'recommendation',
     title: 'Score',
     dataIndex: 'priorityScore',
     ellipsis: true,
   },
-];
-
-const components = {
-  header: {
-    th: ResizableTitle,
-  },
-};
+]
 
 export const SymbolTable = () => {
-  const {isLoading, data} = useSymbolTable();
-  const {columns} = useResizableTitle(originColumns);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<(string | number)[]>([]);
+  const { isLoading, data } = useSymbolTable()
+  const { columns } = useResizableTitle(originColumns)
+  // const [selectedRowKeys, setSelectedRowKeys] = useState<(string | number)[]>(
+  //   [],
+  // );
 
-  const rowSelection: RowSelectionProps<ISymbolTableItem> = {
-    selectedRowKeys,
-    onChange: (selectedRowKeys: (string | number)[], selectedRows: ISymbol[]) => {
-      console.log('selectedRowKeys', selectedRowKeys);
-      console.log('selectedRows', selectedRows);
-      setSelectedRowKeys(selectedRowKeys)
-    },
-  };
+  console.log(originColumns)
 
   return (
     <Table
-      className={'table-demo-resizable-column'}
+      className="table-demo-resizable-column"
       loading={isLoading}
-      columns={columns} 
-      components={components}
-      data={data}
-      border
-      rowSelection={rowSelection}
+      dataSource={data}
+      columns={columns}
+      components={{
+        header: {
+          cell: ResizableTitle,
+        },
+      }}
     />
-  );
+  )
 }

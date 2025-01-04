@@ -1,13 +1,18 @@
-import { createRoot } from "react-dom/client";
-import { ConfigProvider } from "@arco-design/web-react";
-import enUS from "@arco-design/web-react/es/locale/en-US";
+import { createRoot } from 'react-dom/client'
+import { ConfigProvider, theme } from 'antd'
+import './index.css'
+import App from './App.tsx'
 
-import "@arco-design/web-react/dist/css/arco.css";
-import "./index.css";
-import App from "./App.tsx";
+createRoot(document.getElementById('root')!).render(
+  <ConfigProvider
+    theme={{
+      // 1. Use dark algorithm
+      // algorithm: theme.darkAlgorithm,
 
-createRoot(document.getElementById("root")!).render(
-  <ConfigProvider locale={enUS}>
+      // 2. Combine dark algorithm and compact algorithm
+      algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
+    }}
+  >
     <App />
   </ConfigProvider>,
-);
+)

@@ -1,30 +1,30 @@
-import { useEffect, useState } from "react";
-import { Card } from "@arco-design/web-react";
+import { useEffect, useState } from 'react'
 // import GridLayout from "react-grid-layout";
-import { Responsive as ResponsiveGridLayout } from "react-grid-layout";
-import { useSymbolStore } from "./stores/symbolStore";
-
-import "react-grid-layout/css/styles.css";
-import { SymbolTable } from "./components/SymbolTable/SymbolTable";
+import { Responsive as ResponsiveGridLayout } from 'react-grid-layout'
+import { useSymbolStore } from './stores/symbolStore'
+import { Card } from 'antd'
+import 'antd/dist/reset.css'
+import 'react-grid-layout/css/styles.css'
+import { SymbolTable } from './components/SymbolTable/SymbolTable'
 
 const layout = [
-  { i: "a", x: 0, y: 0, w: 7, h: 12 },
-  { i: "b", x: 7, y: 0, w: 2, h: 12 },
-  { i: "c", x: 9, y: 0, w: 3, h: 12 },
-];
+  { i: 'a', x: 0, y: 0, w: 7, h: 12 },
+  { i: 'b', x: 7, y: 0, w: 2, h: 12 },
+  { i: 'c', x: 9, y: 0, w: 3, h: 12 },
+]
 
-const layouts = { lg: layout };
+const layouts = { lg: layout }
 function App() {
-  const [rowHeight, setRowHeight] = useState(0);
-  const mainStore = useSymbolStore();
+  const [rowHeight, setRowHeight] = useState(0)
+  const mainStore = useSymbolStore()
 
   useEffect(() => {
-    document.body.setAttribute("arco-theme", "dark");
-    console.log(mainStore.getSuggestedSymbols());
-    setRowHeight(window.innerHeight / 100);
-  }, []);
+    document.documentElement.setAttribute('data-theme', 'dark')
+    console.log(mainStore.getSuggestedSymbols())
+    setRowHeight(window.innerHeight / 100)
+  }, [])
 
-  console.log(mainStore.symbols);
+  console.log(mainStore.symbols)
 
   return (
     <>
@@ -54,7 +54,7 @@ function App() {
         </div>
       </ResponsiveGridLayout>
     </>
-  );
+  )
 }
 
-export default App;
+export default App
