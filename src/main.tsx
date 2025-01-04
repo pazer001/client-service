@@ -3,7 +3,6 @@ import { ConfigProvider } from "@arco-design/web-react";
 import enUS from "@arco-design/web-react/es/locale/en-US";
 
 import "@arco-design/web-react/dist/css/arco.css";
-import "@arco-themes/react-dc-orange/theme.css";
 import "./index.css";
 import App from "./App.tsx";
 
