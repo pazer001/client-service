@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Avatar, Table, TableColumnProps } from '@arco-design/web-react';
 import { ISymbol } from '../../stores/symbolStore';
-import './SymbolTable.css';
 import { ResizableTitle } from '../ResizableTitle/ResizableTitle';
 import { useResizableTitle } from '../ResizableTitle/ResizableTitle.hooks';
 import { useSymbolTable } from './SymbolTable.hooks';
 import { RowSelectionProps } from '@arco-design/web-react/es/Table';
 import { ISymbolTableItem } from './SymbolTable.types';
+
+import './SymbolTable.css';
 
 const originColumns: TableColumnProps[] = [
   {
