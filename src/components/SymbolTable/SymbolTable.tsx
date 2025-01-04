@@ -1,4 +1,4 @@
-// import { useState } from "react";
+import { useState } from 'react'
 import { ISymbol } from '../../stores/symbolStore'
 import { ResizableTitle } from '../ResizableTitle/ResizableTitle'
 import { useResizableTitle } from '../ResizableTitle/ResizableTitle.hooks'
@@ -46,11 +46,12 @@ const originColumns: TableProps<ISymbolTableItem>['columns'] = [
 export const SymbolTable = () => {
   const { isLoading, data } = useSymbolTable()
   const { columns } = useResizableTitle(originColumns)
-  // const [selectedRowKeys, setSelectedRowKeys] = useState<(string | number)[]>(
-  //   [],
-  // );
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
 
-  console.log(originColumns)
+  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    console.log('selectedRowKeys changed: ', newSelectedRowKeys)
+    setSelectedRowKeys(newSelectedRowKeys)
+  }
 
   return (
     <Table
@@ -58,6 +59,10 @@ export const SymbolTable = () => {
       loading={isLoading}
       dataSource={data}
       columns={columns}
+      rowSelection={{
+        selectedRowKeys,
+        onChange: onSelectChange,
+      }}
       components={{
         header: {
           cell: ResizableTitle,
