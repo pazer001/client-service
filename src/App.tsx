@@ -2,15 +2,18 @@ import { useEffect, useState } from 'react'
 // import GridLayout from "react-grid-layout";
 import { Responsive as ResponsiveGridLayout } from 'react-grid-layout'
 import { useSymbolStore } from './stores/symbolStore'
-import { Card } from 'antd'
-import 'antd/dist/reset.css'
-import 'react-grid-layout/css/styles.css'
+import { Card } from 'primereact/card'
+import './App.css'
+import 'primereact/resources/themes/lara-dark-teal/theme.css' //theme
+import 'primereact/resources/primereact.min.css' //core css
+import 'primeicons/primeicons.css' //icons
+import 'primeflex/primeflex.css' // flex
 import { SymbolTable } from './components/SymbolTable/SymbolTable'
 
 const layout = [
-  { i: 'a', x: 0, y: 0, w: 7, h: 12 },
-  { i: 'b', x: 7, y: 0, w: 2, h: 12 },
-  { i: 'c', x: 9, y: 0, w: 3, h: 12 },
+  { i: 'a', x: 0, y: 0, w: 5, h: 12 },
+  { i: 'b', x: 5, y: 0, w: 3, h: 12 },
+  { i: 'c', x: 8, y: 0, w: 4, h: 12 },
 ]
 
 const layouts = { lg: layout }
@@ -19,7 +22,6 @@ function App() {
   const mainStore = useSymbolStore()
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', 'dark')
     console.log(mainStore.getSuggestedSymbols())
     setRowHeight(window.innerHeight / 100)
   }, [])
@@ -39,14 +41,12 @@ function App() {
       >
         <div key="a">
           <Card title="Arco Card">
-            news recommendation engine and gradually evolved into a platform
-            delivering content in various formats.
+            news recommendation engine and gradually evolved into a platform delivering content in various formats.
           </Card>
         </div>
         <div key="b">
           <Card title="Arco Card">
-            news recommendation engine and gradually evolved into a platform
-            delivering content in various formats.
+            news recommendation engine and gradually evolved into a platform delivering content in various formats.
           </Card>
         </div>
         <div key="c">

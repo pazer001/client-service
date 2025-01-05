@@ -1,64 +1,38 @@
-import { useState } from 'react'
+import { DataTable } from 'primereact/datatable'
 import { ISymbol } from '../../stores/symbolStore'
-import { ResizableTitle } from '../ResizableTitle/ResizableTitle'
-import { useResizableTitle } from '../ResizableTitle/ResizableTitle.hooks'
 import { useSymbolTable } from './SymbolTable.hooks'
 
-import { Space, Table, Avatar, Typography } from 'antd'
-import type { TableProps } from 'antd'
-
 import './SymbolTable.css'
-
-const originColumns: TableProps<ISymbol>['columns'] = [
-  {
-    title: 'Symbol',
-    dataIndex: 'symbol',
-    width: 80,
-    ellipsis: true,
-    render(_col, { logo, symbol }: ISymbol) {
-      return (
-        <Space>
-          <Avatar src={logo} size={24} alt={symbol}>
-            <Typography.Text>{symbol.slice(0, 1).toUpperCase()}</Typography.Text>
-          </Avatar>
-          <Typography.Text ellipsis>{symbol}</Typography.Text>
-        </Space>
-      )
-    },
-  },
-  {
-    title: 'Market Cap',
-    dataIndex: 'marketCapitalization',
-    width: 100,
-    ellipsis: true,
-  },
-  {
-    title: 'Score',
-    dataIndex: 'priorityScore',
-    ellipsis: true,
-  },
-]
+import { Column } from 'primereact/column'
+import { Avatar } from 'primereact/avatar'
 
 export const SymbolTable = () => {
   const { isLoading, data } = useSymbolTable()
-  const { columns } = useResizableTitle(originColumns)
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
+
+  const symbolCell = (rowData: ISymbol): React.ReactNode => {
+    return (
+      <div className="flex align-items-center gap-2">
+        <Avatar image={rowData.logo} shape="circle" />
+        <span>{rowData.symbol}</span>
+      </div>
+    )
+  }
 
   return (
-    <Table
-      className="table-demo-resizable-column"
+    <DataTable
+      scrollable
+      style={{ height: 'calc(100vh - 23px)' }}
+      paginator={data.length > 0}
+      rows={100}
+      scrollHeight="calc(100vh - 75px)"
+      value={data}
       loading={isLoading}
-      dataSource={data}
-      columns={columns}
-      rowSelection={{
-        selectedRowKeys,
-        onChange: setSelectedRowKeys,
-      }}
-      components={{
-        header: {
-          cell: ResizableTitle,
-        },
-      }}
-    />
+      resizableColumns
+      columnResizeMode="expand"
+    >
+      <Column field="symbol" header="Symbol" body={symbolCell} />
+      <Column field="marketCapitalization" header="Market Cap" />
+      <Column field="priorityScore" header="Score" />
+    </DataTable>
   )
 }
