@@ -4,7 +4,7 @@ import { Responsive as ResponsiveGridLayout } from 'react-grid-layout'
 import { useSymbolStore } from './stores/symbolStore'
 import { Card } from 'primereact/card'
 import './App.css'
-import 'primereact/resources/themes/lara-dark-teal/theme.css' //theme
+import 'primereact/resources/themes/lara-dark-cyan/theme.css' //theme
 import 'primereact/resources/primereact.min.css' //core css
 import 'primeicons/primeicons.css' //icons
 import 'primeflex/primeflex.css' // flex

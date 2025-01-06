@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { DataTable } from 'primereact/datatable'
 import { ISymbol } from '../../stores/symbolStore'
 import { useSymbolTable } from './SymbolTable.hooks'
@@ -8,6 +9,7 @@ import { Avatar } from 'primereact/avatar'
 
 export const SymbolTable = () => {
   const { isLoading, data } = useSymbolTable()
+  const [selectedSymbol, setSelectedSymbol] = useState<ISymbol[]>([])
 
   const symbolCell = (rowData: ISymbol): React.ReactNode => {
     return (
@@ -28,8 +30,11 @@ export const SymbolTable = () => {
       value={data}
       loading={isLoading}
       resizableColumns
-      columnResizeMode="expand"
+      selectionMode={'multiple'}
+      onSelectionChange={(e) => setSelectedSymbol(e.value as ISymbol[])}
+      selection={selectedSymbol}
     >
+      <Column selectionMode="multiple"></Column>
       <Column field="symbol" header="Symbol" body={symbolCell} />
       <Column field="marketCapitalization" header="Market Cap" />
       <Column field="priorityScore" header="Score" />
