@@ -14,7 +14,7 @@ export const SymbolTable = () => {
   const symbolCell = (rowData: ISymbol): React.ReactNode => {
     return (
       <div className="flex align-items-center gap-2">
-        <Avatar image={rowData.logo} shape="circle" />
+        <Avatar image={rowData.logo} label={rowData.symbol.slice(0, 1).toUpperCase()} shape="circle" />
         <span>{rowData.symbol}</span>
       </div>
     )
