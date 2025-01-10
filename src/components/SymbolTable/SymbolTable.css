@@ -12,3 +12,11 @@
   cursor: col-resize;
   z-index: 1;
 }
+
+.p-input-icon-left {
+  margin-bottom: 0.5rem;
+}
+
+.p-input-icon-left i {
+  color: var(--text-color-secondary);
+}

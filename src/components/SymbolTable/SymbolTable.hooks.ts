@@ -5,6 +5,7 @@ import type { ISymbolTableItem } from './SymbolTable.types'
 interface IReturnSymbolTableHook {
   isLoading: boolean
   data: ISymbolTableItem[]
+  tableHeaderHeight: number
 }
 
 /**
@@ -14,12 +15,15 @@ interface IReturnSymbolTableHook {
  */
 export const useSymbolTable = (): IReturnSymbolTableHook => {
   const [isLoading, setIsLoading] = useState(false)
+  const [tableHeaderHeight, setTableHeaderHeight] = useState(0)
   const [data, setData] = useState<ISymbolTableItem[]>([])
   const { getSuggestedSymbols, symbols } = useSymbolStore()
 
   useEffect(() => {
     setIsLoading(true)
     getSuggestedSymbols().finally(() => setIsLoading(false))
+    const tableHeaderHeight = document.querySelector('.p-datatable-header')?.clientHeight ?? 0
+    setTableHeaderHeight(tableHeaderHeight)
   }, [])
 
   useEffect(() => {
@@ -30,5 +34,6 @@ export const useSymbolTable = (): IReturnSymbolTableHook => {
   return {
     isLoading,
     data,
+    tableHeaderHeight,
   }
 }
