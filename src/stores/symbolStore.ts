@@ -36,6 +36,7 @@ export interface ISymbol {
   recommendation: 'Buy' | 'Sell' | 'Hold' | ''
   updatedAt: string
   nextEarningReport: number
+  averageVolume: number
   isPennyStock: boolean
   logo: string
   priorityScore: number
@@ -48,12 +49,13 @@ const symbolStore: StateCreator<ISymbolStore> = (set, get) => ({
   symbols: [],
   getSuggestedSymbols: async (): Promise<void> => {
     const { interval } = get()
-    const supportedSymbolsResult: AxiosResponse<Array<ISymbol>> =
-      await axios.get(
-        `${API_HOST}/analyze/suggestedSymbols/${interval}/byProfit`,
-      )
+    const supportedSymbolsResult: AxiosResponse<Array<ISymbol>> = await axios.get(
+      `${API_HOST}/analyze/suggestedSymbols/${interval}/byProfit`,
+    )
 
-    set({ symbols: supportedSymbolsResult.data })
+    set({
+      symbols: supportedSymbolsResult.data,
+    })
   },
 })
 

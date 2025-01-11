@@ -23,6 +23,9 @@ export const useSymbolTable = (): IReturnSymbolTableHook => {
     setIsLoading(true)
     getSuggestedSymbols().finally(() => setIsLoading(false))
     const tableHeaderHeight = document.querySelector('.p-datatable-header')?.clientHeight ?? 0
+    const overlay = document.querySelector('.p-component-overlay') as HTMLElement
+    console.log(overlay)
+    overlay?.style.setProperty('--tableHeaderHeight', `${tableHeaderHeight}px`)
     setTableHeaderHeight(tableHeaderHeight)
   }, [])
 

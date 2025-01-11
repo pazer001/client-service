@@ -50,7 +50,9 @@ function App() {
           </Card>
         </div>
         <div key="c">
-          <SymbolTable />
+          <Card className="datatable-card">
+            <SymbolTable />
+          </Card>
         </div>
       </ResponsiveGridLayout>
     </>
