@@ -32,7 +32,7 @@ export const SymbolTable = () => {
     <DataTable
       removableSort
       scrollable
-      style={{ height: `calc(100dvh - 50px)`, display: 'flex', flexDirection: 'column' }}
+      // style={{ height: `calc(100dvh - 50px)`, display: 'flex', flexDirection: 'column' }}
       paginator={data.length > 0}
       paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport"
       currentPageReportTemplate="{first} to {last} of {totalRecords} Symbols"
