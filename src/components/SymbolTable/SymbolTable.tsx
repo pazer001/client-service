@@ -33,7 +33,7 @@ export const SymbolTable = () => {
       scrollable
       pt={{
         root: { className: 'h-full' },
-        header: { className: 'border-none px-0' },
+        header: { className: 'border-none px-0 pt-0' },
         wrapper: { className: 'h-full' },
       }}
       paginator={data.length > 0}

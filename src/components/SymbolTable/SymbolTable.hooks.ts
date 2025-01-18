@@ -15,7 +15,7 @@ interface IReturnSymbolTableHook {
  */
 export const useSymbolTable = (): IReturnSymbolTableHook => {
   const [isLoading, setIsLoading] = useState(false)
-  const [tableWrapperEdgesHeight, setTableWrapperEdgesHeight] = useState(136)
+  const [tableWrapperEdgesHeight, setTableWrapperEdgesHeight] = useState(137)
   const [data, setData] = useState<ISymbolTableItem[]>([])
   const { getSuggestedSymbols, symbols } = useSymbolStore()
 
