@@ -12,8 +12,8 @@ import Algo from './components/Algo/Algo.tsx'
 const layoutLg = [
   { i: 'a', x: 0, y: 0, w: 5, h: 5 },
   { i: 'b', x: 5, y: 0, w: 3, h: 5 },
-  { i: 'c', x: 8, y: 0, w: 4, h: 5 },
-  { i: 'd', x: 0, y: 15, w: 12, h: 2.88 },
+  { i: 'c', x: 8, y: 0, w: 4, h: 7.87 },
+  { i: 'd', x: 0, y: 15, w: 8, h: 2.87 },
 ]
 
 const layouts = { lg: layoutLg }
