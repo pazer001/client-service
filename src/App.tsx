@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-// import GridLayout from "react-grid-layout";
 import { Responsive as ResponsiveGridLayout } from 'react-grid-layout'
 import { useSymbolStore } from './stores/symbolStore'
 import { Card } from 'primereact/card'
@@ -7,7 +6,7 @@ import './App.css'
 import 'primereact/resources/themes/lara-dark-cyan/theme.css' //theme
 import 'primereact/resources/primereact.min.css' //core css
 import 'primeicons/primeicons.css' //icons
-import 'primeflex/primeflex.css' // flex
+import 'primeflex/primeflex.css' // flexpa
 import { SymbolTable } from './components/SymbolTable/SymbolTable'
 import Algo from './components/Algo/Algo.tsx'
 
@@ -20,15 +19,11 @@ const layout = [
 
 const layouts = { lg: layout }
 function App() {
-  // const [rowHeight, setRowHeight] = useState(0)
   const mainStore = useSymbolStore()
 
   useEffect(() => {
     console.log(mainStore.getSuggestedSymbols())
-    // setRowHeight(window.innerHeight / 12)
   }, [])
-
-  console.log(mainStore.symbols)
 
   return (
     <>
@@ -52,7 +47,13 @@ function App() {
           </Card>
         </div>
         <div key="c">
-          <Card className="datatable-card">
+          <Card
+            pt={{
+              root: { className: 'h-full' },
+              body: { className: 'h-full' },
+              content: { className: 'p-0 h-full' },
+            }}
+          >
             <SymbolTable />
           </Card>
         </div>
