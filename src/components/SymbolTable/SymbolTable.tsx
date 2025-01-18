@@ -73,12 +73,7 @@ export const SymbolTable = () => {
         )
       }}
     >
-      <Column
-        selectionMode="multiple"
-        resizeable={false}
-        frozen
-        style={{ width: '40px !important', maxWidth: '40px !important' }}
-      ></Column>
+      <Column selectionMode="multiple" resizeable={false} frozen></Column>
       <Column
         field="symbol"
         header="Symbol"
