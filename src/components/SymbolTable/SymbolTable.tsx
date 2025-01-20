@@ -1,43 +1,46 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { DataTable, DataTableFilterMeta } from 'primereact/datatable'
 import { ISymbol } from '../../stores/symbolStore'
 import { useSymbolTable } from './SymbolTable.hooks'
 
-import './SymbolTable.css'
 import { Column } from 'primereact/column'
 import { Avatar } from 'primereact/avatar'
 import { InputText } from 'primereact/inputtext'
 import { IconField } from 'primereact/iconfield'
 import { InputIcon } from 'primereact/inputicon'
-import { useDebounce } from '../../hooks/useDebouce'
 import { Watchlist } from './Watchlist/Watchlist'
+import { debounce } from 'lodash'
 
 const MIN_VOLUME = 500000
 
 export const SymbolTable = () => {
-  const { isLoading, data, tableHeaderHeight } = useSymbolTable()
+  const { isLoading, data, tableWrapperEdgesHeight } = useSymbolTable()
   const [selectedSymbol, setSelectedSymbol] = useState<ISymbol[]>([])
   const [globalFilter, setGlobalFilter] = useState<string>('')
-  const [searchValue, setSearchValue] = useState('')
-  const debouncedSearch = useDebounce(searchValue, 150)
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     averageVolume: { value: MIN_VOLUME, operator: 'gt', constraints: [{ value: MIN_VOLUME, matchMode: 'gt' }] },
   })
 
-  useEffect(() => {
-    setGlobalFilter(debouncedSearch)
-  }, [debouncedSearch])
+  const handleSearchChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+    setGlobalFilter(e.target.value)
+  }, 100)
 
   return (
     <DataTable
+      className="symbol-table"
       removableSort
+      showGridlines
       scrollable
-      // style={{ height: `calc(100dvh - 50px)`, display: 'flex', flexDirection: 'column' }}
+      pt={{
+        root: { className: 'h-full' },
+        header: { className: 'border-none px-0 pt-0' },
+        wrapper: { className: 'h-full' },
+      }}
       paginator={data.length > 0}
       paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport"
       currentPageReportTemplate="{first} to {last} of {totalRecords} Symbols"
       rows={200}
-      scrollHeight={`calc(100dvh - 75px - ${tableHeaderHeight}px)`}
+      scrollHeight={`calc(100% - ${tableWrapperEdgesHeight}px)`}
       value={data}
       loading={isLoading}
       resizableColumns
@@ -60,8 +63,8 @@ export const SymbolTable = () => {
                 <InputIcon className="pi pi-search"> </InputIcon>
                 <InputText
                   className="w-full"
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
+                  value={globalFilter}
+                  onChange={handleSearchChange}
                   placeholder="Search..."
                 />
               </IconField>
@@ -70,12 +73,7 @@ export const SymbolTable = () => {
         )
       }}
     >
-      <Column
-        selectionMode="multiple"
-        resizeable={false}
-        frozen
-        style={{ width: '40px !important', maxWidth: '40px !important' }}
-      ></Column>
+      <Column selectionMode="multiple" resizeable={false} frozen></Column>
       <Column
         field="symbol"
         header="Symbol"

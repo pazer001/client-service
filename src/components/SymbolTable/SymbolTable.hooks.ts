@@ -5,7 +5,7 @@ import type { ISymbolTableItem } from './SymbolTable.types'
 interface IReturnSymbolTableHook {
   isLoading: boolean
   data: ISymbolTableItem[]
-  tableHeaderHeight: number
+  tableWrapperEdgesHeight: number
 }
 
 /**
@@ -15,18 +15,20 @@ interface IReturnSymbolTableHook {
  */
 export const useSymbolTable = (): IReturnSymbolTableHook => {
   const [isLoading, setIsLoading] = useState(false)
-  const [tableHeaderHeight, setTableHeaderHeight] = useState(0)
+  const [tableWrapperEdgesHeight, setTableWrapperEdgesHeight] = useState(137)
   const [data, setData] = useState<ISymbolTableItem[]>([])
   const { getSuggestedSymbols, symbols } = useSymbolStore()
 
   useEffect(() => {
     setIsLoading(true)
-    getSuggestedSymbols().finally(() => setIsLoading(false))
-    const tableHeaderHeight = document.querySelector('.p-datatable-header')?.clientHeight ?? 0
-    const overlay = document.querySelector('.p-component-overlay') as HTMLElement
-    console.log(overlay)
-    overlay?.style.setProperty('--tableHeaderHeight', `${tableHeaderHeight}px`)
-    setTableHeaderHeight(tableHeaderHeight)
+    getSuggestedSymbols().finally(() => {
+      setIsLoading(false)
+      setTimeout(() => {
+        const tableHeaderHeight = document.querySelector('.symbol-table .p-datatable-header')?.clientHeight ?? 0
+        const tablePaginatorHeight = document.querySelector('.symbol-table .p-paginator')?.clientHeight ?? 0
+        setTableWrapperEdgesHeight(tableHeaderHeight + tablePaginatorHeight)
+      }, 0)
+    })
   }, [])
 
   useEffect(() => {
@@ -37,6 +39,6 @@ export const useSymbolTable = (): IReturnSymbolTableHook => {
   return {
     isLoading,
     data,
-    tableHeaderHeight,
+    tableWrapperEdgesHeight,
   }
 }
