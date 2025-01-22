@@ -19,8 +19,8 @@ export const Watchlist = () => {
         placeholder="Select a watchlist"
         className="w-full"
       />
-      <Button icon="pi pi-plus-circle" className="p-inputgroup-addon" />
-      <Button icon="pi pi-trash" className="p-button-danger p-inputgroup-addon" />
+      <Button icon="pi pi-plus-circle" />
+      <Button icon="pi pi-trash" severity="danger" />
     </div>
   )
 }

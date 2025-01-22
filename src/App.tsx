@@ -1,13 +1,13 @@
-import { useEffect } from 'react'
 import { Responsive as ResponsiveGridLayout } from 'react-grid-layout'
-import { useSymbolStore } from './stores/symbolStore'
 import { Card } from 'primereact/card'
-import 'primereact/resources/themes/lara-dark-cyan/theme.css' //theme
+import 'primereact/resources/themes/lara-dark-amber/theme.css' //theme
 import 'primereact/resources/primereact.min.css' //core css
 import 'primeicons/primeicons.css' //icons
 import 'primeflex/primeflex.css' // flexpa
 import { SymbolTable } from './components/SymbolTable/SymbolTable'
 import Algo from './components/Algo/Algo.tsx'
+import { useSymbataStore } from './stores/symbataStore.ts'
+import AnalyzedResult from './components/AnalyzedResult/AnalyzedResult.tsx'
 
 const layoutLg = [
   { i: 'a', x: 0, y: 0, w: 5, h: 5 },
@@ -18,12 +18,7 @@ const layoutLg = [
 
 const layouts = { lg: layoutLg }
 function App() {
-  const mainStore = useSymbolStore()
-
-  useEffect(() => {
-    console.log(mainStore.getSuggestedSymbols())
-  }, [])
-
+  const { symbol, interval } = useSymbataStore()
   return (
     <>
       <ResponsiveGridLayout
@@ -35,24 +30,25 @@ function App() {
         width={document.body.clientWidth}
       >
         <div key="a">
-          <Card pt={{ root: { className: 'h-full' } }} title="Arco Card">
+          <Card pt={{ root: { className: 'h-full' } }} title="Symbols">
             news recommendation engine and gradually evolved into a platform delivering content in various formats.
           </Card>
         </div>
         <div key="b">
-          <Card pt={{ root: { className: 'h-full' } }} title="Arco Card">
-            <div>Test</div>
+          <Card pt={{ root: { className: 'h-full' } }} title="Analyzed Result">
+            <AnalyzedResult symbol={symbol} interval={interval} />
           </Card>
         </div>
         <div key="c">
           <Card
+            title="Symbols"
             pt={{
               root: { className: 'h-full' },
               body: { className: 'h-full' },
               content: { className: 'p-0 h-full' },
             }}
           >
-            <SymbolTable />
+            <SymbolTable interval={interval} />
           </Card>
         </div>
         <div key="d">
