@@ -10,7 +10,6 @@ import { Button } from 'primereact/button'
 import { Watchlist } from './Watchlist/Watchlist'
 import { useSymbataStore } from '../../stores/symbataStore.ts'
 import { ProgressBar } from 'primereact/progressbar'
-import millify from 'millify'
 
 export const SymbolTable = () => {
   const { isLoading, symbols, symbolsLooking, progress } = useSymbolTable()
@@ -63,15 +62,6 @@ export const SymbolTable = () => {
       )}
     >
       <Column field="symbol" header="Symbol" sortable filter dataType="text" />
-      <Column
-        field="averageVolume"
-        header="Avg Volume"
-        sortable
-        filter
-        filterPlaceholder="Less than 50000"
-        dataType="numeric"
-        body={(rowData) => millify(rowData.averageVolume)}
-      />
       <Column
         field="priorityScore.symbol"
         header="Score"

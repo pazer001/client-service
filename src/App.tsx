@@ -48,7 +48,7 @@ function App() {
               content: { className: 'p-0 h-full' },
             }}
           >
-            <SymbolTable interval={interval} />
+            <SymbolTable />
           </Card>
         </div>
         <div key="d">
