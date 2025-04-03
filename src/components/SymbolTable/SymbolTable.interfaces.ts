@@ -1,21 +1,22 @@
-import { IAnalyzedSignalsAndLines } from '../AnalyzedResult/AnalyzedResult.interfaces.ts'
-
-export interface ISymbolTableItem extends ISymbolItem {
-  key: string
+export interface IPriorityScore {
+  symbol: number | null
+  sector: number | null
+  index: number | null
+  sizeValue: number | null
+  style: number | null
+  symbolLastScore: number | null
+  sectorLastScore: number | null
+  indexLastScore: number | null
+  sizeLastValueScore: number | null
+  styleLastScore: number | null
 }
 
 export interface ISymbolItem {
-  marketCapitalization: number
-  id: number
+  _id: string
   symbol: string
-  score: number
-  verdict: string
-  recommendation: 'Buy' | 'Sell' | 'Hold' | ''
-  updatedAt: string
-  nextEarningReport: number
+  __v: number
   averageVolume: number
-  isPennyStock: boolean
-  logo: string
-  priorityScore: number
-  analyzedSignalsAndLines: IAnalyzedSignalsAndLines
+  createdAt: string
+  priorityScore: IPriorityScore
+  updatedAt: string
 }
