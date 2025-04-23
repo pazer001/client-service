@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { Button } from 'primereact/button'
 import { Menu } from 'primereact/menu'
-import { MenuItem } from 'primereact/menuitem'
+import { MenuItem, MenuItemCommandEvent } from 'primereact/menuitem'
 import { Toast } from 'primereact/toast'
 import { ISymbolItem } from '../../../stores/symbataStore.types'
 import { InputText } from 'primereact/inputtext'
@@ -9,13 +9,38 @@ import { useWatchlistStoreActions, useWatchlistStoreWatchlists } from '../../../
 
 export default function AddToWatchListButton(props: ISymbolItem) {
   const watchlists = useWatchlistStoreWatchlists()
+  const { addToWatchlist, removeFromWatchlist } = useWatchlistStoreActions()
   const menuLeft = useRef<Menu>(null)
   const toast = useRef<Toast>(null)
 
-  const addWatchlistItems = watchlists.map((watchlist) => ({
-    label: watchlist.name,
-    icon: 'pi pi-star',
-  }))
+  const addWatchlistItems = watchlists.map((watchlist) => {
+    const isSymbolInWatchlist = watchlist.symbols.some((symbol) => symbol.symbol === props.symbol)
+    return {
+      label: watchlist.name,
+      icon: `pi ${isSymbolInWatchlist ? 'pi-star-fill text-yellow-500' : 'pi-star'}`,
+      command: (e: MenuItemCommandEvent) => {
+        e.originalEvent.preventDefault()
+        e.originalEvent.stopPropagation()
+        if (isSymbolInWatchlist) {
+          removeFromWatchlist(watchlist.name, props)
+          toast.current?.show({
+            severity: 'info',
+            summary: 'Removed from Watchlist',
+            detail: `Removed ${props.symbol} from ${watchlist.name}`,
+            life: 3000,
+          })
+          return
+        }
+        addToWatchlist(watchlist.name, props)
+        toast.current?.show({
+          severity: 'success',
+          summary: 'Added to Watchlist',
+          detail: `Added ${props.symbol} to ${watchlist.name}`,
+          life: 3000,
+        })
+      },
+    } as MenuItem
+  })
 
   const items: MenuItem[] = [
     {
@@ -87,16 +112,22 @@ export default function AddToWatchListButton(props: ISymbolItem) {
       { separator: true },
     )
   }
+
   console.log('AddToWatchListButton', props)
+  console.log('watchlists', watchlists)
+
+  const isSymbolInWatchlist = watchlists.some((watchlist) =>
+    watchlist.symbols.some((symbol) => symbol._id === props._id),
+  )
 
   return (
     <div className="card flex justify-content-center">
       <Toast ref={toast}></Toast>
       <Menu className="w-full md:w-15rem" model={items} popup ref={menuLeft} id="popup_menu_left" />
       <Button
-        icon="pi pi-star"
+        icon={`pi ${isSymbolInWatchlist ? 'pi-star-fill' : 'pi-star'}`}
         text
-        severity="secondary"
+        severity={isSymbolInWatchlist ? undefined : 'secondary'}
         size="small"
         onClick={(event) => menuLeft?.current?.toggle(event)}
         aria-controls="popup_menu_left"

@@ -57,6 +57,7 @@ export const SymbolTable = () => {
               body={(rowData) => Math.round(rowData.priorityScore.symbol)}
             />
             <Column
+              header="Watchlist"
               headerStyle={{ width: '10%', minWidth: '8rem' }}
               bodyStyle={{ textAlign: 'center' }}
               body={(rowData) => <AddToWatchListButton {...rowData} />}

@@ -30,10 +30,30 @@ const watchlistStore: StateCreator<IWatchListStore> = (set) => ({
       }))
     },
     addToWatchlist: async (name: string, symbol: ISymbolItem) => {
-      console.log('Adding symbol to watchlist:', name, symbol)
+      set((state) => {
+        const watchlist = state.watchlists.find((watchlist) => watchlist.name === name)
+        if (watchlist) {
+          return {
+            watchlists: state.watchlists.map((wl) =>
+              wl.name === name ? { ...wl, symbols: [...wl.symbols, symbol] } : wl,
+            ),
+          }
+        }
+        return state
+      })
     },
     removeFromWatchlist: async (name: string, symbol: ISymbolItem) => {
-      console.log('Removing symbol from watchlist:', name, symbol)
+      set((state) => {
+        const watchlist = state.watchlists.find((watchlist) => watchlist.name === name)
+        if (watchlist) {
+          return {
+            watchlists: state.watchlists.map((wl) =>
+              wl.name === name ? { ...wl, symbols: wl.symbols.filter((s) => s.symbol !== symbol.symbol) } : wl,
+            ),
+          }
+        }
+        return state
+      })
     },
     removeWatchlist: async (name: string) => {
       console.log('Removing watchlist:', name)
