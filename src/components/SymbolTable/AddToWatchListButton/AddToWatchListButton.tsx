@@ -46,6 +46,7 @@ export default function AddToWatchListButton(props: ISymbolItem) {
       items: [
         {
           template: () => {
+            // TODO: extract to a separate component
             const [value, setValue] = useState('')
             const { addWatchlist } = useWatchlistStoreActions()
             const watchlists = useWatchlistStoreWatchlists()
