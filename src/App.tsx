@@ -3,10 +3,9 @@ import { Card } from 'primereact/card'
 import 'primereact/resources/themes/lara-dark-amber/theme.css' //theme
 import 'primereact/resources/primereact.min.css' //core css
 import 'primeicons/primeicons.css' //icons
-import 'primeflex/primeflex.css' // flexpa
+import 'primeflex/primeflex.css' //flex utilities
 import { SymbolTable } from './components/SymbolTable/SymbolTable'
 import Algo from './components/Algo/Algo.tsx'
-import { useSymbataStore } from './stores/symbataStore.ts'
 import AnalyzedResult from './components/AnalyzedResult/AnalyzedResult.tsx'
 
 const layoutLg = [
@@ -18,7 +17,6 @@ const layoutLg = [
 
 const layouts = { lg: layoutLg }
 function App() {
-  const { symbol, interval } = useSymbataStore()
   return (
     <>
       <ResponsiveGridLayout
@@ -36,7 +34,7 @@ function App() {
         </div>
         <div key="b">
           <Card pt={{ root: { className: 'h-full' } }} title="Analyzed Result">
-            <AnalyzedResult symbol={symbol} interval={interval} />
+            <AnalyzedResult />
           </Card>
         </div>
         <div key="c">

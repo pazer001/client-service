@@ -1,27 +1,34 @@
 import { useEffect, useState } from 'react'
-import axios, { AxiosResponse } from 'axios'
-import { ISymbolItem } from './SymbolTable.interfaces.ts'
+import { ISymbolItem } from '../../stores/symbataStore.types.ts'
+import { useSymbataStoreActions, useSymbataStoreSymbols } from '../../stores/symbataStore.ts'
+import { DataTableRowClickEvent } from 'primereact/datatable'
 
-interface IReturnSymbolTableHook {
+export interface IReturnSymbolTableHook {
   isLoading: boolean
   symbols: ISymbolItem[]
   symbolsLooking: boolean
   progress: number
+  handleRowClick: (e: DataTableRowClickEvent) => Promise<void>
 }
-const API_HOST = import.meta.env.VITE_API_HOST
 
 export const useSymbolTable = (): IReturnSymbolTableHook => {
   const [isLoading, setIsLoading] = useState(false)
   const [symbolsLooking] = useState<boolean>(false)
   const [progress] = useState<number>(0)
-  const [symbols, setSymbols] = useState<ISymbolItem[]>([])
+  const symbols = useSymbataStoreSymbols()
+  const { getSuggestedSymbols, setSymbol, getRecommendation } = useSymbataStoreActions()
+
   const getSymbolsList = async () => {
     setIsLoading(true)
-    const supportedSymbolsResult: AxiosResponse<Array<ISymbolItem>> = await axios.get(
-      `${API_HOST}/analyze/suggestedSymbols`,
-    )
-    setSymbols(supportedSymbolsResult.data)
+    await getSuggestedSymbols()
     setIsLoading(false)
+  }
+
+  const handleRowClick = async (e: DataTableRowClickEvent) => {
+    const selectedRow = e.data as ISymbolItem // Cast the data to ISymbolItem type
+    const recommendation = await getRecommendation(selectedRow) // Fetch recommendation for the selected symbol
+    const symbol = { ...selectedRow, recommendation } // Combine selected row with recommendation
+    setSymbol(symbol) // Set the selected symbol in the store
   }
 
   useEffect(() => {
@@ -33,5 +40,6 @@ export const useSymbolTable = (): IReturnSymbolTableHook => {
     isLoading,
     symbolsLooking,
     progress,
+    handleRowClick,
   }
 }
