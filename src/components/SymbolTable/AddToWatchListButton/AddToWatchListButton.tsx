@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { Button } from 'primereact/button'
 import { Menu } from 'primereact/menu'
-import { MenuItem, MenuItemCommandEvent } from 'primereact/menuitem'
+import { MenuItem } from 'primereact/menuitem'
 import { Toast } from 'primereact/toast'
 import { ISymbolItem } from '../../../stores/symbataStore.types'
 import { InputText } from 'primereact/inputtext'
@@ -18,9 +18,7 @@ export default function AddToWatchListButton(props: ISymbolItem) {
     return {
       label: watchlist.name,
       icon: `pi ${isSymbolInWatchlist ? 'pi-star-fill text-yellow-500' : 'pi-star'}`,
-      command: (e: MenuItemCommandEvent) => {
-        e.originalEvent.preventDefault()
-        e.originalEvent.stopPropagation()
+      command: () => {
         if (isSymbolInWatchlist) {
           removeFromWatchlist(watchlist.name, props)
           toast.current?.show({
