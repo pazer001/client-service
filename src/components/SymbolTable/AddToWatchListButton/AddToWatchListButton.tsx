@@ -61,9 +61,6 @@ export default function AddToWatchListButton(props: ISymbolItem) {
     )
   }
 
-  console.log('AddToWatchListButton', props)
-  console.log('watchlists', watchlists)
-
   const isSymbolInWatchlist = watchlists.some((watchlist) =>
     watchlist.symbols.some((symbol) => symbol.symbol === props.symbol),
   )

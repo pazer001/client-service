@@ -26,6 +26,7 @@ export const useSymbolTable = (): IReturnSymbolTableHook => {
 
   const handleRowClick = async (e: DataTableRowClickEvent) => {
     const selectedRow = e.data as ISymbolItem // Cast the data to ISymbolItem type
+
     const recommendation = await getRecommendation(selectedRow) // Fetch recommendation for the selected symbol
     const symbol = { ...selectedRow, recommendation } // Combine selected row with recommendation
     setSymbol(symbol) // Set the selected symbol in the store

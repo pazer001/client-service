@@ -101,12 +101,12 @@ const symbataStore: StateCreator<ISymbolStore> = (set) => ({
         set((state) => ({ ...state, symbols: mockSymbols }))
       }
     },
-    getRecommendation: async (symbol) => {
+    getRecommendation: async (rowData) => {
       try {
-        const req = await axios.get(`${import.meta.env.VITE_API_HOST}/analyze/recommendation/`, {
+        const req = await axios.get(`${import.meta.env.VITE_API_HOST}/analyze/recommendation`, {
           params: {
-            symbol,
-            usedStrategy: symbol.recommendation?.usedStrategy,
+            symbol: rowData.symbol,
+            usedStrategy: rowData?.recommendation?.usedStrategy ?? '',
           },
         })
         const recommendation = req.data as IRecommendation
