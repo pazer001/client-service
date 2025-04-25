@@ -1,11 +1,11 @@
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import { Button } from 'primereact/button'
 import { Menu } from 'primereact/menu'
 import { MenuItem } from 'primereact/menuitem'
 import { Toast } from 'primereact/toast'
 import { ISymbolItem } from '../../../stores/symbataStore.types'
-import { InputText } from 'primereact/inputtext'
 import { useWatchlistStoreActions, useWatchlistStoreWatchlists } from '../../../stores/watchlistStore'
+import { WatchlistMenu } from '../Watchlist/WatchlistMenu/WatchlistMenu'
 
 export default function AddToWatchListButton(props: ISymbolItem) {
   const watchlists = useWatchlistStoreWatchlists()
@@ -45,58 +45,7 @@ export default function AddToWatchListButton(props: ISymbolItem) {
       label: 'Create new Watchlist',
       items: [
         {
-          template: () => {
-            // TODO: extract to a separate component
-            const [value, setValue] = useState('')
-            const { addWatchlist } = useWatchlistStoreActions()
-            const watchlists = useWatchlistStoreWatchlists()
-            const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-              setValue(e.target.value)
-            }
-            const handleClick = () => {
-              addWatchlist(value)
-              setValue('')
-              toast.current?.show({
-                severity: 'success',
-                summary: 'Watchlist Created',
-                detail: `Watchlist ${value} created`,
-                life: 3000,
-              })
-            }
-
-            const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-              if (e.key === 'Enter') {
-                handleClick()
-              }
-            }
-            return (
-              <div className="flex flex-column gap-2 px-3 pb-3">
-                <div className="p-inputgroup flex-1">
-                  <InputText
-                    placeholder="Name"
-                    name="watchlist"
-                    id="watchlist"
-                    aria-describedby="watchlist-help"
-                    value={value}
-                    onChange={handleChange}
-                    onKeyDown={handleKeyDown}
-                    className="w-full"
-                  />
-                  <Button
-                    size="small"
-                    icon="pi pi-plus"
-                    disabled={value.length === 0 || watchlists.some((watchlist) => watchlist.name === value)}
-                    onClick={handleClick}
-                  />
-                </div>
-                {watchlists.some((watchlist) => watchlist.name === value) && (
-                  <small id="watchlist-help" className="text-red-300">
-                    Watchlist already exists
-                  </small>
-                )}
-              </div>
-            )
-          },
+          template: WatchlistMenu,
         },
       ],
     },
@@ -116,7 +65,7 @@ export default function AddToWatchListButton(props: ISymbolItem) {
   console.log('watchlists', watchlists)
 
   const isSymbolInWatchlist = watchlists.some((watchlist) =>
-    watchlist.symbols.some((symbol) => symbol._id === props._id),
+    watchlist.symbols.some((symbol) => symbol.symbol === props.symbol),
   )
 
   return (
