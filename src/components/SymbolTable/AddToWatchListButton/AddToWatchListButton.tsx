@@ -27,6 +27,8 @@ const AddToWatchListButton = (props: ISymbolItem) => {
   const checkSymbolInWatchlist = (watchlist: IWatchlist) =>
     watchlist.symbols.some((symbol) => symbol.symbol === props.symbol)
 
+  const isSymbolInWatchlist = watchlists.some(checkSymbolInWatchlist)
+
   useEffect(() => {
     if (watchlists.length > 0) {
       // Add the watchlist items to the menu
@@ -68,8 +70,6 @@ const AddToWatchListButton = (props: ISymbolItem) => {
       ])
     }
   }, [watchlists])
-
-  const isSymbolInWatchlist = watchlists.some(checkSymbolInWatchlist)
 
   return (
     <>
