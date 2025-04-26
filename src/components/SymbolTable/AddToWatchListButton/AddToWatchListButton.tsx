@@ -8,10 +8,10 @@ import { useWatchlistStoreActions, useWatchlistStoreWatchlists } from '../../../
 import { WatchlistMenu } from '../Watchlist/WatchlistMenu/WatchlistMenu'
 
 const AddToWatchListButton = (props: ISymbolItem) => {
-  const watchlists = useWatchlistStoreWatchlists()
-  const { addToWatchlist, removeFromWatchlist } = useWatchlistStoreActions()
   const menuLeft = useRef<Menu>(null)
   const toast = useRef<Toast>(null)
+  const watchlists = useWatchlistStoreWatchlists()
+  const { addToWatchlist, removeFromWatchlist } = useWatchlistStoreActions()
   const [menuItems, setMenuItems] = useState<MenuItem[]>([
     {
       id: 'create-new-watchlist',
