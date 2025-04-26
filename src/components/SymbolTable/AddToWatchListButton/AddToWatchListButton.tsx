@@ -25,9 +25,9 @@ const AddToWatchListButton = (props: ISymbolItem) => {
   ])
 
   useEffect(() => {
-    if (Array.from(watchlists.values()).length > 0) {
+    if (watchlists.length > 0) {
       // Add the watchlist items to the menu
-      const items = Array.from(watchlists.values()).map((watchlist): MenuItem => {
+      const items = watchlists.map((watchlist): MenuItem => {
         const isSymbolInWatchlist = watchlist.symbols.some((symbol) => symbol.symbol === props.symbol)
         return {
           label: watchlist.name,
