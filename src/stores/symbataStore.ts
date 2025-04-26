@@ -2,7 +2,7 @@ import { create, StateCreator } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { Interval } from '../components/interfaces.ts'
 import axios, { AxiosResponse } from 'axios'
-import { EAction, IRecommendation, ISymbolItem } from './symbataStore.types.ts'
+import { IRecommendation, ISymbolItem } from './symbataStore.types.ts'
 
 const API_HOST = import.meta.env.VITE_API_HOST
 
@@ -29,76 +29,12 @@ const symbataStore: StateCreator<ISymbolStore> = (set) => ({
     },
     getSuggestedSymbols: async () => {
       try {
-        const supportedSymbolsResult: AxiosResponse<Array<ISymbolItem>> = await axios.get(
+        const supportedSymbolsResult: AxiosResponse<ISymbolItem[]> = await axios.get(
           `${API_HOST}/analyze/suggestedSymbols`,
         )
         set((state) => ({ ...state, symbols: supportedSymbolsResult.data }))
       } catch (error) {
         console.error('Error fetching suggested symbols:', error)
-        // Mock data to return in case of failure
-        const mockSymbols: ISymbolItem[] = [
-          {
-            _id: '1',
-            symbol: 'AAPL',
-            __v: 0,
-            averageVolume: 1000000,
-            createdAt: new Date().toISOString(),
-            priorityScore: {
-              symbol: null,
-              sector: null,
-              index: null,
-              sizeValue: null,
-              style: null,
-              symbolLastScore: null,
-              sectorLastScore: null,
-              indexLastScore: null,
-              sizeLastValueScore: null,
-              styleLastScore: null,
-            },
-            updatedAt: new Date().toISOString(),
-          },
-          {
-            _id: '2',
-            symbol: 'GOOGL',
-            __v: 0,
-            averageVolume: 2000000,
-            createdAt: new Date().toISOString(),
-            priorityScore: {
-              symbol: null,
-              sector: null,
-              index: null,
-              sizeValue: null,
-              style: null,
-              symbolLastScore: null,
-              sectorLastScore: null,
-              indexLastScore: null,
-              sizeLastValueScore: null,
-              styleLastScore: null,
-            },
-            updatedAt: new Date().toISOString(),
-          },
-          {
-            _id: '3',
-            symbol: 'MSFT',
-            __v: 0,
-            averageVolume: 1500000,
-            createdAt: new Date().toISOString(),
-            priorityScore: {
-              symbol: null,
-              sector: null,
-              index: null,
-              sizeValue: null,
-              style: null,
-              symbolLastScore: null,
-              sectorLastScore: null,
-              indexLastScore: null,
-              sizeLastValueScore: null,
-              styleLastScore: null,
-            },
-            updatedAt: new Date().toISOString(),
-          },
-        ]
-        set((state) => ({ ...state, symbols: mockSymbols }))
       }
     },
     getRecommendation: async (rowData) => {
@@ -113,13 +49,7 @@ const symbataStore: StateCreator<ISymbolStore> = (set) => ({
         return recommendation
       } catch (error) {
         console.error('Error fetching recommendation:', error)
-        // Mock data to return in case of failure
-        return {
-          usedStrategy: 'default',
-          action: EAction.HOLD, // Updated to use the correct enum value
-          stopLoss: 0,
-          riskCapitalPercent: 0,
-        } as IRecommendation
+        throw error
       }
     },
   },
