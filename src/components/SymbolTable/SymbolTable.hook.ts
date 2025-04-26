@@ -18,12 +18,6 @@ export const useSymbolTable = (): IReturnSymbolTableHook => {
   const symbols = useSymbataStoreSymbols()
   const { getSuggestedSymbols, setSymbol, getRecommendation } = useSymbataStoreActions()
 
-  const getSymbolsList = async () => {
-    setIsLoading(true)
-    await getSuggestedSymbols()
-    setIsLoading(false)
-  }
-
   const handleRowClick = async (e: DataTableRowClickEvent) => {
     const selectedRow = e.data as ISymbolItem // Cast the data to ISymbolItem type
 
@@ -33,6 +27,12 @@ export const useSymbolTable = (): IReturnSymbolTableHook => {
   }
 
   useEffect(() => {
+    const getSymbolsList = async () => {
+      setIsLoading(true)
+      await getSuggestedSymbols()
+      setIsLoading(false)
+    }
+
     getSymbolsList()
   }, [])
 
