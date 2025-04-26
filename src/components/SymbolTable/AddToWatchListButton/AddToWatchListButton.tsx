@@ -81,3 +81,4 @@ export default function AddToWatchListButton(props: ISymbolItem) {
     </>
   )
 }
+// TODO: extract the toast to the root component and add the toast ref to main store (symbataStore.ts) to be used in all components
