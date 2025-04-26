@@ -28,7 +28,6 @@ export const SymbolTable = () => {
         >
           <DataTable
             removableSort
-            showGridlines
             scrollable
             pt={{
               root: { className: 'h-full' },
