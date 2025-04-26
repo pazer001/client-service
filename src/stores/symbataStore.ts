@@ -25,7 +25,7 @@ const symbataStore: StateCreator<ISymbolStore> = (set) => ({
   symbols: [],
   actions: {
     setSymbol: (symbol: ISymbolItem) => {
-      set((state) => ({ ...state, symbol }))
+      set({ symbol })
     },
     getSuggestedSymbols: async () => {
       try {
