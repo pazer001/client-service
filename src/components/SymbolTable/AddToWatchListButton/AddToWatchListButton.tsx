@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef } from 'react'
 import { Button } from 'primereact/button'
 import { Menu } from 'primereact/menu'
 import { MenuItem } from 'primereact/menuitem'
@@ -12,7 +12,7 @@ const AddToWatchListButton = (props: ISymbolItem) => {
   const toast = useRef<Toast>(null)
   const watchlists = useWatchlistStoreWatchlists()
   const { addToWatchlist, removeFromWatchlist } = useWatchlistStoreActions()
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([
+  let menuItems: MenuItem[] = [
     {
       id: 'create-new-watchlist',
       label: 'Create new Watchlist',
@@ -22,54 +22,53 @@ const AddToWatchListButton = (props: ISymbolItem) => {
         },
       ],
     },
-  ])
+  ]
 
   const checkSymbolInWatchlist = (watchlist: IWatchlist) =>
     watchlist.symbols.some((symbol) => symbol.symbol === props.symbol)
 
   const isSymbolInWatchlist = watchlists.some(checkSymbolInWatchlist)
   // TODO: move useEffect to a hook
-  useEffect(() => {
-    if (watchlists.length > 0) {
-      // Add the watchlist items to the menu
-      const items = watchlists.map((watchlist): MenuItem => {
-        const isSymbolInWatchlist = checkSymbolInWatchlist(watchlist)
-        return {
-          label: watchlist.name,
-          icon: `pi ${isSymbolInWatchlist ? 'pi-star-fill text-yellow-500' : 'pi-star'}`,
-          command: () => {
-            if (isSymbolInWatchlist) {
-              removeFromWatchlist(watchlist.name, props)
-              toast.current?.show({
-                severity: 'info',
-                summary: 'Removed from Watchlist',
-                detail: `Removed ${props.symbol} from ${watchlist.name}`,
-                life: 3000,
-              })
-              return
-            }
-
-            addToWatchlist(watchlist.name, props)
+  // useEffect(() => {
+  if (watchlists.length > 0) {
+    // Add the watchlist items to the menu
+    const items = watchlists.map((watchlist): MenuItem => {
+      const isSymbolInWatchlist = checkSymbolInWatchlist(watchlist)
+      return {
+        label: watchlist.name,
+        icon: `pi ${isSymbolInWatchlist ? 'pi-star-fill text-yellow-500' : 'pi-star'}`,
+        command: () => {
+          if (isSymbolInWatchlist) {
+            removeFromWatchlist(watchlist.name, props)
             toast.current?.show({
-              severity: 'success',
-              summary: 'Added to Watchlist',
-              detail: `Added ${props.symbol} to ${watchlist.name}`,
+              severity: 'info',
+              summary: 'Removed from Watchlist',
+              detail: `Removed ${props.symbol} from ${watchlist.name}`,
               life: 3000,
             })
-          },
-        }
-      })
+            return
+          }
 
-      setMenuItems((prevItems) => [
-        {
-          id: 'add-to-watchlist',
-          label: 'Add to Watchlist',
-          items,
+          addToWatchlist(watchlist.name, props)
+          toast.current?.show({
+            severity: 'success',
+            summary: 'Added to Watchlist',
+            detail: `Added ${props.symbol} to ${watchlist.name}`,
+            life: 3000,
+          })
         },
-        ...prevItems.filter((item) => item.id !== 'add-to-watchlist'),
-      ])
-    }
-  }, [watchlists])
+      }
+    })
+
+    menuItems = [
+      {
+        id: 'add-to-watchlist',
+        label: 'Add to Watchlist',
+        items,
+      },
+      ...menuItems.filter((item) => item.id !== 'add-to-watchlist'),
+    ]
+  }
 
   return (
     <>

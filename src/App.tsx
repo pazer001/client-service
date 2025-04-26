@@ -1,13 +1,55 @@
-import { Responsive as ResponsiveGridLayout } from 'react-grid-layout'
-import { Card } from 'primereact/card'
-import 'primereact/resources/themes/lara-dark-amber/theme.css' //theme
-import 'primereact/resources/primereact.min.css' //core css
-import 'primeicons/primeicons.css' //icons
-import 'primeflex/primeflex.css' //flex utilities
+import { AppBar, Box, Grid, Paper, Stack, styled, Toolbar } from '@mui/material'
 import { SymbolTable } from './components/SymbolTable/SymbolTable'
-import Algo from './components/Algo/Algo.tsx'
-import AnalyzedResult from './components/AnalyzedResult/AnalyzedResult.tsx'
 
+const spacingBetween = 1
+const fullHeightStyleProp = { height: '100%' }
+
+// Item copied from MUI documentation
+// https://mui.com/material-ui/react-grid/#limitations
+const Item = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(spacingBetween),
+  ...fullHeightStyleProp,
+}))
+
+const Container = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(spacingBetween),
+  height: '100dvh',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(spacingBetween),
+}))
+
+const AppBarStyled = styled(AppBar)(() => ({}))
+
+function App() {
+  return (
+    <>
+      <Container>
+        <AppBarStyled position="static" sx={{ borderRadius: 1 }}>
+          <Toolbar variant="dense"></Toolbar>
+        </AppBarStyled>
+        <Grid container spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
+          <Grid size={6}>
+            <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
+              <Item></Item>
+              <Item sx={{ height: 'calc(100% / 2)' }}></Item>
+            </Stack>
+          </Grid>
+          <Grid size={2}>
+            <Item></Item>
+          </Grid>
+          <Grid size={4}>
+            <Item sx={{ paddingTop: 0 }}>
+              <SymbolTable />
+            </Item>
+          </Grid>
+        </Grid>
+      </Container>
+    </>
+  )
+}
+
+/**
 const layoutLg = [
   { i: 'a', x: 0, y: 0, w: 5, h: 5 },
   { i: 'b', x: 5, y: 0, w: 3, h: 5 },
@@ -63,5 +105,6 @@ function App() {
     </>
   )
 }
+  */
 
 export default App
