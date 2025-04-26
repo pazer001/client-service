@@ -13,8 +13,19 @@ export const SymbolTable = () => {
 
   return (
     <>
-      <TabView activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)}>
-        <TabPanel header="Symbols">
+      <TabView
+        pt={{
+          panelContainer: { className: 'px-0' },
+        }}
+        activeIndex={activeIndex}
+        onTabChange={(e) => setActiveIndex(e.index)}
+      >
+        <TabPanel
+          header="Symbols"
+          pt={{
+            content: { style: { height: 'calc(100vh - 281px' } },
+          }}
+        >
           <DataTable
             removableSort
             showGridlines
@@ -27,7 +38,7 @@ export const SymbolTable = () => {
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport"
             currentPageReportTemplate="{first} to {last} of {totalRecords} Symbols"
             rows={200}
-            scrollHeight={`calc(100% - 155px)`}
+            scrollHeight={`calc(100% - 97px)`}
             value={symbols}
             loading={isLoading}
             resizableColumns

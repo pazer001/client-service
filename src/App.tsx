@@ -43,7 +43,12 @@ function App() {
             pt={{
               root: { className: 'h-full' },
               body: { className: 'h-full' },
-              content: { className: 'p-0 h-full' },
+              content: {
+                className: 'p-0 h-full',
+                style: {
+                  maxHeight: 'calc(100% - 15px)',
+                },
+              },
             }}
           >
             <SymbolTable />
