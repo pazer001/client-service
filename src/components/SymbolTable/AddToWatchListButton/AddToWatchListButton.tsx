@@ -50,7 +50,7 @@ export default function AddToWatchListButton(props: ISymbolItem) {
       ],
     },
   ]
-
+  // when there is watchlists, add the watchlist items to the menu
   if (addWatchlistItems.length > 0) {
     items.unshift(
       {
