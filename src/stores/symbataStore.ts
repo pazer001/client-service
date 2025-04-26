@@ -1,10 +1,9 @@
 import { create, StateCreator } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { Interval } from '../components/interfaces.ts'
-import axios, { AxiosResponse } from 'axios'
+import axios from '../axios'
+import { AxiosResponse } from 'axios'
 import { IRecommendation, ISymbolItem } from './symbataStore.types.ts'
-
-const API_HOST = import.meta.env.VITE_API_HOST
 
 export interface IStoreActions {
   setSymbol: (symbol: ISymbolItem) => void
@@ -29,9 +28,7 @@ const symbataStore: StateCreator<ISymbolStore> = (set) => ({
     },
     getSuggestedSymbols: async () => {
       try {
-        const supportedSymbolsResult: AxiosResponse<ISymbolItem[]> = await axios.get(
-          `${API_HOST}/analyze/suggestedSymbols`,
-        )
+        const supportedSymbolsResult: AxiosResponse<ISymbolItem[]> = await axios.get('analyze/suggestedSymbols')
         set((state) => ({ ...state, symbols: supportedSymbolsResult.data }))
       } catch (error) {
         console.error('Error fetching suggested symbols:', error)
@@ -39,7 +36,7 @@ const symbataStore: StateCreator<ISymbolStore> = (set) => ({
     },
     getRecommendation: async (rowData) => {
       try {
-        const req = await axios.get(`${import.meta.env.VITE_API_HOST}/analyze/recommendation`, {
+        const req = await axios.get(`analyze/recommendation`, {
           params: {
             symbol: rowData.symbol,
             usedStrategy: rowData?.recommendation?.usedStrategy ?? '',

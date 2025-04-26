@@ -7,7 +7,7 @@ import { ISymbolItem } from '../../../stores/symbataStore.types'
 import { useWatchlistStoreActions, useWatchlistStoreWatchlists } from '../../../stores/watchlistStore'
 import { WatchlistMenu } from '../Watchlist/WatchlistMenu/WatchlistMenu'
 
-export default function AddToWatchListButton(props: ISymbolItem) {
+const AddToWatchListButton = (props: ISymbolItem) => {
   const watchlists = useWatchlistStoreWatchlists()
   const { addToWatchlist, removeFromWatchlist } = useWatchlistStoreActions()
   const menuLeft = useRef<Menu>(null)
@@ -25,9 +25,9 @@ export default function AddToWatchListButton(props: ISymbolItem) {
   ])
 
   useEffect(() => {
-    if (watchlists.length > 0) {
+    if (Array.from(watchlists.values()).length > 0) {
       // Add the watchlist items to the menu
-      const items = watchlists.map((watchlist): MenuItem => {
+      const items = Array.from(watchlists.values()).map((watchlist): MenuItem => {
         const isSymbolInWatchlist = watchlist.symbols.some((symbol) => symbol.symbol === props.symbol)
         return {
           label: watchlist.name,
@@ -87,3 +87,5 @@ export default function AddToWatchListButton(props: ISymbolItem) {
   )
 }
 // TODO: extract the toast to the root component and add the toast ref to main store (symbataStore.ts) to be used in all components
+
+export default AddToWatchListButton
