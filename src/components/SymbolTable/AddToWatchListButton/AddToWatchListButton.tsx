@@ -4,7 +4,7 @@ import { Menu } from 'primereact/menu'
 import { MenuItem } from 'primereact/menuitem'
 import { Toast } from 'primereact/toast'
 import { ISymbolItem } from '../../../stores/symbataStore.types'
-import { useWatchlistStoreActions, useWatchlistStoreWatchlists } from '../../../stores/watchlistStore'
+import { IWatchlist, useWatchlistStoreActions, useWatchlistStoreWatchlists } from '../../../stores/watchlistStore'
 import { WatchlistMenu } from '../Watchlist/WatchlistMenu/WatchlistMenu'
 
 const AddToWatchListButton = (props: ISymbolItem) => {
@@ -24,11 +24,14 @@ const AddToWatchListButton = (props: ISymbolItem) => {
     },
   ])
 
+  const checkSymbolInWatchlist = (watchlist: IWatchlist) =>
+    watchlist.symbols.some((symbol) => symbol.symbol === props.symbol)
+
   useEffect(() => {
     if (watchlists.length > 0) {
       // Add the watchlist items to the menu
       const items = watchlists.map((watchlist): MenuItem => {
-        const isSymbolInWatchlist = watchlist.symbols.some((symbol) => symbol.symbol === props.symbol)
+        const isSymbolInWatchlist = checkSymbolInWatchlist(watchlist)
         return {
           label: watchlist.name,
           icon: `pi ${isSymbolInWatchlist ? 'pi-star-fill text-yellow-500' : 'pi-star'}`,
@@ -66,9 +69,7 @@ const AddToWatchListButton = (props: ISymbolItem) => {
     }
   }, [watchlists])
 
-  const isSymbolInWatchlist = watchlists.some((watchlist) =>
-    watchlist.symbols.some((symbol) => symbol.symbol === props.symbol),
-  )
+  const isSymbolInWatchlist = watchlists.some(checkSymbolInWatchlist)
 
   return (
     <>

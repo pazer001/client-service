@@ -9,7 +9,7 @@ interface IWatchListStoreActions {
   removeFromWatchlist: (watchlistName: string, symbol: ISymbolItem) => Promise<void>
 }
 
-interface IWatchlist {
+export interface IWatchlist {
   name: string
   symbols: ISymbolItem[]
 }
