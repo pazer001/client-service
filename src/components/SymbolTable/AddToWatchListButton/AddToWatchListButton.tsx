@@ -43,6 +43,7 @@ export default function AddToWatchListButton(props: ISymbolItem) {
               })
               return
             }
+
             addToWatchlist(watchlist.name, props)
             toast.current?.show({
               severity: 'success',
