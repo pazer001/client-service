@@ -69,7 +69,7 @@ export const SymbolTable = () => {
             <Column
               header="Watchlist"
               headerStyle={{ width: '10%', minWidth: '8rem' }}
-              bodyStyle={{ textAlign: 'center' }}
+              bodyStyle={{ textAlign: 'start' }}
               body={(rowData) => <AddToWatchListButton {...rowData} />}
             />
           </DataTable>

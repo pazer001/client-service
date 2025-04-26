@@ -66,7 +66,7 @@ export default function AddToWatchListButton(props: ISymbolItem) {
   )
 
   return (
-    <div className="card flex justify-content-center">
+    <>
       <Toast ref={toast}></Toast>
       <Menu className="w-full md:w-15rem" model={items} popup ref={menuLeft} id="popup_menu_left" />
       <Button
@@ -78,6 +78,6 @@ export default function AddToWatchListButton(props: ISymbolItem) {
         aria-controls="popup_menu_left"
         aria-haspopup
       />
-    </div>
+    </>
   )
 }
