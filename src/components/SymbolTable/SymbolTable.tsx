@@ -1,9 +1,15 @@
 // import { useSymbolTable } from './SymbolTable.hook.ts'
 import { useState } from 'react'
 import Tabs from '@mui/material/Tabs'
-import Tab from '@mui/material/Tab'
+import Tab, { tabClasses } from '@mui/material/Tab'
+import { buttonBaseClasses } from '@mui/material/ButtonBase'
 import Box from '@mui/material/Box'
 import ListIcon from '@mui/icons-material/List'
+import FolderSpecialIcon from '@mui/icons-material/FolderSpecial'
+import { DataGrid } from '@mui/x-data-grid'
+import { styled } from '@mui/material'
+import { useSymbolTable } from './SymbolTable.hook'
+
 // import AddToWatchListButton from './AddToWatchListButton/AddToWatchListButton.tsx'
 
 interface TabPanelProps {
@@ -12,6 +18,8 @@ interface TabPanelProps {
   value: number
 }
 
+// this is an example code from MUI documentation
+// https://mui.com/material-ui/react-tabs/#introduction (first example)
 function CustomTabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props
 
@@ -24,11 +32,13 @@ function CustomTabPanel(props: TabPanelProps) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ p: 0, paddingTop: 1 }}>{children}</Box>}
+      {value === index && (
+        <Box sx={{ p: 0, paddingTop: 1, height: '100%', maxHeight: 'calc(100vh - 130px)' }}>{children}</Box>
+      )}
     </Box>
   )
 }
-
+// also from MUI documentation
 function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
@@ -36,24 +46,33 @@ function a11yProps(index: number) {
   }
 }
 
+// tabs with icons are too big by default, so we need to override the default styles
+const TabStyled = styled(Tab)(() => ({
+  [`&.${buttonBaseClasses.root}.${tabClasses.root}`]: {
+    minHeight: '49px',
+  },
+}))
+
 export const SymbolTable = () => {
-  // const { isLoading, symbolsLooking, progress, symbols, handleRowClick } = useSymbolTable()
+  const { isLoading, rows, columns } = useSymbolTable()
   const [activeIndex, setActiveIndex] = useState(0)
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setActiveIndex(newValue)
   }
 
+  console.log('rows', rows)
+
   return (
     <Box sx={{ height: 'inherit' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs variant="fullWidth" value={activeIndex} onChange={handleChange} aria-label="basic tabs example">
-          <Tab icon={<ListIcon />} label="Symbols" {...a11yProps(0)} />
-          <Tab disabled label="Watchlist" {...a11yProps(1)} />
+          <TabStyled iconPosition="start" icon={<ListIcon />} label="Symbols" {...a11yProps(0)} />
+          <TabStyled iconPosition="start" icon={<FolderSpecialIcon />} label="Watchlist" {...a11yProps(1)} />
         </Tabs>
       </Box>
       <CustomTabPanel value={activeIndex} index={0}>
-        Item One
+        <DataGrid density="compact" loading={isLoading} rows={rows} columns={columns} />
       </CustomTabPanel>
       <CustomTabPanel value={activeIndex} index={1}>
         Item Two

@@ -13,12 +13,9 @@ export interface IPriorityScore {
 
 export interface ISymbolItem {
   _id: string
+  id: string
   symbol: string
-  __v: number
-  averageVolume: number
-  createdAt: string
   priorityScore: IPriorityScore
-  updatedAt: string
   recommendation?: IRecommendation
 }
 
