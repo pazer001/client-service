@@ -1,5 +1,6 @@
 import {
   useCallback,
+  useMemo,
   // useCallback, useMemo,
   useState,
 } from 'react'
@@ -41,10 +42,10 @@ const AddToWatchListButton = (props: GridRowParams<ISymbolItem>) => {
     [],
   )
 
-  // const isSymbolInWatchlist = useMemo(
-  //   () => watchlists.some(checkSymbolInWatchlist),
-  //   [watchlists, checkSymbolInWatchlist],
-  // )
+  const isSymbolInWatchlist = useMemo(
+    () => watchlists.some(checkSymbolInWatchlist),
+    [watchlists, checkSymbolInWatchlist],
+  )
   // // TODO: move useEffect to a hook
   // // useEffect(() => {
   // if (watchlists.length > 0) {
@@ -78,7 +79,8 @@ const AddToWatchListButton = (props: GridRowParams<ISymbolItem>) => {
   return (
     <>
       <IconButton
-        color="warning"
+        color={isSymbolInWatchlist ? 'warning' : 'default'}
+        aria-label="add to watchlist"
         aria-describedby={id}
         onClick={handleClick}
         size="small"
@@ -87,11 +89,7 @@ const AddToWatchListButton = (props: GridRowParams<ISymbolItem>) => {
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
       >
-        {
-          // isSymbolInWatchlist ?
-          <StarRateRoundedIcon />
-          // : <StarOutlineRoundedIcon />
-        }
+        {isSymbolInWatchlist ? <StarRateRoundedIcon /> : <StarOutlineRoundedIcon />}
       </IconButton>
       <Popover
         id={id}
