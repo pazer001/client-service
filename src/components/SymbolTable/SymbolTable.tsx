@@ -61,8 +61,6 @@ export const SymbolTable = () => {
     setActiveIndex(newValue)
   }
 
-  console.log('rows', rows)
-
   return (
     <Box sx={{ height: 'inherit' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

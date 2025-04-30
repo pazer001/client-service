@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { inputBaseClasses } from '@mui/material/InputBase'
-import { useWatchlistStoreActions, useWatchlistStoreWatchlists } from '../../../../stores/watchlistStore'
+import { useWatchlistStoreActions, useWatchlistStoreWatchlists } from '../../../stores/watchlistStore'
 import { Button, FormControl, FormHelperText, InputAdornment, TextField } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 
@@ -34,7 +34,7 @@ export const WatchlistAddInput = () => {
     >
       <TextField
         fullWidth
-        autoFocus
+        autoFocus={watchlists.length === 0}
         size="small"
         placeholder="Name"
         name="watchlist"
