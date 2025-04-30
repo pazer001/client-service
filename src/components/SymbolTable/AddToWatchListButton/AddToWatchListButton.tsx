@@ -1,88 +1,141 @@
-import { useRef } from 'react'
-import { Button } from 'primereact/button'
-import { Menu } from 'primereact/menu'
-import { MenuItem } from 'primereact/menuitem'
-import { Toast } from 'primereact/toast'
+import {
+  useCallback,
+  // useCallback, useMemo,
+  useState,
+} from 'react'
 import { ISymbolItem } from '../../../stores/symbataStore.types'
+// import {
+//   IWatchlist,
+//   // useWatchlistStoreActions,
+//   useWatchlistStoreWatchlists,
+// } from '../../../stores/watchlistStore'
+import { WatchlistAddInput } from '../Watchlist/WatchlistMenu/WatchlistAddInput'
+import { Divider, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Popover } from '@mui/material'
+// import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded'
+import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded'
+import StarRateRoundedIcon from '@mui/icons-material/StarRateRounded'
+import { GridRowParams } from '@mui/x-data-grid'
 import { IWatchlist, useWatchlistStoreActions, useWatchlistStoreWatchlists } from '../../../stores/watchlistStore'
-import { WatchlistMenu } from '../Watchlist/WatchlistMenu/WatchlistMenu'
 
-const AddToWatchListButton = (props: ISymbolItem) => {
-  const menuLeft = useRef<Menu>(null)
-  const toast = useRef<Toast>(null)
+const AddToWatchListButton = (props: GridRowParams<ISymbolItem>) => {
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
+
+  const open = Boolean(anchorEl)
+  const id = open ? 'simple-popper' : undefined
+
+  console.log('AddToWatchListButton props', props)
+
   const watchlists = useWatchlistStoreWatchlists()
   const { addToWatchlist, removeFromWatchlist } = useWatchlistStoreActions()
-  let menuItems: MenuItem[] = [
-    {
-      id: 'create-new-watchlist',
-      label: 'Create new Watchlist',
-      items: [
-        {
-          template: WatchlistMenu,
-        },
-      ],
-    },
-  ]
 
-  const checkSymbolInWatchlist = (watchlist: IWatchlist) =>
-    watchlist.symbols.some((symbol) => symbol.symbol === props.symbol)
+  const checkSymbolInWatchlist = useCallback(
+    (watchlist: IWatchlist) => watchlist.symbols.some((symbol) => symbol.symbol === props.row.symbol),
+    [],
+  )
 
-  const isSymbolInWatchlist = watchlists.some(checkSymbolInWatchlist)
-  // TODO: move useEffect to a hook
-  // useEffect(() => {
-  if (watchlists.length > 0) {
-    // Add the watchlist items to the menu
-    const items = watchlists.map((watchlist): MenuItem => {
-      const isSymbolInWatchlist = checkSymbolInWatchlist(watchlist)
-      return {
-        label: watchlist.name,
-        icon: `pi ${isSymbolInWatchlist ? 'pi-star-fill text-yellow-500' : 'pi-star'}`,
-        command: () => {
-          if (isSymbolInWatchlist) {
-            removeFromWatchlist(watchlist.name, props)
-            toast.current?.show({
-              severity: 'info',
-              summary: 'Removed from Watchlist',
-              detail: `Removed ${props.symbol} from ${watchlist.name}`,
-              life: 3000,
-            })
-            return
-          }
+  // const isSymbolInWatchlist = useMemo(
+  //   () => watchlists.some(checkSymbolInWatchlist),
+  //   [watchlists, checkSymbolInWatchlist],
+  // )
+  // // TODO: move useEffect to a hook
+  // // useEffect(() => {
+  // if (watchlists.length > 0) {
+  //   // Add the watchlist items to the menu
+  //   const items = watchlists.map((watchlist): MenuItem => {
+  //     const isSymbolInWatchlist = checkSymbolInWatchlist(watchlist)
+  //     return {
+  //       label: watchlist.name,
+  //       icon: `pi ${isSymbolInWatchlist ? 'pi-star-fill text-yellow-500' : 'pi-star'}`,
+  //       command: () => {
+  //         if (isSymbolInWatchlist) {
+  //           removeFromWatchlist(watchlist.name, props)
+  //           return
+  //         }
 
-          addToWatchlist(watchlist.name, props)
-          toast.current?.show({
-            severity: 'success',
-            summary: 'Added to Watchlist',
-            detail: `Added ${props.symbol} to ${watchlist.name}`,
-            life: 3000,
-          })
-        },
-      }
-    })
+  //         addToWatchlist(watchlist.name, props)
+  //       },
+  //     }
+  //   })
 
-    menuItems = [
-      {
-        id: 'add-to-watchlist',
-        label: 'Add to Watchlist',
-        items,
-      },
-      ...menuItems.filter((item) => item.id !== 'add-to-watchlist'),
-    ]
-  }
+  //   menuItems = [
+  //     {
+  //       id: 'add-to-watchlist',
+  //       label: 'Add to Watchlist',
+  //       items,
+  //     },
+  //     ...menuItems.filter((item) => item.id !== 'add-to-watchlist'),
+  //   ]
+  // }
 
   return (
     <>
-      <Toast ref={toast}></Toast>
-      <Menu className="w-full md:w-15rem" model={menuItems} popup ref={menuLeft} id="popup_menu_left" />
-      <Button
-        icon={`pi ${isSymbolInWatchlist ? 'pi-star-fill' : 'pi-star'}`}
-        text
-        severity={isSymbolInWatchlist ? undefined : 'secondary'}
+      <IconButton
+        color="warning"
+        aria-describedby={id}
+        onClick={handleClick}
         size="small"
-        onClick={(event) => menuLeft?.current?.toggle(event)}
-        aria-controls="popup_menu_left"
-        aria-haspopup
-      />
+        sx={{ mr: 2 }}
+        aria-controls={open ? 'watchlist-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? 'true' : undefined}
+      >
+        {
+          // isSymbolInWatchlist ?
+          <StarRateRoundedIcon />
+          // : <StarOutlineRoundedIcon />
+        }
+      </IconButton>
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        elevation={9}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+      >
+        <List sx={{ padding: 0 }} aria-label="watchlist" dense>
+          {watchlists.length > 0 && (
+            <>
+              {watchlists.map((watchlist) => {
+                const isSymbolInWatchlist = checkSymbolInWatchlist(watchlist)
+                return (
+                  <ListItem sx={{ paddingInline: 1 }} key={watchlist.name} dense>
+                    <ListItemButton
+                      onClick={() => {
+                        if (isSymbolInWatchlist) {
+                          removeFromWatchlist(watchlist.name, props.row)
+                        } else {
+                          addToWatchlist(watchlist.name, props.row)
+                        }
+                      }}
+                    >
+                      <ListItemIcon>
+                        {isSymbolInWatchlist ? <StarRateRoundedIcon color="warning" /> : <StarOutlineRoundedIcon />}
+                      </ListItemIcon>
+                      <ListItemText primary={watchlist.name} />
+                    </ListItemButton>
+                  </ListItem>
+                )
+              })}
+              <Divider />
+            </>
+          )}
+          <ListItem sx={{ paddingInline: 1 }}>
+            <WatchlistAddInput />
+          </ListItem>
+        </List>
+      </Popover>
     </>
   )
 }

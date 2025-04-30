@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { IPriorityScore, ISymbolItem } from '../../stores/symbataStore.types.ts'
 import { useSymbataStoreActions, useSymbataStoreSymbols } from '../../stores/symbataStore.ts'
 import { GridColDef, GridRowsProp } from '@mui/x-data-grid'
+import AddToWatchListButton from './AddToWatchListButton/AddToWatchListButton'
 
 export interface IReturnSymbolTableHook {
   isLoading: boolean
@@ -21,6 +22,11 @@ const columns: GridColDef<ISymbolItem>[] = [
       return priorityScore.symbol
     },
     renderCell: (params) => params.row.priorityScore.symbol,
+  },
+  {
+    field: 'watchlist',
+    headerName: 'Watchlist',
+    renderCell: AddToWatchListButton,
   },
 ]
 
