@@ -13,6 +13,7 @@ import { IPriorityScore, ISymbolItem } from '../../stores/symbataStore.types'
 import AddToWatchListButton from './AddToWatchListButton/AddToWatchListButton'
 import { Watchlists } from './Watchlists/Watchlists'
 import { useWatchlistStoreWatchlists } from '../../stores/watchlistStore'
+import { grey } from '@mui/material/colors'
 
 interface CustomTabPanelProps {
   children?: React.ReactNode
@@ -34,7 +35,9 @@ const CustomTabPanel = (props: CustomTabPanelProps) => {
       aria-labelledby={`table-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ pt: 1, height: 'calc(100vh - 130px)' }}>{children}</Box>}
+      {value === index && (
+        <Box sx={{ pt: 1, boxShadow: `0px -1px 0px 0px ${grey[500]}`, height: 'calc(100vh - 130px)' }}>{children}</Box>
+      )}
     </Box>
   )
 }
