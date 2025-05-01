@@ -5,7 +5,6 @@ import StarRateRoundedIcon from '@mui/icons-material/StarRateRounded'
 import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded'
 import { WatchlistAddInput } from './WatchlistAddInput'
 import { IWatchlist, useWatchlistStoreActions, useWatchlistStoreWatchlists } from '../../../stores/watchlistStore'
-import { useCallback } from 'react'
 import { ISymbolItem } from '../../../stores/symbataStore.types'
 
 interface IWatchlistMenuProps {
@@ -20,10 +19,8 @@ export const WatchlistMenu = ({ id, symbolItem, onClose, anchorEl, open }: IWatc
   const watchlists = useWatchlistStoreWatchlists()
   const { addToWatchlist, removeFromWatchlist, removeWatchlist } = useWatchlistStoreActions()
 
-  const checkSymbolInWatchlist = useCallback(
-    (watchlist: IWatchlist) => watchlist.symbols.some((item) => item.symbol === symbolItem.symbol),
-    [],
-  )
+  const checkSymbolInWatchlist = (watchlist: IWatchlist) =>
+    watchlist.symbols.some((item) => item.symbol === symbolItem.symbol)
 
   const handleToggleWatchlist =
     (isSymbolInWatchlist: boolean, watchlistName: string, symbolItem: ISymbolItem) => () => {
