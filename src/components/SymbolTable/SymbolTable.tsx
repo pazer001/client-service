@@ -87,18 +87,16 @@ export const SymbolTable = () => {
 
   return (
     <Box sx={{ height: 'inherit' }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs variant="fullWidth" value={activeIndex} onChange={handleChange} aria-label="basic tabs example">
-          <TabStyled iconPosition="start" icon={<ListIcon />} label="Symbols" {...a11yProps(0)} />
-          <TabStyled
-            disabled={watchlistsDisabled}
-            iconPosition="start"
-            icon={<FolderSpecialIcon color={watchlistsDisabled ? 'inherit' : 'warning'} />}
-            label="Watchlist"
-            {...a11yProps(1)}
-          />
-        </Tabs>
-      </Box>
+      <Tabs variant="fullWidth" value={activeIndex} onChange={handleChange} aria-label="basic tabs example">
+        <TabStyled iconPosition="start" icon={<ListIcon />} label="Symbols" {...a11yProps(0)} />
+        <TabStyled
+          disabled={watchlistsDisabled}
+          iconPosition="start"
+          icon={<FolderSpecialIcon color={watchlistsDisabled ? 'inherit' : 'warning'} />}
+          label="Watchlist"
+          {...a11yProps(1)}
+        />
+      </Tabs>
       <CustomTabPanel value={activeIndex} index={0}>
         <DataGrid density="compact" loading={isLoading} rows={rows} columns={columns} />
       </CustomTabPanel>
