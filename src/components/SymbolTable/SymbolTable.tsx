@@ -59,17 +59,13 @@ export const columns: GridColDef<ISymbolItem>[] = [
   {
     field: 'priorityScore',
     headerName: 'Priority Score',
-    valueGetter: (priorityScore: IPriorityScore) => {
-      return priorityScore.symbol
-    },
+    valueGetter: (priorityScore: IPriorityScore) => priorityScore.symbol,
     renderCell: (params) => params.row.priorityScore.symbol,
   },
   {
     field: 'watchlist',
     headerName: 'Watchlist',
-    renderCell: (params: GridRenderCellParams<ISymbolItem>): ReactNode => {
-      return <AddToWatchListButton {...params.row} />
-    },
+    renderCell: (params: GridRenderCellParams<ISymbolItem>): ReactNode => <AddToWatchListButton {...params.row} />,
   },
 ]
 
