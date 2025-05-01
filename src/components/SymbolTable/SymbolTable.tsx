@@ -28,8 +28,8 @@ function CustomTabPanel(props: TabPanelProps) {
     <Box
       role="tabpanel"
       hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
+      id={`table-tabpanel-${index}`}
+      aria-labelledby={`table-tab-${index}`}
       {...other}
     >
       {value === index && <Box sx={{ pt: 1, height: 'calc(100vh - 130px)' }}>{children}</Box>}
@@ -39,8 +39,8 @@ function CustomTabPanel(props: TabPanelProps) {
 // also from MUI documentation
 function a11yProps(index: number) {
   return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
+    id: `table-tab-${index}`,
+    'aria-controls': `table-tabpanel-${index}`,
   }
 }
 
