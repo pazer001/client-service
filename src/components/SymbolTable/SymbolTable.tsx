@@ -1,5 +1,5 @@
 // import { useSymbolTable } from './SymbolTable.hook.ts'
-import { ReactNode, useState } from 'react'
+import { ReactNode, useMemo, useState } from 'react'
 import Tabs from '@mui/material/Tabs'
 import Tab, { tabClasses } from '@mui/material/Tab'
 import { buttonBaseClasses } from '@mui/material/ButtonBase'
@@ -12,6 +12,7 @@ import { useSymbolTable } from './SymbolTable.hook'
 import { IPriorityScore, ISymbolItem } from '../../stores/symbataStore.types'
 import AddToWatchListButton from './AddToWatchListButton/AddToWatchListButton'
 import { Watchlists } from './Watchlists/Watchlists'
+import { useWatchlistStoreWatchlists } from '../../stores/watchlistStore'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -72,6 +73,8 @@ export const columns: GridColDef<ISymbolItem>[] = [
 ]
 
 export const SymbolTable = () => {
+  const watchlists = useWatchlistStoreWatchlists()
+
   const { isLoading, rows } = useSymbolTable()
   const [activeIndex, setActiveIndex] = useState(0)
 
@@ -79,12 +82,23 @@ export const SymbolTable = () => {
     setActiveIndex(newValue)
   }
 
+  const watchlistsDisabled = useMemo(
+    () => watchlists.some((watchlist) => watchlist.symbols.length > 0) === false,
+    [watchlists],
+  )
+
   return (
     <Box sx={{ height: 'inherit' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs variant="fullWidth" value={activeIndex} onChange={handleChange} aria-label="basic tabs example">
           <TabStyled iconPosition="start" icon={<ListIcon />} label="Symbols" {...a11yProps(0)} />
-          <TabStyled iconPosition="start" icon={<FolderSpecialIcon />} label="Watchlist" {...a11yProps(1)} />
+          <TabStyled
+            disabled={watchlistsDisabled}
+            iconPosition="start"
+            icon={<FolderSpecialIcon />}
+            label="Watchlist"
+            {...a11yProps(1)}
+          />
         </Tabs>
       </Box>
       <CustomTabPanel value={activeIndex} index={0}>
