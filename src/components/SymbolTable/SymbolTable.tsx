@@ -74,7 +74,6 @@ export const columns: GridColDef<ISymbolItem>[] = [
 
 export const SymbolTable = () => {
   const watchlists = useWatchlistStoreWatchlists()
-
   const { isLoading, rows } = useSymbolTable()
   const [activeIndex, setActiveIndex] = useState(0)
 
