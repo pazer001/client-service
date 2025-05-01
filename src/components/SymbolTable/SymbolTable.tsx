@@ -21,6 +21,8 @@ interface CustomTabPanelProps {
   value: number
 }
 
+const tabsHeight = 36
+
 // this is an example code from MUI documentation
 // https://mui.com/material-ui/react-tabs/#introduction (first example)
 // the Mui TabPanel component has to much padding by default, so we need to create our own, since the table doesn't have enough space
@@ -53,7 +55,7 @@ function a11yProps(index: number) {
 const TabStyled = styled(Tab)<TabProps>(() => {
   return {
     [`&.${buttonBaseClasses.root}.${tabClasses.root}`]: {
-      minHeight: '36px',
+      minHeight: `${tabsHeight}px`,
     },
   }
 })
@@ -87,7 +89,7 @@ export const SymbolTable = () => {
   return (
     <Box sx={{ height: 'inherit' }}>
       <Tabs
-        sx={{ minHeight: '36px' }}
+        sx={{ minHeight: `${tabsHeight}px` }}
         variant="fullWidth"
         value={activeIndex}
         onChange={handleChange}
