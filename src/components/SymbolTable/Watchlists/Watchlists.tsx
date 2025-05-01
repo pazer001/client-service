@@ -18,7 +18,6 @@ export const Watchlists = ({ columns }: IWatchlistProps) => {
     () => columns.filter((column) => !watchlistExcludedColumns.includes(column.field)),
     [],
   )
-  // const [selectedWatchlist, setSelectedWatchlist] = useState<string>(watchlists[watchlistSelectedIndex]?.name || '')
 
   return (
     <DataGrid
