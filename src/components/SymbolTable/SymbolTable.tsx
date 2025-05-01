@@ -74,10 +74,6 @@ export const columns: GridColDef<ISymbolItem>[] = [
   },
 ]
 
-const watchlistExcludedColumns = ['watchlist']
-
-const watchlistColumns = columns.filter((column) => !watchlistExcludedColumns.includes(column.field))
-
 export const SymbolTable = () => {
   const { isLoading, rows } = useSymbolTable()
   const [activeIndex, setActiveIndex] = useState(0)
@@ -98,7 +94,7 @@ export const SymbolTable = () => {
         <DataGrid density="compact" loading={isLoading} rows={rows} columns={columns} />
       </CustomTabPanel>
       <CustomTabPanel value={activeIndex} index={1}>
-        <Watchlists columns={watchlistColumns} />
+        <Watchlists columns={columns} />
       </CustomTabPanel>
     </Box>
   )
