@@ -68,8 +68,7 @@ export const columns: GridColDef<ISymbolItem>[] = [
     field: 'watchlist',
     headerName: 'Watchlist',
     renderCell: (params: GridRenderCellParams<ISymbolItem>): ReactNode => {
-      const symbol: ISymbolItem = params.row
-      return <AddToWatchListButton {...symbol} />
+      return <AddToWatchListButton {...params.row} />
     },
   },
 ]
