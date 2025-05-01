@@ -1,13 +1,12 @@
-import { useCallback, useMemo, useState } from 'react'
+import React, { ReactNode, useCallback, useMemo, useState } from 'react'
 import { ISymbolItem } from '../../../stores/symbataStore.types'
 import { IconButton } from '@mui/material'
 import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded'
 import StarRateRoundedIcon from '@mui/icons-material/StarRateRounded'
-import { GridRowParams } from '@mui/x-data-grid'
 import { IWatchlist, useWatchlistStoreWatchlists } from '../../../stores/watchlistStore'
 import { WatchlistMenu } from './WatchListMenu'
 
-const AddToWatchListButton = (props: GridRowParams<ISymbolItem>) => {
+const AddToWatchListButton = (props: ISymbolItem): ReactNode => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -19,7 +18,7 @@ const AddToWatchListButton = (props: GridRowParams<ISymbolItem>) => {
   const watchlists = useWatchlistStoreWatchlists()
 
   const checkSymbolInWatchlist = useCallback(
-    (watchlist: IWatchlist) => watchlist.symbols.some((symbol) => symbol.symbol === props.row.symbol),
+    (watchlist: IWatchlist) => watchlist.symbols.some((symbol) => symbol.symbol === props.symbol),
     [],
   )
 
@@ -49,7 +48,7 @@ const AddToWatchListButton = (props: GridRowParams<ISymbolItem>) => {
       >
         {isSymbolInWatchlist ? <StarRateRoundedIcon /> : <StarOutlineRoundedIcon />}
       </IconButton>
-      <WatchlistMenu id={id} symbolItem={props.row} onClose={handleClose} anchorEl={anchorEl} open={open} />
+      <WatchlistMenu id={id} symbolItem={props} onClose={handleClose} anchorEl={anchorEl} open={open} />
     </>
   )
 }

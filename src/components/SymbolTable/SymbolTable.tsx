@@ -1,14 +1,37 @@
 // import { useSymbolTable } from './SymbolTable.hook.ts'
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
 import Tabs from '@mui/material/Tabs'
 import Tab, { tabClasses } from '@mui/material/Tab'
 import { buttonBaseClasses } from '@mui/material/ButtonBase'
 import Box from '@mui/material/Box'
 import ListIcon from '@mui/icons-material/List'
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial'
-import { DataGrid } from '@mui/x-data-grid'
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { styled } from '@mui/material'
 import { useSymbolTable } from './SymbolTable.hook'
+import { IPriorityScore, ISymbolItem } from '../../stores/symbataStore.types'
+import AddToWatchListButton from './AddToWatchListButton/AddToWatchListButton'
+import { Watchlists } from './Watchlists/Watchlists'
+
+export const columns: GridColDef<ISymbolItem>[] = [
+  { field: 'symbol', headerName: 'Symbol' },
+  {
+    field: 'priorityScore',
+    headerName: 'Priority Score',
+    valueGetter: (priorityScore: IPriorityScore) => {
+      return priorityScore.symbol
+    },
+    renderCell: (params) => params.row.priorityScore.symbol,
+  },
+  {
+    field: 'watchlist',
+    headerName: 'Watchlist',
+    renderCell: (params: GridRenderCellParams<ISymbolItem>): ReactNode => {
+      const symbol: ISymbolItem = params.row
+      return <AddToWatchListButton {...symbol} />
+    },
+  },
+]
 
 // import AddToWatchListButton from './AddToWatchListButton/AddToWatchListButton.tsx'
 
@@ -54,7 +77,7 @@ const TabStyled = styled(Tab)(() => ({
 }))
 
 export const SymbolTable = () => {
-  const { isLoading, rows, columns } = useSymbolTable()
+  const { isLoading, rows } = useSymbolTable()
   const [activeIndex, setActiveIndex] = useState(0)
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
@@ -73,77 +96,8 @@ export const SymbolTable = () => {
         <DataGrid density="compact" loading={isLoading} rows={rows} columns={columns} />
       </CustomTabPanel>
       <CustomTabPanel value={activeIndex} index={1}>
-        Item Two
+        <Watchlists columns={[...columns.slice(0, -1)]} />
       </CustomTabPanel>
     </Box>
   )
-
-  // return (
-  //   <>
-  //     <TabView
-  //       pt={{
-  //         panelContainer: { className: 'px-0' },
-  //       }}
-  //       activeIndex={activeIndex}
-  //       onTabChange={(e) => setActiveIndex(e.index)}
-  //     >
-  //       <TabPanel
-  //         header="Symbols"
-  //         pt={{
-  //           content: { style: { height: 'calc(100vh - 281px' } },
-  //         }}
-  //       >
-  //         <DataTable
-  //           removableSort
-  //           scrollable
-  //           pt={{
-  //             root: { className: 'h-full' },
-  //             wrapper: { className: 'h-full' },
-  //           }}
-  //           paginator={symbols.length > 0}
-  //           paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport"
-  //           currentPageReportTemplate="{first} to {last} of {totalRecords} Symbols"
-  //           rows={200}
-  //           scrollHeight={`calc(100% - 97px)`}
-  //           value={symbols}
-  //           loading={isLoading}
-  //           resizableColumns
-  //           size="small"
-  //           selectionMode="single"
-  //           // onSelectionChange={(e) => setSelectedSymbol(e.value as ISymbolItem[])}
-  //           // selection={selectedSymbol}
-  //           onRowClick={handleRowClick}
-  //           // globalFilter={globalFilter}
-  //           header={() => (
-  //             <div className="grid gap-2">
-  //               <div className="col-12 py-0 flex align-items-center gap-2">
-  //                 <Button label="Lookup" icon={symbolsLooking ? 'pi pi-spin pi-spinner' : 'pi pi-play-circle'} />
-  //               </div>
-
-  //               {progress !== 0 && <ProgressBar value={progress} className="w-full ml-2 mr-2" />}
-  //             </div>
-  //           )}
-  //         >
-  //           <Column field="symbol" header="Symbol" sortable filter dataType="text" />
-  //           <Column
-  //             field="priorityScore.symbol"
-  //             header="Score"
-  //             sortable
-  //             filter
-  //             body={(rowData) => Math.round(rowData.priorityScore.symbol)}
-  //           />
-  //           <Column
-  //             header="Watchlist"
-  //             headerStyle={{ width: '10%', minWidth: '8rem' }}
-  //             bodyStyle={{ textAlign: 'start' }}
-  //             body={(rowData) => <AddToWatchListButton {...rowData} />}
-  //           />
-  //         </DataTable>
-  //       </TabPanel>
-  //       <TabPanel header="Watch list">
-  //         <p className="m-0">Some content for the Watch list tab. You can add any content you want here.</p>
-  //       </TabPanel>
-  //     </TabView>
-  //   </>
-  // )
 }
