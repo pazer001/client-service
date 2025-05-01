@@ -36,7 +36,7 @@ const CustomTabPanel = (props: CustomTabPanelProps) => {
       {...other}
     >
       {value === index && (
-        <Box sx={{ pt: 1, boxShadow: `0px -1px 0px 0px ${grey[500]}`, height: 'calc(100vh - 130px)' }}>{children}</Box>
+        <Box sx={{ pt: 1, boxShadow: `0px -1px 0px 0px ${grey[500]}`, height: 'calc(100dvh - 116px)' }}>{children}</Box>
       )}
     </Box>
   )
@@ -53,7 +53,7 @@ function a11yProps(index: number) {
 const TabStyled = styled(Tab)<TabProps>(() => {
   return {
     [`&.${buttonBaseClasses.root}.${tabClasses.root}`]: {
-      minHeight: '49px',
+      minHeight: '36px',
     },
   }
 })
@@ -86,7 +86,13 @@ export const SymbolTable = () => {
 
   return (
     <Box sx={{ height: 'inherit' }}>
-      <Tabs variant="fullWidth" value={activeIndex} onChange={handleChange} aria-label="basic tabs example">
+      <Tabs
+        sx={{ minHeight: '36px' }}
+        variant="fullWidth"
+        value={activeIndex}
+        onChange={handleChange}
+        aria-label="basic tabs example"
+      >
         <TabStyled iconPosition="start" icon={<ListIcon />} label="Symbols" {...a11yProps(0)} />
         <TabStyled
           disabled={watchlistsDisabled}

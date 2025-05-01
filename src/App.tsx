@@ -13,21 +13,20 @@ const Item = styled(Paper)(({ theme }) => ({
 
 const Container = styled(Box)(({ theme }) => ({
   padding: theme.spacing(spacingBetween),
-  height: '100dvh',
+  height: '100%',
+  maxHeight: '100dvh',
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(spacingBetween),
 }))
 
-const AppBarStyled = styled(AppBar)(() => ({}))
-
 function App() {
   return (
     <>
       <Container>
-        <AppBarStyled position="static" sx={{ borderRadius: 1 }}>
+        <AppBar position="static" sx={{ borderRadius: 1 }}>
           <Toolbar variant="dense"></Toolbar>
-        </AppBarStyled>
+        </AppBar>
         <Grid container spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
           <Grid size={6}>
             <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
