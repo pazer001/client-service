@@ -81,10 +81,7 @@ export const SymbolTable = () => {
     setActiveIndex(newValue)
   }
 
-  const watchlistsDisabled = useMemo(
-    () => watchlists.some((watchlist) => watchlist.symbols.length > 0) === false,
-    [watchlists],
-  )
+  const watchlistsDisabled = useMemo(() => watchlists.some(({ symbols }) => symbols.length > 0) === false, [watchlists])
 
   return (
     <Box sx={{ height: 'inherit' }}>
