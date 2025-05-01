@@ -1,7 +1,7 @@
 // import { useSymbolTable } from './SymbolTable.hook.ts'
 import { ReactNode, useMemo, useState } from 'react'
 import Tabs from '@mui/material/Tabs'
-import Tab, { tabClasses } from '@mui/material/Tab'
+import Tab, { tabClasses, TabProps } from '@mui/material/Tab'
 import { buttonBaseClasses } from '@mui/material/ButtonBase'
 import Box from '@mui/material/Box'
 import ListIcon from '@mui/icons-material/List'
@@ -46,11 +46,13 @@ function a11yProps(index: number) {
 }
 
 // tabs with icons are too big by default, so we need to override the default styles
-const TabStyled = styled(Tab)(() => ({
-  [`&.${buttonBaseClasses.root}.${tabClasses.root}`]: {
-    minHeight: '49px',
-  },
-}))
+const TabStyled = styled(Tab)<TabProps>(() => {
+  return {
+    [`&.${buttonBaseClasses.root}.${tabClasses.root}`]: {
+      minHeight: '49px',
+    },
+  }
+})
 
 export const columns: GridColDef<ISymbolItem>[] = [
   { field: 'symbol', headerName: 'Symbol' },
@@ -91,7 +93,7 @@ export const SymbolTable = () => {
           <TabStyled
             disabled={watchlistsDisabled}
             iconPosition="start"
-            icon={<FolderSpecialIcon />}
+            icon={<FolderSpecialIcon color={watchlistsDisabled ? 'inherit' : 'warning'} />}
             label="Watchlist"
             {...a11yProps(1)}
           />
