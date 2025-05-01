@@ -25,6 +25,21 @@ export const WatchlistMenu = ({ id, symbolItem, onClose, anchorEl, open }: IWatc
     [],
   )
 
+  const handleToggleWatchlist =
+    (isSymbolInWatchlist: boolean, watchlistName: string, symbolItem: ISymbolItem) => () => {
+      if (isSymbolInWatchlist) {
+        removeFromWatchlist(watchlistName, symbolItem)
+      } else {
+        addToWatchlist(watchlistName, symbolItem)
+      }
+      onClose()
+    }
+
+  const handleRemoveWatchlist = (watchlistName: string) => () => {
+    removeWatchlist(watchlistName)
+    onClose()
+  }
+
   return (
     <Popover
       id={id}
@@ -49,20 +64,14 @@ export const WatchlistMenu = ({ id, symbolItem, onClose, anchorEl, open }: IWatc
                   key={watchlist.name}
                   dense
                   secondaryAction={
-                    <IconButton edge="end" aria-label="delete" onClick={() => removeWatchlist(watchlist.name)}>
+                    <IconButton edge="end" aria-label="delete" onClick={handleRemoveWatchlist(watchlist.name)}>
                       <DeleteIcon />
                     </IconButton>
                   }
                 >
                   <ListItemButton
                     sx={{ pl: '12px' }}
-                    onClick={() => {
-                      if (isSymbolInWatchlist) {
-                        removeFromWatchlist(watchlist.name, symbolItem)
-                      } else {
-                        addToWatchlist(watchlist.name, symbolItem)
-                      }
-                    }}
+                    onClick={handleToggleWatchlist(isSymbolInWatchlist, watchlist.name, symbolItem)}
                   >
                     <ListItemIcon sx={{ minWidth: 0, mr: 1 }}>
                       {isSymbolInWatchlist ? <StarRateRoundedIcon color="warning" /> : <StarOutlineRoundedIcon />}
