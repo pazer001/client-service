@@ -1,5 +1,5 @@
 // import { useSymbolTable } from './SymbolTable.hook.ts'
-import { ReactNode, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Tabs from '@mui/material/Tabs'
 import Tab, { tabClasses, TabProps } from '@mui/material/Tab'
 import { buttonBaseClasses } from '@mui/material/ButtonBase'
@@ -65,7 +65,7 @@ export const columns: GridColDef<ISymbolItem>[] = [
   {
     field: 'watchlist',
     headerName: 'Watchlist',
-    renderCell: (params: GridRenderCellParams<ISymbolItem>): ReactNode => <AddToWatchListButton {...params.row} />,
+    renderCell: (params: GridRenderCellParams<ISymbolItem>) => <AddToWatchListButton {...params.row} />,
   },
 ]
 
