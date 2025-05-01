@@ -13,28 +13,6 @@ import { IPriorityScore, ISymbolItem } from '../../stores/symbataStore.types'
 import AddToWatchListButton from './AddToWatchListButton/AddToWatchListButton'
 import { Watchlists } from './Watchlists/Watchlists'
 
-export const columns: GridColDef<ISymbolItem>[] = [
-  { field: 'symbol', headerName: 'Symbol' },
-  {
-    field: 'priorityScore',
-    headerName: 'Priority Score',
-    valueGetter: (priorityScore: IPriorityScore) => {
-      return priorityScore.symbol
-    },
-    renderCell: (params) => params.row.priorityScore.symbol,
-  },
-  {
-    field: 'watchlist',
-    headerName: 'Watchlist',
-    renderCell: (params: GridRenderCellParams<ISymbolItem>): ReactNode => {
-      const symbol: ISymbolItem = params.row
-      return <AddToWatchListButton {...symbol} />
-    },
-  },
-]
-
-// import AddToWatchListButton from './AddToWatchListButton/AddToWatchListButton.tsx'
-
 interface TabPanelProps {
   children?: React.ReactNode
   index: number
@@ -76,6 +54,30 @@ const TabStyled = styled(Tab)(() => ({
   },
 }))
 
+export const columns: GridColDef<ISymbolItem>[] = [
+  { field: 'symbol', headerName: 'Symbol' },
+  {
+    field: 'priorityScore',
+    headerName: 'Priority Score',
+    valueGetter: (priorityScore: IPriorityScore) => {
+      return priorityScore.symbol
+    },
+    renderCell: (params) => params.row.priorityScore.symbol,
+  },
+  {
+    field: 'watchlist',
+    headerName: 'Watchlist',
+    renderCell: (params: GridRenderCellParams<ISymbolItem>): ReactNode => {
+      const symbol: ISymbolItem = params.row
+      return <AddToWatchListButton {...symbol} />
+    },
+  },
+]
+
+const watchlistExcludedColumns = ['watchlist']
+
+const watchlistColumns = columns.filter((column) => !watchlistExcludedColumns.includes(column.field))
+
 export const SymbolTable = () => {
   const { isLoading, rows } = useSymbolTable()
   const [activeIndex, setActiveIndex] = useState(0)
@@ -96,7 +98,7 @@ export const SymbolTable = () => {
         <DataGrid density="compact" loading={isLoading} rows={rows} columns={columns} />
       </CustomTabPanel>
       <CustomTabPanel value={activeIndex} index={1}>
-        <Watchlists columns={[...columns.slice(0, -1)]} />
+        <Watchlists columns={watchlistColumns} />
       </CustomTabPanel>
     </Box>
   )
