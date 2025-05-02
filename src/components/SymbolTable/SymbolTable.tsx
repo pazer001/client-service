@@ -37,7 +37,7 @@ interface ICustomToolbarProps extends ToolbarProps {
   onScanSymbols: () => void
 }
 
-const TabVerticalIconLabel = ({ children, icon }: { children: React.ReactNode; icon: React.ReactNode }) => (
+const TabHorizontalIconLabel = ({ children, icon }: { children: React.ReactNode; icon: React.ReactNode }) => (
   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
     {icon}
     {children}
@@ -139,13 +139,13 @@ export const SymbolTable = () => {
   return (
     <Box sx={{ height: 'inherit' }}>
       <Tabs variant="fullWidth" value={activeIndex} onChange={handleChange} aria-label="basic tabs example">
-        <Tab label={<TabVerticalIconLabel icon={<ListIcon />}>Symbols</TabVerticalIconLabel>} />
+        <Tab label={<TabHorizontalIconLabel icon={<ListIcon />}>Symbols</TabHorizontalIconLabel>} />
         <Tab
           disabled={watchlistsDisabled}
           label={
-            <TabVerticalIconLabel icon={<FolderSpecialIcon color={watchlistsDisabled ? 'inherit' : 'warning'} />}>
+            <TabHorizontalIconLabel icon={<FolderSpecialIcon color={watchlistsDisabled ? 'inherit' : 'warning'} />}>
               Watchlist
-            </TabVerticalIconLabel>
+            </TabHorizontalIconLabel>
           }
         />
       </Tabs>
