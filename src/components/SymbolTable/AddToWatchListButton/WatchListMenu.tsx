@@ -52,12 +52,11 @@ export const WatchlistMenu = ({ id, symbolItem, onClose, anchorEl, open }: IWatc
       {watchlists.length > 0 && (
         <>
           <ListTitle>Add to Watchlist</ListTitle>
-          <List sx={{ p: 0 }} aria-label="watchlist" dense>
+          <List aria-label="watchlist" dense>
             {watchlists.map((watchlist) => {
               const isSymbolInWatchlist = checkSymbolInWatchlist(watchlist)
               return (
                 <ListItem
-                  sx={{ p: 0 }}
                   key={watchlist.name}
                   dense
                   secondaryAction={
@@ -70,7 +69,7 @@ export const WatchlistMenu = ({ id, symbolItem, onClose, anchorEl, open }: IWatc
                     sx={{ pl: '12px' }}
                     onClick={handleToggleWatchlist(isSymbolInWatchlist, watchlist.name, symbolItem)}
                   >
-                    <ListItemIcon sx={{ minWidth: 0, mr: 1 }}>
+                    <ListItemIcon>
                       {isSymbolInWatchlist ? <StarRateRoundedIcon color="warning" /> : <StarOutlineRoundedIcon />}
                     </ListItemIcon>
                     <ListItemText primary={watchlist.name} />
@@ -83,8 +82,8 @@ export const WatchlistMenu = ({ id, symbolItem, onClose, anchorEl, open }: IWatc
         </>
       )}
       <ListTitle>Create Watchlist</ListTitle>
-      <List sx={{ padding: 0 }} aria-label="create watchlist" dense>
-        <ListItem sx={{ px: 1, pb: 1 }} dense>
+      <List aria-label="create watchlist" dense>
+        <ListItem dense>
           <WatchlistAddInput />
         </ListItem>
       </List>

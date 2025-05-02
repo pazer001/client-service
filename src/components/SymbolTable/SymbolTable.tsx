@@ -1,19 +1,31 @@
 // import { useSymbolTable } from './SymbolTable.hook.ts'
 import { useMemo, useState } from 'react'
 import Tabs from '@mui/material/Tabs'
-import Tab, { tabClasses, TabProps } from '@mui/material/Tab'
-import { buttonBaseClasses } from '@mui/material/ButtonBase'
+import Tab from '@mui/material/Tab'
 import Box from '@mui/material/Box'
 import ListIcon from '@mui/icons-material/List'
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial'
-import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
-import { styled } from '@mui/material'
+import {
+  DataGrid,
+  GridColDef,
+  GridRenderCellParams,
+  QuickFilter,
+  QuickFilterClear,
+  QuickFilterControl,
+  Toolbar,
+  ToolbarButton,
+  ToolbarProps,
+} from '@mui/x-data-grid'
+import { InputAdornment, TextField, Tooltip } from '@mui/material'
 import { useSymbolTable } from './SymbolTable.hook'
 import { IPriorityScore, ISymbolItem } from '../../stores/symbataStore.types'
 import AddToWatchListButton from './AddToWatchListButton/AddToWatchListButton'
 import { Watchlists } from './Watchlists/Watchlists'
 import { useWatchlistStoreWatchlists } from '../../stores/watchlistStore'
 import { grey } from '@mui/material/colors'
+import QueryStatsIcon from '@mui/icons-material/QueryStats'
+import SearchIcon from '@mui/icons-material/Search'
+import CancelIcon from '@mui/icons-material/Cancel'
 
 interface CustomTabPanelProps {
   children?: React.ReactNode
@@ -21,7 +33,54 @@ interface CustomTabPanelProps {
   value: number
 }
 
-const tabsHeight = 36
+interface ICustomToolbarProps extends ToolbarProps {
+  onScanSymbols: () => void
+}
+
+export function CustomToolbar({ onScanSymbols }: ICustomToolbarProps) {
+  return (
+    <Toolbar>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        <Tooltip title="Scan Symbols for suggestions" placement="top">
+          <ToolbarButton onClick={onScanSymbols}>
+            <QueryStatsIcon fontSize="small" />
+          </ToolbarButton>
+        </Tooltip>
+        <QuickFilter expanded>
+          <QuickFilterControl
+            render={({ ref, ...other }) => (
+              <TextField
+                {...other}
+                inputRef={ref}
+                aria-label="Search"
+                placeholder="Search..."
+                size="small"
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon fontSize="small" />
+                      </InputAdornment>
+                    ),
+                    endAdornment: other.value ? (
+                      <InputAdornment position="end">
+                        <QuickFilterClear edge="end" size="small" aria-label="Clear search">
+                          <CancelIcon fontSize="small" />
+                        </QuickFilterClear>
+                      </InputAdornment>
+                    ) : null,
+                    ...other.slotProps?.input,
+                  },
+                  ...other.slotProps,
+                }}
+              />
+            )}
+          />
+        </QuickFilter>
+      </Box>
+    </Toolbar>
+  )
+}
 
 // this is an example code from MUI documentation
 // https://mui.com/material-ui/react-tabs/#introduction (first example)
@@ -38,7 +97,7 @@ const CustomTabPanel = (props: CustomTabPanelProps) => {
       {...other}
     >
       {value === index && (
-        <Box sx={{ pt: 1, boxShadow: `0px -1px 0px 0px ${grey[500]}`, height: 'calc(100dvh - 116px)' }}>{children}</Box>
+        <Box sx={{ pt: 1, boxShadow: `0px -1px 0px 0px ${grey[500]}`, height: 'calc(100dvh - 155px)' }}>{children}</Box>
       )}
     </Box>
   )
@@ -50,15 +109,6 @@ function a11yProps(index: number) {
     'aria-controls': `table-tabpanel-${index}`,
   }
 }
-
-// tabs with icons are too big by default, so we need to override the default styles
-const TabStyled = styled(Tab)<TabProps>(() => {
-  return {
-    [`&.${buttonBaseClasses.root}.${tabClasses.root}`]: {
-      minHeight: `${tabsHeight}px`,
-    },
-  }
-})
 
 export const columns: GridColDef<ISymbolItem>[] = [
   { field: 'symbol', headerName: 'Symbol' },
@@ -88,15 +138,9 @@ export const SymbolTable = () => {
 
   return (
     <Box sx={{ height: 'inherit' }}>
-      <Tabs
-        sx={{ minHeight: `${tabsHeight}px` }}
-        variant="fullWidth"
-        value={activeIndex}
-        onChange={handleChange}
-        aria-label="basic tabs example"
-      >
-        <TabStyled iconPosition="start" icon={<ListIcon />} label="Symbols" {...a11yProps(0)} />
-        <TabStyled
+      <Tabs variant="fullWidth" value={activeIndex} onChange={handleChange} aria-label="basic tabs example">
+        <Tab iconPosition="start" icon={<ListIcon />} label="Symbols" {...a11yProps(0)} />
+        <Tab
           disabled={watchlistsDisabled}
           iconPosition="start"
           icon={<FolderSpecialIcon color={watchlistsDisabled ? 'inherit' : 'warning'} />}
@@ -105,7 +149,14 @@ export const SymbolTable = () => {
         />
       </Tabs>
       <CustomTabPanel value={activeIndex} index={0}>
-        <DataGrid density="compact" loading={isLoading} rows={rows} columns={columns} />
+        <DataGrid
+          showToolbar
+          slots={{ toolbar: () => <CustomToolbar onScanSymbols={() => console.log('Scan Symbols')} /> }}
+          density="compact"
+          loading={isLoading}
+          rows={rows}
+          columns={columns}
+        />
       </CustomTabPanel>
       <CustomTabPanel value={activeIndex} index={1}>
         <Watchlists columns={columns} />
