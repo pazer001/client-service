@@ -37,6 +37,13 @@ interface ICustomToolbarProps extends ToolbarProps {
   onScanSymbols: () => void
 }
 
+const TabLabel = ({ children, Icon }: { children: React.ReactNode; Icon: React.ReactNode }) => (
+  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+    {Icon}
+    {children}
+  </Box>
+)
+
 export function CustomToolbar({ onScanSymbols }: ICustomToolbarProps) {
   return (
     <Toolbar>
@@ -102,13 +109,6 @@ const CustomTabPanel = (props: CustomTabPanelProps) => {
     </Box>
   )
 }
-// also from MUI documentation
-function a11yProps(index: number) {
-  return {
-    id: `table-tab-${index}`,
-    'aria-controls': `table-tabpanel-${index}`,
-  }
-}
 
 export const columns: GridColDef<ISymbolItem>[] = [
   { field: 'symbol', headerName: 'Symbol' },
@@ -139,13 +139,14 @@ export const SymbolTable = () => {
   return (
     <Box sx={{ height: 'inherit' }}>
       <Tabs variant="fullWidth" value={activeIndex} onChange={handleChange} aria-label="basic tabs example">
-        <Tab iconPosition="start" icon={<ListIcon />} label="Symbols" {...a11yProps(0)} />
+        <Tab label={<TabLabel Icon={<ListIcon />}>Symbols</TabLabel>} />
         <Tab
           disabled={watchlistsDisabled}
-          iconPosition="start"
-          icon={<FolderSpecialIcon color={watchlistsDisabled ? 'inherit' : 'warning'} />}
-          label="Watchlist"
-          {...a11yProps(1)}
+          label={
+            <TabLabel Icon={<FolderSpecialIcon color={watchlistsDisabled ? 'inherit' : 'warning'} />}>
+              Watchlist
+            </TabLabel>
+          }
         />
       </Tabs>
       <CustomTabPanel value={activeIndex} index={0}>
