@@ -25,12 +25,13 @@ export const WatchlistAddInput = () => {
   const isWatchlistExists = useMemo(() => watchlists.some((watchlist) => watchlist.name === value), [value])
 
   return (
-    <FormControl fullWidth error={isWatchlistExists} variant="standard">
+    <FormControl error={isWatchlistExists} variant="standard">
       <TextField
         fullWidth
+        sx={{ maxWidth: '200px' }}
         autoFocus={watchlists.length === 0}
         size="small"
-        placeholder="Create watchlist"
+        placeholder="Create Watchlist"
         name="watchlist"
         id="watchlist"
         value={value}

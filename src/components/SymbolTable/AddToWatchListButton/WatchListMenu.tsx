@@ -41,6 +41,10 @@ export const WatchlistMenu = ({ id, symbolItem, onClose, anchorEl, open }: IWatc
       id="watchlist-menu"
       open={open}
       elevation={9}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'left',
+      }}
       anchorEl={anchorEl}
       onClose={onClose}
       slotProps={{
