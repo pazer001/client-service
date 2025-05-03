@@ -1,4 +1,4 @@
-import { Box, Divider, IconButton, ListItem, ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material'
+import { Box, Divider, IconButton, ListItem, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import StarRateRoundedIcon from '@mui/icons-material/StarRateRounded'
 import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded'
@@ -40,6 +40,7 @@ export const WatchlistMenu = ({ id, symbolItem, onClose, anchorEl, open }: IWatc
     <Menu
       id="watchlist-menu"
       open={open}
+      elevation={9}
       anchorEl={anchorEl}
       onClose={onClose}
       slotProps={{
@@ -52,19 +53,31 @@ export const WatchlistMenu = ({ id, symbolItem, onClose, anchorEl, open }: IWatc
         <Box>
           {watchlists.map((watchlist) => {
             const isSymbolInWatchlist = checkSymbolInWatchlist(watchlist)
+            const toggleTooltipText = isSymbolInWatchlist
+              ? `Remove "${symbolItem.symbol}" from "${watchlist.name}" watchlist`
+              : `Add "${symbolItem.symbol}" to "${watchlist.name}" watchlist`
             return (
               <MenuItem
                 key={watchlist.name}
                 dense
                 onClick={handleToggleWatchlist(isSymbolInWatchlist, watchlist.name, symbolItem)}
               >
-                <ListItemIcon>
-                  {isSymbolInWatchlist ? <StarRateRoundedIcon color="warning" /> : <StarOutlineRoundedIcon />}
-                </ListItemIcon>
+                <Tooltip title={toggleTooltipText} placement="top">
+                  <ListItemIcon>
+                    {isSymbolInWatchlist ? <StarRateRoundedIcon color="warning" /> : <StarOutlineRoundedIcon />}
+                  </ListItemIcon>
+                </Tooltip>
                 <ListItemText primary={watchlist.name} />
-                <IconButton edge="end" aria-label="delete" size="small" onClick={handleRemoveWatchlist(watchlist.name)}>
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
+                <Tooltip title={`Delete "${watchlist.name}" watchlist`} placement="top">
+                  <IconButton
+                    edge="end"
+                    aria-label="delete"
+                    size="small"
+                    onClick={handleRemoveWatchlist(watchlist.name)}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
               </MenuItem>
             )
           })}
