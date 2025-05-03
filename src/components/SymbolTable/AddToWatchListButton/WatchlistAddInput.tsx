@@ -1,8 +1,7 @@
 import { useMemo, useState } from 'react'
-import { inputBaseClasses } from '@mui/material/InputBase'
 import { useWatchlistStoreActions, useWatchlistStoreWatchlists } from '../../../stores/watchlistStore'
-import { Button, FormControl, FormHelperText, InputAdornment, TextField } from '@mui/material'
-import AddIcon from '@mui/icons-material/Add'
+import { FormControl, FormHelperText, IconButton, InputAdornment, TextField } from '@mui/material'
+import AddBoxIcon from '@mui/icons-material/AddBox'
 
 export const WatchlistAddInput = () => {
   const [value, setValue] = useState('')
@@ -18,7 +17,7 @@ export const WatchlistAddInput = () => {
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !isWatchlistExists) {
+    if (e.key === 'Enter' && !isWatchlistExists && value.length > 0) {
       handleClick()
     }
   }
@@ -26,17 +25,12 @@ export const WatchlistAddInput = () => {
   const isWatchlistExists = useMemo(() => watchlists.some((watchlist) => watchlist.name === value), [value])
 
   return (
-    <FormControl
-      fullWidth
-      error={isWatchlistExists}
-      variant="standard"
-      sx={{ [`& .${inputBaseClasses.root}`]: { paddingRight: '4px' } }}
-    >
+    <FormControl fullWidth error={isWatchlistExists} variant="standard">
       <TextField
         fullWidth
         autoFocus={watchlists.length === 0}
         size="small"
-        placeholder="Name"
+        placeholder="Create watchlist"
         name="watchlist"
         id="watchlist"
         value={value}
@@ -47,15 +41,14 @@ export const WatchlistAddInput = () => {
           input: {
             endAdornment: (
               <InputAdornment position="end">
-                <Button
-                  sx={{ minWidth: 0 }}
+                <IconButton
                   size="small"
-                  variant="contained"
+                  color="primary"
                   disabled={value.length === 0 || isWatchlistExists}
                   onClick={handleClick}
                 >
-                  <AddIcon />
-                </Button>
+                  <AddBoxIcon />
+                </IconButton>
               </InputAdornment>
             ),
           },

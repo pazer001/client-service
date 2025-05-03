@@ -1,5 +1,4 @@
-import { Divider, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Popover } from '@mui/material'
-import { ListTitle } from './WatchListMenu.style'
+import { Box, Divider, IconButton, ListItem, ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import StarRateRoundedIcon from '@mui/icons-material/StarRateRounded'
 import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded'
@@ -38,55 +37,43 @@ export const WatchlistMenu = ({ id, symbolItem, onClose, anchorEl, open }: IWatc
   }
 
   return (
-    <Popover
-      id={id}
+    <Menu
+      id="watchlist-menu"
       open={open}
       anchorEl={anchorEl}
       onClose={onClose}
-      elevation={8}
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'left',
+      slotProps={{
+        paper: {
+          'aria-labelledby': id,
+        },
       }}
     >
       {watchlists.length > 0 && (
-        <>
-          <ListTitle>Add to Watchlist</ListTitle>
-          <List aria-label="watchlist" dense>
-            {watchlists.map((watchlist) => {
-              const isSymbolInWatchlist = checkSymbolInWatchlist(watchlist)
-              return (
-                <ListItem
-                  key={watchlist.name}
-                  dense
-                  secondaryAction={
-                    <IconButton edge="end" aria-label="delete" onClick={handleRemoveWatchlist(watchlist.name)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  }
-                >
-                  <ListItemButton
-                    sx={{ pl: '12px' }}
-                    onClick={handleToggleWatchlist(isSymbolInWatchlist, watchlist.name, symbolItem)}
-                  >
-                    <ListItemIcon>
-                      {isSymbolInWatchlist ? <StarRateRoundedIcon color="warning" /> : <StarOutlineRoundedIcon />}
-                    </ListItemIcon>
-                    <ListItemText primary={watchlist.name} />
-                  </ListItemButton>
-                </ListItem>
-              )
-            })}
-          </List>
+        <Box>
+          {watchlists.map((watchlist) => {
+            const isSymbolInWatchlist = checkSymbolInWatchlist(watchlist)
+            return (
+              <MenuItem
+                key={watchlist.name}
+                dense
+                onClick={handleToggleWatchlist(isSymbolInWatchlist, watchlist.name, symbolItem)}
+              >
+                <ListItemIcon>
+                  {isSymbolInWatchlist ? <StarRateRoundedIcon color="warning" /> : <StarOutlineRoundedIcon />}
+                </ListItemIcon>
+                <ListItemText primary={watchlist.name} />
+                <IconButton edge="end" aria-label="delete" size="small" onClick={handleRemoveWatchlist(watchlist.name)}>
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              </MenuItem>
+            )
+          })}
           <Divider />
-        </>
+        </Box>
       )}
-      <ListTitle>Create Watchlist</ListTitle>
-      <List aria-label="create watchlist" dense>
-        <ListItem dense>
-          <WatchlistAddInput />
-        </ListItem>
-      </List>
-    </Popover>
+      <ListItem dense>
+        <WatchlistAddInput />
+      </ListItem>
+    </Menu>
   )
 }

@@ -39,7 +39,7 @@ const AddToWatchListButton = (props: ISymbolItem): ReactNode => {
       <IconButton
         color={isSymbolInWatchlist ? 'warning' : 'default'}
         aria-label="add to watchlist"
-        aria-describedby={id}
+        id={id}
         onClick={handleClick}
         size="small"
         aria-controls={open ? 'watchlist-menu' : undefined}
