@@ -20,6 +20,8 @@ export const WatchlistAddInput = () => {
     if (e.key === 'Enter' && !isWatchlistExists && value.length > 0) {
       handleClick()
     }
+    // Must stop propagation, because then the input will lose the focus to the first item that starts with the same inset letter
+    e.stopPropagation()
   }
 
   const isWatchlistExists = useMemo(() => watchlists.some((watchlist) => watchlist.name === value), [value])
