@@ -1,5 +1,6 @@
 import { AppBar, Box, Grid, Paper, Stack, styled, Toolbar } from '@mui/material'
-import { SymbolTable } from './components/SymbolTable/SymbolTable'
+import AnalyzedResult from './components/AnalyzedResult/AnalyzedResult'
+import { TableContainer } from './components/SymbolTable/TableContainer'
 
 const spacingBetween = 1
 const fullHeightStyleProp = { height: '100%' }
@@ -34,11 +35,13 @@ function App() {
           </Stack>
         </Grid>
         <Grid size={2}>
-          <Item></Item>
+          <Item>
+            <AnalyzedResult />
+          </Item>
         </Grid>
         <Grid size={4}>
           <Item sx={{ paddingTop: 0 }}>
-            <SymbolTable />
+            <TableContainer />
           </Item>
         </Grid>
       </Grid>
