@@ -22,29 +22,27 @@ const Container = styled(Box)(({ theme }) => ({
 
 function App() {
   return (
-    <>
-      <Container>
-        <AppBar position="static" sx={{ borderRadius: 1 }}>
-          <Toolbar variant="dense"></Toolbar>
-        </AppBar>
-        <Grid container spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
-          <Grid size={6}>
-            <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
-              <Item></Item>
-              <Item sx={{ height: 'calc(100% / 2)' }}></Item>
-            </Stack>
-          </Grid>
-          <Grid size={2}>
+    <Container>
+      <AppBar position="static">
+        <Toolbar variant="dense"></Toolbar>
+      </AppBar>
+      <Grid container spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
+        <Grid size={6}>
+          <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
             <Item></Item>
-          </Grid>
-          <Grid size={4}>
-            <Item sx={{ paddingTop: 0 }}>
-              <SymbolTable />
-            </Item>
-          </Grid>
+            <Item sx={{ height: 'calc(100% / 2)' }}></Item>
+          </Stack>
         </Grid>
-      </Container>
-    </>
+        <Grid size={2}>
+          <Item></Item>
+        </Grid>
+        <Grid size={4}>
+          <Item sx={{ paddingTop: 0 }}>
+            <SymbolTable />
+          </Item>
+        </Grid>
+      </Grid>
+    </Container>
   )
 }
 
