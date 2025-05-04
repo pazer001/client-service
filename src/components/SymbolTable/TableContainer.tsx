@@ -37,7 +37,7 @@ const CustomTabPanel = (props: CustomTabPanelProps) => {
   )
 }
 
-export const columns: GridColDef<ISymbolItem>[] = [
+const columns: GridColDef<ISymbolItem>[] = [
   { field: 'symbol', headerName: 'Symbol' },
   {
     field: 'priorityScore',
