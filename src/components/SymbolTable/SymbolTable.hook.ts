@@ -27,6 +27,7 @@ export const useSymbolTable = (): IReturnSymbolTableHook => {
   }
 
   useEffect(() => {
+    if (rows.length) return
     const getSymbolsList = async () => {
       setIsLoading(true)
       await getSuggestedSymbols()
