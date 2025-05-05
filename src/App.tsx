@@ -1,5 +1,6 @@
 import { AppBar, Box, Grid, Paper, Stack, styled, Toolbar } from '@mui/material'
-import { SymbolTable } from './components/SymbolTable/SymbolTable'
+import AnalyzedResult from './components/AnalyzedResult/AnalyzedResult'
+import { TableContainer } from './components/SymbolTable/TableContainer'
 
 const spacingBetween = 1
 const fullHeightStyleProp = { height: '100%' }
@@ -13,39 +14,38 @@ const Item = styled(Paper)(({ theme }) => ({
 
 const Container = styled(Box)(({ theme }) => ({
   padding: theme.spacing(spacingBetween),
-  height: '100dvh',
+  height: '100%',
+  maxHeight: '100dvh',
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(spacingBetween),
 }))
 
-const AppBarStyled = styled(AppBar)(() => ({}))
-
 function App() {
   return (
-    <>
-      <Container>
-        <AppBarStyled position="static" sx={{ borderRadius: 1 }}>
-          <Toolbar variant="dense"></Toolbar>
-        </AppBarStyled>
-        <Grid container spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
-          <Grid size={6}>
-            <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
-              <Item></Item>
-              <Item sx={{ height: 'calc(100% / 2)' }}></Item>
-            </Stack>
-          </Grid>
-          <Grid size={2}>
+    <Container>
+      <AppBar position="static">
+        <Toolbar variant="dense"></Toolbar>
+      </AppBar>
+      <Grid container spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
+        <Grid size={6}>
+          <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
             <Item></Item>
-          </Grid>
-          <Grid size={4}>
-            <Item sx={{ paddingTop: 0 }}>
-              <SymbolTable />
-            </Item>
-          </Grid>
+            <Item sx={{ height: 'calc(100% / 2)' }}></Item>
+          </Stack>
         </Grid>
-      </Container>
-    </>
+        <Grid size={2}>
+          <Item>
+            <AnalyzedResult />
+          </Item>
+        </Grid>
+        <Grid size={4}>
+          <Item sx={{ paddingTop: 0 }}>
+            <TableContainer />
+          </Item>
+        </Grid>
+      </Grid>
+    </Container>
   )
 }
 

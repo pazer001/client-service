@@ -1,28 +1,15 @@
 import { useEffect, useState } from 'react'
-import { IPriorityScore, ISymbolItem } from '../../stores/symbataStore.types.ts'
+import { ISymbolItem } from '../../stores/symbataStore.types.ts'
 import { useSymbataStoreActions, useSymbataStoreSymbols } from '../../stores/symbataStore.ts'
-import { GridColDef, GridRowsProp } from '@mui/x-data-grid'
+import { GridRowsProp } from '@mui/x-data-grid'
 
 export interface IReturnSymbolTableHook {
   isLoading: boolean
   rows: GridRowsProp<ISymbolItem>
   symbolsLooking: boolean
   progress: number
-  columns: GridColDef<ISymbolItem>[]
   handleRowClick: (selectedRow: ISymbolItem) => Promise<void>
 }
-
-const columns: GridColDef<ISymbolItem>[] = [
-  { field: 'symbol', headerName: 'Symbol' },
-  {
-    field: 'priorityScore',
-    headerName: 'Priority Score',
-    valueGetter: (priorityScore: IPriorityScore) => {
-      return priorityScore.symbol
-    },
-    renderCell: (params) => params.row.priorityScore.symbol,
-  },
-]
 
 export const useSymbolTable = (): IReturnSymbolTableHook => {
   const [isLoading, setIsLoading] = useState(false)
@@ -34,10 +21,13 @@ export const useSymbolTable = (): IReturnSymbolTableHook => {
   const handleRowClick = async (selectedRow: ISymbolItem) => {
     const recommendation = await getRecommendation(selectedRow) // Fetch recommendation for the selected symbol
     const symbol = { ...selectedRow, recommendation } // Combine selected row with recommendation
+    console.log('symbol', symbol)
+
     setSymbol(symbol) // Set the selected symbol in the store
   }
 
   useEffect(() => {
+    if (rows.length) return
     const getSymbolsList = async () => {
       setIsLoading(true)
       await getSuggestedSymbols()
@@ -48,7 +38,6 @@ export const useSymbolTable = (): IReturnSymbolTableHook => {
   }, [])
 
   return {
-    columns,
     rows,
     isLoading,
     symbolsLooking,

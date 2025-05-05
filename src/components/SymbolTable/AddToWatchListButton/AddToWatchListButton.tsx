@@ -1,88 +1,54 @@
-import { useRef } from 'react'
-import { Button } from 'primereact/button'
-import { Menu } from 'primereact/menu'
-import { MenuItem } from 'primereact/menuitem'
-import { Toast } from 'primereact/toast'
+import React, { ReactNode, useCallback, useMemo, useState } from 'react'
 import { ISymbolItem } from '../../../stores/symbataStore.types'
-import { IWatchlist, useWatchlistStoreActions, useWatchlistStoreWatchlists } from '../../../stores/watchlistStore'
-import { WatchlistMenu } from '../Watchlist/WatchlistMenu/WatchlistMenu'
+import { IconButton } from '@mui/material'
+import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded'
+import StarRateRoundedIcon from '@mui/icons-material/StarRateRounded'
+import { IWatchlist, useWatchlistStoreWatchlists } from '../../../stores/watchlistStore'
+import { WatchlistMenu } from './WatchListMenu'
 
-const AddToWatchListButton = (props: ISymbolItem) => {
-  const menuLeft = useRef<Menu>(null)
-  const toast = useRef<Toast>(null)
-  const watchlists = useWatchlistStoreWatchlists()
-  const { addToWatchlist, removeFromWatchlist } = useWatchlistStoreActions()
-  let menuItems: MenuItem[] = [
-    {
-      id: 'create-new-watchlist',
-      label: 'Create new Watchlist',
-      items: [
-        {
-          template: WatchlistMenu,
-        },
-      ],
-    },
-  ]
+const AddToWatchListButton = (props: ISymbolItem): ReactNode => {
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
 
-  const checkSymbolInWatchlist = (watchlist: IWatchlist) =>
-    watchlist.symbols.some((symbol) => symbol.symbol === props.symbol)
-
-  const isSymbolInWatchlist = watchlists.some(checkSymbolInWatchlist)
-  // TODO: move useEffect to a hook
-  // useEffect(() => {
-  if (watchlists.length > 0) {
-    // Add the watchlist items to the menu
-    const items = watchlists.map((watchlist): MenuItem => {
-      const isSymbolInWatchlist = checkSymbolInWatchlist(watchlist)
-      return {
-        label: watchlist.name,
-        icon: `pi ${isSymbolInWatchlist ? 'pi-star-fill text-yellow-500' : 'pi-star'}`,
-        command: () => {
-          if (isSymbolInWatchlist) {
-            removeFromWatchlist(watchlist.name, props)
-            toast.current?.show({
-              severity: 'info',
-              summary: 'Removed from Watchlist',
-              detail: `Removed ${props.symbol} from ${watchlist.name}`,
-              life: 3000,
-            })
-            return
-          }
-
-          addToWatchlist(watchlist.name, props)
-          toast.current?.show({
-            severity: 'success',
-            summary: 'Added to Watchlist',
-            detail: `Added ${props.symbol} to ${watchlist.name}`,
-            life: 3000,
-          })
-        },
-      }
-    })
-
-    menuItems = [
-      {
-        id: 'add-to-watchlist',
-        label: 'Add to Watchlist',
-        items,
-      },
-      ...menuItems.filter((item) => item.id !== 'add-to-watchlist'),
-    ]
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
+    event.preventDefault()
+    setAnchorEl(event.currentTarget)
   }
+
+  const watchlists = useWatchlistStoreWatchlists()
+
+  const checkSymbolInWatchlist = useCallback(
+    (watchlist: IWatchlist) => watchlist.symbols.some((symbol) => symbol.symbol === props.symbol),
+    [],
+  )
+
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
+
+  const isSymbolInWatchlist = useMemo(
+    () => watchlists.some(checkSymbolInWatchlist),
+    [watchlists, checkSymbolInWatchlist],
+  )
+
+  const open = Boolean(anchorEl)
+  const id = open ? 'watchlist-menu-popper' : undefined
 
   return (
     <>
-      <Toast ref={toast}></Toast>
-      <Menu className="w-full md:w-15rem" model={menuItems} popup ref={menuLeft} id="popup_menu_left" />
-      <Button
-        icon={`pi ${isSymbolInWatchlist ? 'pi-star-fill' : 'pi-star'}`}
-        text
-        severity={isSymbolInWatchlist ? undefined : 'secondary'}
+      <IconButton
+        color={isSymbolInWatchlist ? 'warning' : 'default'}
+        aria-label="add to watchlist"
+        id={id}
+        onClick={handleClick}
         size="small"
-        onClick={(event) => menuLeft?.current?.toggle(event)}
-        aria-controls="popup_menu_left"
-        aria-haspopup
-      />
+        aria-controls={open ? 'watchlist-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? 'true' : undefined}
+      >
+        {isSymbolInWatchlist ? <StarRateRoundedIcon /> : <StarOutlineRoundedIcon />}
+      </IconButton>
+      <WatchlistMenu id={id} symbolItem={props} onClose={handleClose} anchorEl={anchorEl} open={open} />
     </>
   )
 }

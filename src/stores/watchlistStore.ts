@@ -56,7 +56,11 @@ const watchlistStore: StateCreator<IWatchListStore> = (set) => ({
       })
     },
     removeWatchlist: async (name: string) => {
-      console.log('Removing watchlist:', name)
+      set((state) => {
+        return {
+          watchlists: state.watchlists.filter((watchlist) => watchlist.name !== name),
+        }
+      })
     },
   },
 })

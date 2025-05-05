@@ -1,3 +1,4 @@
+import { Box, Typography } from '@mui/material'
 import { useSymbataStoreSymbol } from '../../stores/symbataStore.ts'
 import { ISymbolItem } from '../../stores/symbataStore.types.ts'
 
@@ -5,16 +6,16 @@ const AnalyzedResult = () => {
   const symbol: ISymbolItem | undefined = useSymbataStoreSymbol()
 
   return (
-    <div>
+    <Box>
       {symbol ? (
         <>
-          <p className="text-sm">Symbol: {symbol?.symbol}</p>
-          <p className="text-sm">Sector Last Score: {symbol?.priorityScore?.sectorLastScore ?? 0}</p>
+          <Typography>Symbol: {symbol?.symbol}</Typography>
+          <Typography>Sector Last Score: {symbol?.priorityScore?.sectorLastScore ?? 0}</Typography>
         </>
       ) : (
-        <p className="text-sm">No symbol selected</p>
+        <Typography>No symbol selected</Typography>
       )}
-    </div>
+    </Box>
   )
 }
 
