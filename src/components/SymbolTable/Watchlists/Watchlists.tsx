@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import { useWatchlistStoreWatchlists } from '../../../stores/watchlistStore'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import { ISymbolItem } from '../../../stores/symbataStore.types'
-import { CustomToolbar } from '../SymbolTable'
 import { useSymbolTable } from '../SymbolTable.hook'
 
 interface IWatchlistProps {
@@ -33,8 +32,6 @@ export const Watchlists = ({ columns }: IWatchlistProps) => {
         const selectedRow = details.api.getRow(rowId)
         handleRowClick(selectedRow)
       }}
-      showToolbar
-      slots={{ toolbar: () => <CustomToolbar onScanSymbols={() => console.log('Scan Symbols')} /> }}
     />
   )
 }
