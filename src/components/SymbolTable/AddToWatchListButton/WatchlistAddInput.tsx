@@ -12,7 +12,7 @@ export const WatchlistAddInput = () => {
     setValue(e.target.value)
   }
   const handleClick = () => {
-    addWatchlist(value)
+    addWatchlist(value, 'manual')
     setValue('')
   }
 

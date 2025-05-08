@@ -3,14 +3,16 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 import { ISymbolItem } from './symbataStore.types.ts'
 
 interface IWatchListStoreActions {
-  addWatchlist: (watchlistName: string) => Promise<void>
+  addWatchlist: (watchlistName: string, source: TWatchlistSource) => Promise<void>
   addToWatchlist: (watchlistName: string, symbol: ISymbolItem) => Promise<void>
   removeWatchlist: (watchlistName: string) => Promise<void>
   removeFromWatchlist: (watchlistName: string, symbol: ISymbolItem) => Promise<void>
 }
 
+type TWatchlistSource = 'manual' | 'broker'
 export interface IWatchlist {
   name: string
+  source: TWatchlistSource
   symbols: ISymbolItem[]
 }
 
@@ -24,9 +26,9 @@ const watchlistStore: StateCreator<IWatchListStore> = (set) => ({
   currentWatchlist: null,
   watchlists: [],
   actions: {
-    addWatchlist: async (name: string) => {
+    addWatchlist: async (name: string, source) => {
       set((state) => ({
-        watchlists: [...state.watchlists, { name, symbols: [] }],
+        watchlists: [...state.watchlists, { name, source, symbols: [] }],
       }))
     },
     addToWatchlist: async (name: string, symbol: ISymbolItem) => {
