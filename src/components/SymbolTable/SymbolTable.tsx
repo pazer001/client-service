@@ -70,7 +70,7 @@ export function CustomToolbar({ onScanSymbols }: ICustomToolbarProps) {
 }
 
 export const SymbolTable = ({ columns }: ISymbolTableProps) => {
-  const { isLoading, rows, handleRowClick } = useSymbolTable()
+  const { isLoading, rows, handleRowClick, setSymbols } = useSymbolTable()
 
   return (
     <DataGrid
@@ -82,8 +82,17 @@ export const SymbolTable = ({ columns }: ISymbolTableProps) => {
       columns={columns}
       onRowSelectionModelChange={(newRowSelectionModel, details) => {
         const rowId = Array.from(newRowSelectionModel.ids)[0]
-        const selectedRow = details.api.getRow(rowId)
-        handleRowClick(selectedRow)
+        if (rowId) {
+          const rowIndex = rows.findIndex((row) => row.id === rowId)
+          if (rowIndex !== undefined) {
+            const selectedRow = details.api.getRow(rowId)
+            const copiedRows: ISymbolItem[] = [...rows]
+            copiedRows[rowIndex] = { ...selectedRow, loading: true }
+
+            setSymbols(copiedRows)
+            handleRowClick(selectedRow, rowIndex)
+          }
+        }
       }}
     />
   )

@@ -1,14 +1,18 @@
 import { useMemo, useState } from 'react'
 import { useWatchlistStoreWatchlists } from '../../stores/watchlistStore'
-import { Box, Tab, Tabs } from '@mui/material'
+import { Box, CircularProgress, Tab, Tabs, Tooltip } from '@mui/material'
 import ListIcon from '@mui/icons-material/List'
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial'
 import { Watchlists } from './Watchlists/Watchlists'
 import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
-import { IPriorityScore, ISymbolItem } from '../../stores/symbataStore.types'
+import { EAction, IPriorityScore, ISymbolItem } from '../../stores/symbataStore.types'
 import AddToWatchListButton from './AddToWatchListButton/AddToWatchListButton'
 import { grey } from '@mui/material/colors'
 import { SymbolTable } from './SymbolTable'
+import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import TrendingDownIcon from '@mui/icons-material/TrendingDown'
+import TrendingFlatIcon from '@mui/icons-material/TrendingFlat'
+import SyncProblemIcon from '@mui/icons-material/SyncProblem'
 
 interface CustomTabPanelProps {
   children?: React.ReactNode
@@ -39,6 +43,50 @@ const CustomTabPanel = (props: CustomTabPanelProps) => {
 
 const columns: GridColDef<ISymbolItem>[] = [
   { field: 'symbol', headerName: 'Symbol' },
+  {
+    field: 'recommendation',
+    headerName: 'Recommendation',
+    renderCell: (params: GridRenderCellParams<ISymbolItem>) => {
+      let Elm = <Box />
+      let title = undefined
+
+      if (params.row.loading) {
+        Elm = <CircularProgress size={20} />
+      }
+      if (!params.row.loading && params.row.recommendation) {
+        switch (params.row.recommendation.action) {
+          case EAction.BUY:
+            title = 'Buy'
+            Elm = <TrendingUpIcon color="success" />
+
+            break
+          case EAction.SELL:
+            title = 'Sell'
+            Elm = <TrendingDownIcon color="error" />
+
+            break
+          case EAction.HOLD:
+            title = 'Hold'
+            Elm = <TrendingFlatIcon />
+
+            break
+          case EAction.ERROR:
+            title = 'Something want wrong, try again'
+            Elm = <SyncProblemIcon color="warning" />
+
+            break
+        }
+      }
+
+      return (
+        <Box display="flex" alignItems="center" height="100%">
+          <Tooltip placement="right" title={title}>
+            {Elm}
+          </Tooltip>
+        </Box>
+      )
+    },
+  },
   {
     field: 'priorityScore',
     headerName: 'Priority Score',

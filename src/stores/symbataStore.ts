@@ -7,6 +7,7 @@ import { IRecommendation, ISymbolItem } from './symbataStore.types.ts'
 
 export interface IStoreActions {
   setSymbol: (symbol: ISymbolItem) => void
+  setSymbols: (symbols: ISymbolItem[]) => void
   getRecommendation: (symbol: ISymbolItem) => Promise<IRecommendation>
   getSuggestedSymbols: () => Promise<void>
 }
@@ -25,6 +26,9 @@ const symbataStore: StateCreator<ISymbolStore> = (set) => ({
   actions: {
     setSymbol: (symbol: ISymbolItem) => {
       set({ symbol })
+    },
+    setSymbols: (symbols: ISymbolItem[]) => {
+      set({ symbols })
     },
     getSuggestedSymbols: async () => {
       try {
