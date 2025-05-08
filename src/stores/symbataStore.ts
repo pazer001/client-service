@@ -53,17 +53,23 @@ const symbataStore: StateCreator<ISymbolStore> = (set) => ({
 })
 
 // TODO: Remove "persist" before going to PRODUCTION!!! (it is just for development usage)
-export const useSymbataStore = create<ISymbolStore>()(
-  devtools(
-    persist(symbataStore, {
-      name: 'symbataStore',
-      storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({
-        symbols: state.symbols,
+export const useSymbataStore = import.meta.env.DEV
+  ? create<ISymbolStore>()(
+      devtools(
+        persist(symbataStore, {
+          name: 'symbataStore',
+          storage: createJSONStorage(() => localStorage),
+          partialize: (state) => ({
+            symbols: state.symbols,
+          }),
+        }),
+      ),
+    )
+  : create<ISymbolStore>()(
+      devtools(symbataStore, {
+        name: 'symbataStore',
       }),
-    }),
-  ),
-)
+    )
 export const useSymbataStoreActions = () => useSymbataStore((state) => state.actions)
 export const useSymbataStoreSymbol = () => useSymbataStore((state) => state.symbol)
 export const useSymbataStoreSymbols = () => useSymbataStore((state) => state.symbols)
