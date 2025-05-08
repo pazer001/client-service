@@ -1,5 +1,5 @@
 import { create, StateCreator } from 'zustand'
-import { devtools } from 'zustand/middleware'
+import { devtools, persist, createJSONStorage } from 'zustand/middleware'
 import { Interval } from '../components/interfaces.ts'
 import axios from '../axios'
 import { AxiosResponse } from 'axios'
@@ -52,7 +52,18 @@ const symbataStore: StateCreator<ISymbolStore> = (set) => ({
   },
 })
 
-export const useSymbataStore = create<ISymbolStore>()(devtools(symbataStore))
+// TODO: Remove "persist" before going to PRODUCTION!!! (it is just for development usage)
+export const useSymbataStore = create<ISymbolStore>()(
+  devtools(
+    persist(symbataStore, {
+      name: 'symbataStore',
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        symbols: state.symbols,
+      }),
+    }),
+  ),
+)
 export const useSymbataStoreActions = () => useSymbataStore((state) => state.actions)
 export const useSymbataStoreSymbol = () => useSymbataStore((state) => state.symbol)
 export const useSymbataStoreSymbols = () => useSymbataStore((state) => state.symbols)
