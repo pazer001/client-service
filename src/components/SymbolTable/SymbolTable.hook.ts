@@ -6,20 +6,20 @@ import { GridRowsProp } from '@mui/x-data-grid'
 export interface IReturnSymbolTableHook {
   isLoading: boolean
   rows: GridRowsProp<ISymbolItem>
-  symbolsLooking: boolean
-  progress: number
-  handleRowClick: (selectedRow: ISymbolItem, rowIndex?: number) => Promise<void>
-  setSymbols: (symbols: ISymbolItem[]) => void
+  handleRowClick: (selectedRow: ISymbolItem, rowIndex: number) => Promise<void>
 }
 
 export const useSymbolTable = (): IReturnSymbolTableHook => {
   const [isLoading, setIsLoading] = useState(false)
-  const [symbolsLooking] = useState<boolean>(false)
-  const [progress] = useState<number>(0)
   const rows: GridRowsProp<ISymbolItem> = useSymbataStoreSymbols()
   const { getSuggestedSymbols, setSymbol, getRecommendation, setSymbols } = useSymbataStoreActions()
 
-  const handleRowClick = async (selectedRow: ISymbolItem, rowIndex: number | undefined) => {
+  const handleRowClick = async (selectedRow: ISymbolItem, rowIndex: number) => {
+    const copiedRows: ISymbolItem[] = [...rows]
+    copiedRows[rowIndex] = { ...selectedRow, loading: true }
+
+    setSymbols(copiedRows)
+
     let symbol: ISymbolItem = selectedRow
     try {
       const recommendation = await getRecommendation(selectedRow) // Fetch recommendation for the selected symbol
@@ -60,9 +60,6 @@ export const useSymbolTable = (): IReturnSymbolTableHook => {
   return {
     rows,
     isLoading,
-    symbolsLooking,
-    progress,
     handleRowClick,
-    setSymbols,
   }
 }
