@@ -7,7 +7,7 @@ interface IWatchListStoreActions {
   addToWatchlist: (watchlistName: string, symbol: ISymbolItem) => void
   removeWatchlist: (watchlistName: string) => void
   removeFromWatchlist: (watchlistName: string, symbol: ISymbolItem) => void
-  updateSymbolInList: (symbol: ISymbolItem) => void
+  updateSymbolInCurrentWatchlist: (symbol: ISymbolItem) => void
   getWatchlist: (watchlistName: string) => IWatchlist | undefined
   setCurrentWatchlist: (watchlist: IWatchlist) => void
 }
@@ -47,29 +47,37 @@ const watchlistStore: StateCreator<IWatchListStore> = (set, get) => ({
         return state
       })
     },
-    updateSymbolInList: (symbolWithRecommendation: ISymbolItem) => {
-      const currentWatchlist = get().currentWatchlist
-      if (!currentWatchlist) {
+    updateSymbolInCurrentWatchlist: (symbolWithRecommendation: ISymbolItem) => {
+      const watchlist = get().watchlists.find((watchlist) =>
+        watchlist.symbols.some((s) => s.symbol === symbolWithRecommendation.symbol),
+      )
+      if (!watchlist) {
         console.error('Cannot update symbol: no watchlist is selected')
         return
       }
 
-      const name = currentWatchlist.name
+      const name = watchlist.name
       set((state) => {
         const watchlist = state.watchlists.find((watchlist) => watchlist.name === name)
 
         if (watchlist) {
+          const watchlists = state.watchlists.map((wl) =>
+            wl.name === name
+              ? {
+                  ...wl,
+                  symbols: wl.symbols.map((s) =>
+                    s.symbol === symbolWithRecommendation.symbol ? symbolWithRecommendation : s,
+                  ),
+                }
+              : wl,
+          )
+
           return {
-            watchlists: state.watchlists.map((wl) =>
-              wl.name === name
-                ? {
-                    ...wl,
-                    symbols: wl.symbols.map((s) =>
-                      s.symbol === symbolWithRecommendation.symbol ? symbolWithRecommendation : s,
-                    ),
-                  }
-                : wl,
-            ),
+            watchlists,
+            currentWatchlist:
+              state.currentWatchlist !== null && state.currentWatchlist.name === name
+                ? watchlists.find((wl) => wl.name === name)
+                : state.currentWatchlist,
           }
         }
         return state

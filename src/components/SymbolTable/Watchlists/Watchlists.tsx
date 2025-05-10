@@ -13,7 +13,7 @@ const watchlistExcludedColumns = ['watchlist']
 
 export const Watchlists = ({ columns }: IWatchlistProps) => {
   const { handleRowClick } = useSymbolTable()
-  const { updateSymbolInList } = useWatchlistStoreActions()
+  const { updateSymbolInCurrentWatchlist } = useWatchlistStoreActions()
   const currentWatchlist = useWatchlistStoreCurrentWatchlist()
   const [isLoading] = useState(false)
 
@@ -38,7 +38,11 @@ export const Watchlists = ({ columns }: IWatchlistProps) => {
 
   const slots: Partial<GridSlotsComponent> = {
     toolbar: () => (
-      <WatchlistCustomToolbar rows={rows} symbolsToScan={rows.length} updateSymbolInList={updateSymbolInList} />
+      <WatchlistCustomToolbar
+        rows={rows}
+        symbolsToScan={rows.length}
+        updateSymbolInList={updateSymbolInCurrentWatchlist}
+      />
     ),
   }
 
