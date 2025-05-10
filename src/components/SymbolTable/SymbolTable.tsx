@@ -17,7 +17,7 @@ export const SymbolTable = ({ columns }: ISymbolTableProps) => {
   const onRowSelectionModelChange = (rowSelectionModel: GridRowSelectionModel, details: GridCallbackDetails) => {
     const rowId = Array.from(rowSelectionModel.ids)[0]
     if (rowId) {
-      const rowIndex = rows.findIndex((row) => row.id === rowId)
+      const rowIndex = rows.findIndex(({ id }) => id === rowId)
       if (rowIndex !== undefined) {
         const selectedRow = details.api.getRow(rowId)
         handleRowClick(selectedRow, rowIndex)
