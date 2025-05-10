@@ -9,6 +9,7 @@ interface IWatchListStoreActions {
   removeFromWatchlist: (watchlistName: string, symbol: ISymbolItem) => void
   updateSymbolInList: (symbol: ISymbolItem) => void
   getWatchlist: (watchlistName: string) => IWatchlist | undefined
+  setCurrentWatchlist: (watchlist: IWatchlist) => void
 }
 
 type TWatchlistSource = 'manual' | 'broker'
@@ -97,6 +98,9 @@ const watchlistStore: StateCreator<IWatchListStore> = (set, get) => ({
         }
       })
     },
+    setCurrentWatchlist: (watchlist: IWatchlist) => {
+      set({ currentWatchlist: watchlist })
+    },
   },
 })
 
@@ -111,3 +115,5 @@ const useWatchlistStore = create<IWatchListStore>()(
 )
 export const useWatchlistStoreActions = () => useWatchlistStore((state) => state.actions)
 export const useWatchlistStoreWatchlists = () => useWatchlistStore((state) => state.watchlists)
+
+export const useWatchlistStoreCurrentWatchlist = () => useWatchlistStore((state) => state.currentWatchlist)

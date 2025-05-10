@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useWatchlistStoreActions, useWatchlistStoreWatchlists } from '../../../stores/watchlistStore'
+import { useWatchlistStoreActions, useWatchlistStoreCurrentWatchlist } from '../../../stores/watchlistStore'
 import { DataGrid, GridCallbackDetails, GridColDef, GridRowSelectionModel, GridSlotsComponent } from '@mui/x-data-grid'
 import { ISymbolItem } from '../../../stores/symbataStore.types'
 import { useSymbolTable } from '../SymbolTable.hook'
@@ -13,12 +13,11 @@ const watchlistExcludedColumns = ['watchlist']
 
 export const Watchlists = ({ columns }: IWatchlistProps) => {
   const { handleRowClick } = useSymbolTable()
-  const watchlists = useWatchlistStoreWatchlists()
   const { updateSymbolInList } = useWatchlistStoreActions()
-  const [watchlistSelectedIndex] = useState<number>(0)
+  const currentWatchlist = useWatchlistStoreCurrentWatchlist()
   const [isLoading] = useState(false)
 
-  const rows = watchlists[watchlistSelectedIndex]?.symbols
+  const rows = currentWatchlist?.symbols || []
 
   const watchlistColumns = useMemo(
     () => columns.filter((column) => !watchlistExcludedColumns.includes(column.field)),

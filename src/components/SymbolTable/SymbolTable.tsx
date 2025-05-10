@@ -2,7 +2,7 @@ import { DataGrid, GridCallbackDetails, GridColDef, GridRowSelectionModel, GridS
 import { useSymbolTable } from './SymbolTable.hook'
 import { ISymbolItem } from '../../stores/symbataStore.types'
 import { useSymbataStoreActions } from './../../stores/symbataStore'
-import { TableCustomToolbar } from './TableCustomToolbar/TableCusomToolbar'
+import { TableCustomToolbar } from './TableCustomToolbar/TableCustomToolbar'
 
 interface ISymbolTableProps {
   columns: GridColDef<ISymbolItem>[]
