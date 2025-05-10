@@ -25,7 +25,7 @@ export const SymbolTable = ({ columns }: ISymbolTableProps) => {
     }
   }
 
-  const slots: Partial<GridSlotsComponent> | undefined = {
+  const slots: Partial<GridSlotsComponent> = {
     toolbar: () => <TableCustomToolbar rows={rows} chunksOf={chunksOf} updateSymbolInList={updateSymbolInList} />,
   }
 
