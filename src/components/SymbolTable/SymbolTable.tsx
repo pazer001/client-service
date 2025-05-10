@@ -14,8 +14,8 @@ export const SymbolTable = ({ columns }: ISymbolTableProps) => {
   const { isLoading, rows, handleRowClick } = useSymbolTable()
   const { updateSymbolInList } = useSymbataStoreActions()
 
-  const onRowSelectionModelChange = (newRowSelectionModel: GridRowSelectionModel, details: GridCallbackDetails) => {
-    const rowId = Array.from(newRowSelectionModel.ids)[0]
+  const onRowSelectionModelChange = (rowSelectionModel: GridRowSelectionModel, details: GridCallbackDetails) => {
+    const rowId = Array.from(rowSelectionModel.ids)[0]
     if (rowId) {
       const rowIndex = rows.findIndex((row) => row.id === rowId)
       if (rowIndex !== undefined) {
