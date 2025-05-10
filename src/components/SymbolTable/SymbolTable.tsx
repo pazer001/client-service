@@ -1,4 +1,4 @@
-import { DataGrid, GridCallbackDetails, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid'
+import { DataGrid, GridCallbackDetails, GridColDef, GridRowSelectionModel, GridSlotsComponent } from '@mui/x-data-grid'
 import { useSymbolTable } from './SymbolTable.hook'
 import { ISymbolItem } from '../../stores/symbataStore.types'
 import { useSymbataStoreActions } from './../../stores/symbataStore'
@@ -25,12 +25,14 @@ export const SymbolTable = ({ columns }: ISymbolTableProps) => {
     }
   }
 
+  const slots: Partial<GridSlotsComponent> | undefined = {
+    toolbar: () => <TableCustomToolbar rows={rows} chunksOf={chunksOf} updateSymbolInList={updateSymbolInList} />,
+  }
+
   return (
     <DataGrid
       showToolbar
-      slots={{
-        toolbar: () => <TableCustomToolbar rows={rows} chunksOf={chunksOf} updateSymbolInList={updateSymbolInList} />,
-      }}
+      slots={slots}
       density="compact"
       loading={isLoading}
       rows={rows}
