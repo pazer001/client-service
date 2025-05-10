@@ -72,7 +72,7 @@ export const WatchlistCustomToolbar = ({ rows, symbolsToScan, updateSymbolInList
             >
               <MenuItem sx={{ display: 'none' }} value=""></MenuItem>
               {watchlists.map((watchlist) => (
-                <MenuItem key={watchlist.name} value={watchlist.name}>
+                <MenuItem dense key={watchlist.name} value={watchlist.name}>
                   <ListItemText primary={watchlist.name} />
                   <Tooltip title={`Delete "${watchlist.name}" watchlist`} placement="top">
                     <IconButton
