@@ -8,7 +8,7 @@ interface ISymbolTableProps {
   columns: GridColDef<ISymbolItem>[]
 }
 
-const chunksOf = 200
+const symbolsToScan = 200
 
 export const SymbolTable = ({ columns }: ISymbolTableProps) => {
   const { isLoading, rows, handleRowClick } = useSymbolTable()
@@ -26,7 +26,9 @@ export const SymbolTable = ({ columns }: ISymbolTableProps) => {
   }
 
   const slots: Partial<GridSlotsComponent> = {
-    toolbar: () => <TableCustomToolbar rows={rows} chunksOf={chunksOf} updateSymbolInList={updateSymbolInList} />,
+    toolbar: () => (
+      <TableCustomToolbar rows={rows} symbolsToScan={symbolsToScan} updateSymbolInList={updateSymbolInList} />
+    ),
   }
 
   return (

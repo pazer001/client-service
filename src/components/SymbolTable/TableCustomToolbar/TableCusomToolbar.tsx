@@ -17,17 +17,17 @@ import { chunk } from 'lodash'
 
 interface ITableCustomToolbarProps {
   rows: GridRowsProp<ISymbolItem>
-  chunksOf: number
+  symbolsToScan: number
   updateSymbolInList: (symbol: ISymbolItem) => void
 }
 
-export const TableCustomToolbar = ({ rows, chunksOf, updateSymbolInList }: ITableCustomToolbarProps) => {
+export const TableCustomToolbar = ({ rows, symbolsToScan, updateSymbolInList }: ITableCustomToolbarProps) => {
   const { getRecommendation } = useSymbataStoreActions()
   const [isScanning, setIsScanning] = useState(false)
   const [chunkIndex, setChunkIndex] = useState(0)
-  const maxChuckIndex = Math.ceil(rows.length / chunksOf)
+  const maxChuckIndex = Math.ceil(rows.length / symbolsToScan)
   const [currentScanSymbolIndex, setCurrentSymbolIndex] = useState(0)
-  const symbolsChunk = useMemo(() => chunk(rows, chunksOf)[chunkIndex], [chunkIndex, rows]) ?? []
+  const symbolsChunk = useMemo(() => chunk(rows, symbolsToScan)[chunkIndex], [chunkIndex, rows]) ?? []
 
   const handleScanSymbols = async () => {
     setIsScanning(true)
