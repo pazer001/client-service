@@ -1,7 +1,16 @@
 import { GridRowsProp, Toolbar } from '@mui/x-data-grid'
 import { ISymbolItem } from '../../../../stores/symbataStore.types'
 import { useTableCustomToolbar } from '../../TableCustomToolbar/TableCustomToolbar.hooks'
-import { Box, IconButton, ListItemText, MenuItem, Select, SelectChangeEvent, Tooltip } from '@mui/material'
+import {
+  Box,
+  IconButton,
+  InputAdornment,
+  ListItemText,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Tooltip,
+} from '@mui/material'
 import { LinearProgressToolbar, ScanToolbarButton } from '../../TableCustomToolbar/TableCustomToolbar'
 import {
   useWatchlistStoreActions,
@@ -9,6 +18,7 @@ import {
   useWatchlistStoreWatchlists,
 } from '../../../../stores/watchlistStore'
 import DeleteIcon from '@mui/icons-material/Delete'
+import StarRateRoundedIcon from '@mui/icons-material/StarRateRounded'
 
 interface IWatchlistCustomToolbarProps {
   rows: GridRowsProp<ISymbolItem>
@@ -65,10 +75,14 @@ export const WatchlistCustomToolbar = ({ rows, symbolsToScan, updateSymbolInList
                   )
                 }
                 const selectedWatchlist = watchlists.find((watchlist) => watchlist.name === value)
-                console.log('selectedWatchlist', selectedWatchlist)
 
                 return selectedWatchlist ? selectedWatchlist.name : ''
               }}
+              startAdornment={
+                <InputAdornment position="start">
+                  <StarRateRoundedIcon color={currentWatchlist?.name ? 'warning' : 'inherit'} fontSize="small" />
+                </InputAdornment>
+              }
             >
               <MenuItem sx={{ display: 'none' }} value=""></MenuItem>
               {watchlists.map((watchlist) => (
