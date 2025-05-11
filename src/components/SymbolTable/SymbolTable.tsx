@@ -1,90 +1,46 @@
-import Box from '@mui/material/Box'
-import {
-  DataGrid,
-  GridColDef,
-  QuickFilter,
-  QuickFilterClear,
-  QuickFilterControl,
-  Toolbar,
-  ToolbarButton,
-  ToolbarProps,
-} from '@mui/x-data-grid'
-import { InputAdornment, TextField, Tooltip } from '@mui/material'
+import { DataGrid, GridCallbackDetails, GridColDef, GridRowSelectionModel, GridSlotsComponent } from '@mui/x-data-grid'
 import { useSymbolTable } from './SymbolTable.hook'
-import QueryStatsIcon from '@mui/icons-material/QueryStats'
-import SearchIcon from '@mui/icons-material/Search'
-import CancelIcon from '@mui/icons-material/Cancel'
 import { ISymbolItem } from '../../stores/symbataStore.types'
-
-interface ICustomToolbarProps extends ToolbarProps {
-  onScanSymbols: () => void
-}
+import { useSymbataStoreActions } from './../../stores/symbataStore'
+import { TableCustomToolbar } from './TableCustomToolbar/TableCustomToolbar'
 
 interface ISymbolTableProps {
   columns: GridColDef<ISymbolItem>[]
 }
 
-export function CustomToolbar({ onScanSymbols }: ICustomToolbarProps) {
-  return (
-    <Toolbar>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-        <Tooltip title="Scan Symbols for suggestions" placement="top">
-          <ToolbarButton onClick={onScanSymbols}>
-            <QueryStatsIcon fontSize="small" />
-          </ToolbarButton>
-        </Tooltip>
-        <QuickFilter expanded>
-          <QuickFilterControl
-            render={({ ref, ...other }) => (
-              <TextField
-                {...other}
-                inputRef={ref}
-                aria-label="Search"
-                placeholder="Search..."
-                size="small"
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon fontSize="small" />
-                      </InputAdornment>
-                    ),
-                    endAdornment: other.value ? (
-                      <InputAdornment position="end">
-                        <QuickFilterClear edge="end" size="small" aria-label="Clear search">
-                          <CancelIcon fontSize="small" />
-                        </QuickFilterClear>
-                      </InputAdornment>
-                    ) : null,
-                    ...other.slotProps?.input,
-                  },
-                  ...other.slotProps,
-                }}
-              />
-            )}
-          />
-        </QuickFilter>
-      </Box>
-    </Toolbar>
-  )
-}
+const symbolsToScan = 200
 
 export const SymbolTable = ({ columns }: ISymbolTableProps) => {
   const { isLoading, rows, handleRowClick } = useSymbolTable()
+  const { updateSymbolInList } = useSymbataStoreActions()
+
+  const onRowSelectionModelChange = (rowSelectionModel: GridRowSelectionModel, details: GridCallbackDetails) => {
+    const rowId = Array.from(rowSelectionModel.ids)[0]
+    if (rowId) {
+      const selectedRow = details.api.getRow(rowId)
+      const rowIndex = rows.findIndex(({ id }) => id === rowId)
+
+      if (rowIndex !== undefined) {
+        handleRowClick(selectedRow, rowIndex)
+      }
+    }
+  }
+
+  const slots: Partial<GridSlotsComponent> = {
+    toolbar: () => (
+      <TableCustomToolbar rows={rows} symbolsToScan={symbolsToScan} updateSymbolInList={updateSymbolInList} />
+    ),
+  }
 
   return (
     <DataGrid
       showToolbar
-      slots={{ toolbar: () => <CustomToolbar onScanSymbols={() => console.log('Scan Symbols')} /> }}
+      slots={slots}
       density="compact"
       loading={isLoading}
       rows={rows}
       columns={columns}
-      onRowSelectionModelChange={(newRowSelectionModel, details) => {
-        const rowId = Array.from(newRowSelectionModel.ids)[0]
-        const selectedRow = details.api.getRow(rowId)
-        handleRowClick(selectedRow)
-      }}
+      onRowSelectionModelChange={onRowSelectionModelChange}
     />
   )
 }
