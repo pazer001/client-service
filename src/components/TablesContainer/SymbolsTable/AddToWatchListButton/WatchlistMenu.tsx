@@ -19,7 +19,7 @@ export const WatchlistMenu = ({ id, symbolItem, onClose, anchorEl, open }: IWatc
   const { addToWatchlist, removeFromWatchlist, removeWatchlist } = useWatchlistStoreActions()
 
   const checkSymbolInWatchlist = (watchlist: IWatchlist) =>
-    watchlist.symbols.some((item) => item.symbol === symbolItem.symbol)
+    watchlist.symbols.some(({symbol}) => symbol === symbolItem.symbol)
 
   const handleToggleWatchlist =
     (isSymbolInWatchlist: boolean, watchlistName: string, symbolItem: ISymbolItem) => () => {

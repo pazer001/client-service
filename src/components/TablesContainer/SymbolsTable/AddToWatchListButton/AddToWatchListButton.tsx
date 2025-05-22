@@ -4,7 +4,7 @@ import { IconButton } from '@mui/material'
 import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded'
 import StarRateRoundedIcon from '@mui/icons-material/StarRateRounded'
 import { IWatchlist, useWatchlistStoreWatchlists } from '../../../../stores/watchlistStore.ts'
-import { WatchlistMenu } from './WatchListMenu.tsx'
+import { WatchlistMenu } from './WatchlistMenu.tsx'
 
 const AddToWatchListButton = (props: ISymbolItem): ReactNode => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)

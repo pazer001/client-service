@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { EAction, ISymbolItem } from '../../../stores/symbataStore.types.ts'
 import { useSymbataStoreActions, useSymbataStoreSymbols } from '../../../stores/symbataStore.ts'
-import { GridRowsProp } from '@mui/x-data-grid'
+import { GridCallbackDetails, GridRowSelectionModel, GridRowsProp } from '@mui/x-data-grid'
 import { useWatchlistStoreActions } from '../../../stores/watchlistStore.ts'
 
 export interface IReturnSymbolTableHook {
   isLoading: boolean
   rows: GridRowsProp<ISymbolItem>
-  handleRowClick: (selectedRow: ISymbolItem, rowIndex: number) => Promise<void>
+  onRowSelectionModelChange: (rowSelectionModel: GridRowSelectionModel, details: GridCallbackDetails) => void
 }
 
 export const useSymbolTable = (): IReturnSymbolTableHook => {
@@ -49,6 +49,18 @@ export const useSymbolTable = (): IReturnSymbolTableHook => {
     }
   }
 
+  const onRowSelectionModelChange = (rowSelectionModel: GridRowSelectionModel, details: GridCallbackDetails) => {
+    const rowId = Array.from(rowSelectionModel.ids)[0]
+    if (rowId) {
+      const selectedRow = details.api.getRow(rowId)
+      const rowIndex = rows.findIndex(({ id }) => id === rowId)
+
+      if (rowIndex !== undefined) {
+        void handleRowClick(selectedRow, rowIndex)
+      }
+    }
+  }
+
   useEffect(() => {
     if (rows.length) return
     const getSymbolsList = async () => {
@@ -63,6 +75,6 @@ export const useSymbolTable = (): IReturnSymbolTableHook => {
   return {
     rows,
     isLoading,
-    handleRowClick,
+    onRowSelectionModelChange
   }
 }

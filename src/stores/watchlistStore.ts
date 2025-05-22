@@ -38,12 +38,21 @@ const watchlistStore: StateCreator<IWatchListStore> = (set, get) => ({
       set((state) => {
         const watchlist = state.watchlists.find((watchlist) => watchlist.name === name)
         if (watchlist) {
+
           return {
             watchlists: state.watchlists.map((wl) =>
               wl.name === name ? { ...wl, symbols: [...wl.symbols, symbol] } : wl,
             ),
+            currentWatchlist:
+              state.currentWatchlist !== null && state.currentWatchlist.name === name
+                ? {
+                    ...state.currentWatchlist,
+                    symbols: [...state.currentWatchlist.symbols, symbol],
+                  }
+                : state.currentWatchlist,
           }
         }
+
         return state
       })
     },
@@ -52,7 +61,7 @@ const watchlistStore: StateCreator<IWatchListStore> = (set, get) => ({
         watchlist.symbols.some((s) => s.symbol === symbol.symbol),
       )
       if (!watchlist) {
-        console.error('Cannot update symbol: no watchlist is selected')
+        console.warn('Symbol not found in any watchlist')
         return
       }
 
@@ -123,5 +132,4 @@ const useWatchlistStore = create<IWatchListStore>()(
 )
 export const useWatchlistStoreActions = () => useWatchlistStore((state) => state.actions)
 export const useWatchlistStoreWatchlists = () => useWatchlistStore((state) => state.watchlists)
-
 export const useWatchlistStoreCurrentWatchlist = () => useWatchlistStore((state) => state.currentWatchlist)
