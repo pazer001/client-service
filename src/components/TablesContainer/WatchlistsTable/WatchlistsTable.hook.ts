@@ -54,7 +54,6 @@ export const useWatchlists = ({columns}:IUseWatchlistProps) => {
     }
   }
 
-
   const onRowSelectionModelChange = (rowSelectionModel: GridRowSelectionModel, details: GridCallbackDetails) => {
     const rowId = Array.from(rowSelectionModel.ids)[0]
     if (rowId) {
