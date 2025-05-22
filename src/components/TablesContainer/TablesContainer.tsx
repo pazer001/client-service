@@ -3,12 +3,12 @@ import { useWatchlistStoreWatchlists } from '../../stores/watchlistStore'
 import { Box, CircularProgress, Tab, Tabs, Tooltip } from '@mui/material'
 import ListIcon from '@mui/icons-material/List'
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial'
-import { Watchlists } from './Watchlists/Watchlists'
+import { WatchlistsTable } from './WatchlistsTable/WatchlistsTable.tsx'
 import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { EAction, IPriorityScore, ISymbolItem } from '../../stores/symbataStore.types'
-import AddToWatchListButton from './AddToWatchListButton/AddToWatchListButton'
+import AddToWatchListButton from './SymbolsTable/AddToWatchListButton/AddToWatchListButton'
 import { grey } from '@mui/material/colors'
-import { SymbolTable } from './SymbolTable'
+import { SymbolsTable } from './SymbolsTable/SymbolsTable.tsx'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import TrendingDownIcon from '@mui/icons-material/TrendingDown'
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat'
@@ -100,7 +100,7 @@ const columns: GridColDef<ISymbolItem>[] = [
   },
 ]
 
-export const TableContainer = () => {
+export const TablesContainer = () => {
   const watchlists = useWatchlistStoreWatchlists()
   const [activeIndex, setActiveIndex] = useState(0)
 
@@ -108,7 +108,7 @@ export const TableContainer = () => {
     setActiveIndex(newValue)
   }
 
-  const watchlistsDisabled = useMemo(() => watchlists.some(({ symbols }) => symbols.length > 0) === false, [watchlists])
+  const watchlistsDisabled = useMemo(() => !watchlists.some(({ symbols }) => symbols.length > 0), [watchlists])
 
   return (
     <Box sx={{ height: 'inherit' }}>
@@ -118,14 +118,14 @@ export const TableContainer = () => {
           iconPosition="start"
           disabled={watchlistsDisabled}
           icon={<FolderSpecialIcon color={watchlistsDisabled ? 'inherit' : 'warning'} />}
-          label="Watchlists"
+          label="WatchlistsTable"
         />
       </Tabs>
       <CustomTabPanel value={activeIndex} index={0}>
-        <SymbolTable columns={columns} />
+        <SymbolsTable columns={columns} />
       </CustomTabPanel>
       <CustomTabPanel value={activeIndex} index={1}>
-        <Watchlists columns={columns} />
+        <WatchlistsTable columns={columns} />
       </CustomTabPanel>
     </Box>
   )

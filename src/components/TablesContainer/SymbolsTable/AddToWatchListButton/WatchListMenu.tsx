@@ -2,9 +2,9 @@ import { Divider, IconButton, ListItem, ListItemIcon, ListItemText, Menu, MenuIt
 import DeleteIcon from '@mui/icons-material/Delete'
 import StarRateRoundedIcon from '@mui/icons-material/StarRateRounded'
 import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded'
-import { WatchlistAddInput } from './WatchlistAddInput'
-import { IWatchlist, useWatchlistStoreActions, useWatchlistStoreWatchlists } from '../../../stores/watchlistStore'
-import { ISymbolItem } from '../../../stores/symbataStore.types'
+import { WatchlistAddInput } from './WatchlistAddInput.tsx'
+import { IWatchlist, useWatchlistStoreActions, useWatchlistStoreWatchlists } from '../../../../stores/watchlistStore.ts'
+import { ISymbolItem } from '../../../../stores/symbataStore.types.ts'
 
 interface IWatchlistMenuProps {
   id: string | undefined

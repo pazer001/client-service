@@ -47,9 +47,9 @@ const watchlistStore: StateCreator<IWatchListStore> = (set, get) => ({
         return state
       })
     },
-    updateSymbolInCurrentWatchlist: (symbolWithRecommendation: ISymbolItem) => {
+    updateSymbolInCurrentWatchlist: (symbol: ISymbolItem) => {
       const watchlist = get().watchlists.find((watchlist) =>
-        watchlist.symbols.some((s) => s.symbol === symbolWithRecommendation.symbol),
+        watchlist.symbols.some((s) => s.symbol === symbol.symbol),
       )
       if (!watchlist) {
         console.error('Cannot update symbol: no watchlist is selected')
@@ -66,7 +66,7 @@ const watchlistStore: StateCreator<IWatchListStore> = (set, get) => ({
               ? {
                   ...wl,
                   symbols: wl.symbols.map((s) =>
-                    s.symbol === symbolWithRecommendation.symbol ? symbolWithRecommendation : s,
+                    s.symbol === symbol.symbol ? symbol : s,
                   ),
                 }
               : wl,

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { EAction, ISymbolItem } from '../../stores/symbataStore.types.ts'
-import { useSymbataStoreActions, useSymbataStoreSymbols } from '../../stores/symbataStore.ts'
+import { EAction, ISymbolItem } from '../../../stores/symbataStore.types.ts'
+import { useSymbataStoreActions, useSymbataStoreSymbols } from '../../../stores/symbataStore.ts'
 import { GridRowsProp } from '@mui/x-data-grid'
-import { useWatchlistStoreActions } from '../../stores/watchlistStore.ts'
+import { useWatchlistStoreActions } from '../../../stores/watchlistStore.ts'
 
 export interface IReturnSymbolTableHook {
   isLoading: boolean

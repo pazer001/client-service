@@ -1,6 +1,6 @@
 import { GridRowsProp, Toolbar } from '@mui/x-data-grid'
 import { ISymbolItem } from '../../../../stores/symbataStore.types'
-import { useTableCustomToolbar } from '../../TableCustomToolbar/TableCustomToolbar.hooks'
+import { useTableCustomToolbar } from '../../SymbolsTable/SymbolsTableCustomToolbar/SymbolsTableCustomToolbar.hooks.ts'
 import {
   Box,
   IconButton,
@@ -11,7 +11,7 @@ import {
   SelectChangeEvent,
   Tooltip,
 } from '@mui/material'
-import { LinearProgressToolbar, ScanToolbarButton } from '../../TableCustomToolbar/TableCustomToolbar'
+import { LinearProgressToolbar, ScanToolbarButton } from '../../SymbolsTable/SymbolsTableCustomToolbar/SymbolsTableCustomToolbar.tsx'
 import {
   useWatchlistStoreActions,
   useWatchlistStoreCurrentWatchlist,

@@ -1,8 +1,8 @@
 import { DataGrid, GridCallbackDetails, GridColDef, GridRowSelectionModel, GridSlotsComponent } from '@mui/x-data-grid'
-import { useSymbolTable } from './SymbolTable.hook'
-import { ISymbolItem } from '../../stores/symbataStore.types'
-import { useSymbataStoreActions } from './../../stores/symbataStore'
-import { TableCustomToolbar } from './TableCustomToolbar/TableCustomToolbar'
+import { useSymbolTable } from './SymbolsTable.hook.ts'
+import { ISymbolItem } from '../../../stores/symbataStore.types.ts'
+import { useSymbataStoreActions } from '../../../stores/symbataStore.ts'
+import { SymbolsTableCustomToolbar } from './SymbolsTableCustomToolbar/SymbolsTableCustomToolbar.tsx'
 
 interface ISymbolTableProps {
   columns: GridColDef<ISymbolItem>[]
@@ -10,7 +10,7 @@ interface ISymbolTableProps {
 
 const symbolsToScan = 200
 
-export const SymbolTable = ({ columns }: ISymbolTableProps) => {
+export const SymbolsTable = ({ columns }: ISymbolTableProps) => {
   const { isLoading, rows, handleRowClick } = useSymbolTable()
   const { updateSymbolInList } = useSymbataStoreActions()
 
@@ -21,25 +21,29 @@ export const SymbolTable = ({ columns }: ISymbolTableProps) => {
       const rowIndex = rows.findIndex(({ id }) => id === rowId)
 
       if (rowIndex !== undefined) {
-        handleRowClick(selectedRow, rowIndex)
+        void handleRowClick(selectedRow, rowIndex)
       }
     }
   }
 
   const slots: Partial<GridSlotsComponent> = {
     toolbar: () => (
-      <TableCustomToolbar rows={rows} symbolsToScan={symbolsToScan} updateSymbolInList={updateSymbolInList} />
+      <SymbolsTableCustomToolbar
+        rows={rows}
+        symbolsToScan={symbolsToScan}
+        updateSymbolInList={updateSymbolInList}
+      />
     ),
   }
 
   return (
     <DataGrid
-      showToolbar
-      slots={slots}
-      density="compact"
-      loading={isLoading}
       rows={rows}
       columns={columns}
+      loading={isLoading}
+      density="compact"
+      slots={slots}
+      showToolbar
       onRowSelectionModelChange={onRowSelectionModelChange}
     />
   )

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useWatchlistStoreActions, useWatchlistStoreWatchlists } from '../../../stores/watchlistStore'
+import { useWatchlistStoreActions, useWatchlistStoreWatchlists } from '../../../../stores/watchlistStore.ts'
 import { FormControl, FormHelperText, IconButton, InputAdornment, TextField } from '@mui/material'
 import AddBoxIcon from '@mui/icons-material/AddBox'
 

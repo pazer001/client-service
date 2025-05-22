@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useWatchlistStoreActions, useWatchlistStoreCurrentWatchlist } from '../../../stores/watchlistStore'
 import { DataGrid, GridCallbackDetails, GridColDef, GridRowSelectionModel, GridSlotsComponent } from '@mui/x-data-grid'
 import { ISymbolItem } from '../../../stores/symbataStore.types'
-import { useSymbolTable } from '../SymbolTable.hook'
+import { useSymbolTable } from '../SymbolsTable/SymbolsTable.hook.ts'
 import { WatchlistCustomToolbar } from './WatchlistsCustomToolbar/WatchlistsCustomToolbar'
 
 interface IWatchlistProps {
@@ -11,7 +11,7 @@ interface IWatchlistProps {
 
 const watchlistExcludedColumns = ['watchlist']
 
-export const Watchlists = ({ columns }: IWatchlistProps) => {
+export const WatchlistsTable = ({ columns }: IWatchlistProps) => {
   const { handleRowClick } = useSymbolTable()
   const { updateSymbolInCurrentWatchlist } = useWatchlistStoreActions()
   const currentWatchlist = useWatchlistStoreCurrentWatchlist()
@@ -31,7 +31,7 @@ export const Watchlists = ({ columns }: IWatchlistProps) => {
       const rowIndex = rows.findIndex(({ id }) => id === rowId)
 
       if (rowIndex !== undefined) {
-        handleRowClick(selectedRow, rowIndex)
+        void handleRowClick(selectedRow, rowIndex)
       }
     }
   }
