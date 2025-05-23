@@ -103,6 +103,13 @@ const watchlistStore: StateCreator<IWatchListStore> = (set, get) => ({
             watchlists: state.watchlists.map((wl) =>
               wl.name === name ? { ...wl, symbols: wl.symbols.filter((s) => s.symbol !== symbol.symbol) } : wl,
             ),
+            currentWatchlist:
+              state.currentWatchlist !== null && state.currentWatchlist.name === name
+                ? {
+                    ...state.currentWatchlist,
+                    symbols: state.currentWatchlist.symbols.filter((s) => s.symbol !== symbol.symbol),
+                  }
+                : state.currentWatchlist,
           }
         }
         return state
