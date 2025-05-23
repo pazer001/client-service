@@ -93,11 +93,11 @@ const watchlistStore: StateCreator<IWatchListStore> = (set, get) => ({
       })
     },
     getWatchlist: (name: string) => {
-      return get().watchlists.find((watchlist) => watchlist.name === name)
+      return get().watchlists.find((w) => w.name === name)
     },
     removeFromWatchlist: (name: string, symbol: ISymbolItem) => {
       set((state) => {
-        const watchlist = state.watchlists.find((watchlist) => watchlist.name === name)
+        const watchlist = state.watchlists.find((w) => w.name === name)
         if (watchlist) {
           return {
             watchlists: state.watchlists.map((wl) =>
@@ -118,7 +118,7 @@ const watchlistStore: StateCreator<IWatchListStore> = (set, get) => ({
     removeWatchlist: (name: string) => {
       set((state) => {
         return {
-          watchlists: state.watchlists.filter((watchlist) => watchlist.name !== name),
+          watchlists: state.watchlists.filter((w) => w.name !== name),
         }
       })
     },
