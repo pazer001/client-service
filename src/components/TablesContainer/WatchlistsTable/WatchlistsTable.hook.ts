@@ -1,8 +1,8 @@
 import { useWatchlistStoreActions, useWatchlistStoreCurrentWatchlist } from '../../../stores/watchlistStore.ts'
 import { useMemo } from 'react'
-import { GridCallbackDetails, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid'
+import { GridCallbackDetails, GridColDef, GridRowSelectionModel, GridRowsProp } from '@mui/x-data-grid'
 import { EAction, ISymbolItem } from '../../../stores/symbataStore.types.ts'
-import { useSymbataStoreActions } from '../../../stores/symbataStore.ts'
+import { useSymbataStoreActions, useSymbataStoreSymbols } from '../../../stores/symbataStore.ts'
 
 interface IUseWatchlistProps {
   columns: GridColDef<ISymbolItem>[]
@@ -11,8 +11,9 @@ interface IUseWatchlistProps {
 const watchlistExcludedColumns = ['watchlist']
 
 export const useWatchlists = ({columns}:IUseWatchlistProps) => {
-  const currentWatchlist = useWatchlistStoreCurrentWatchlist()
-  const rows = currentWatchlist?.symbols || []
+  const watchlist = useWatchlistStoreCurrentWatchlist()
+  const symbolsRows: GridRowsProp<ISymbolItem> = useSymbataStoreSymbols()
+  const watchlistRows = watchlist?.symbols || []
   const { setSymbol, getRecommendation, setSymbols } = useSymbataStoreActions()
   const { updateSymbolInCurrentWatchlist } = useWatchlistStoreActions()
 
@@ -21,11 +22,17 @@ export const useWatchlists = ({columns}:IUseWatchlistProps) => {
     [],
   )
 
-  const handleRowClick = async (selectedRow: ISymbolItem, rowIndex: number) => {
-    const copiedRows: ISymbolItem[] = [...rows]
-    copiedRows[rowIndex] = { ...selectedRow, loading: true }
-    setSymbols(copiedRows)
-    updateSymbolInCurrentWatchlist({ ...selectedRow, loading: true })
+  const handleRowClick = async (selectedRow: ISymbolItem, watchlistRowIndex: number, symbolsRowIndex: number) => {
+    const loadingRow = { ...selectedRow, loading: true }
+    const updateSymbols = (symbol: ISymbolItem) => {
+      const symbolsCopiedRows: ISymbolItem[] = [...symbolsRows]
+      symbolsCopiedRows[symbolsRowIndex] = symbol
+
+      setSymbols(symbolsCopiedRows)
+      updateSymbolInCurrentWatchlist(symbol)
+    }
+
+    updateSymbols(loadingRow)
 
     let symbol: ISymbolItem = selectedRow
     try {
@@ -42,13 +49,10 @@ export const useWatchlists = ({columns}:IUseWatchlistProps) => {
           usedStrategy: '',
         },
         loading: false,
-      } // Combine selected row with
+      }
     } finally {
-      if (rowIndex !== undefined) {
-        const copiedRows: ISymbolItem[] = [...rows]
-        copiedRows[rowIndex] = symbol
-        setSymbols(copiedRows) // Update the rows in the store with the new symbol
-        updateSymbolInCurrentWatchlist(symbol) // Update the symbol in the current watchlist
+      if (watchlistRowIndex !== undefined) {
+        updateSymbols(symbol)
       }
       setSymbol(symbol) // Set the selected symbol in the store
     }
@@ -58,16 +62,17 @@ export const useWatchlists = ({columns}:IUseWatchlistProps) => {
     const rowId = Array.from(rowSelectionModel.ids)[0]
     if (rowId) {
       const selectedRow = details.api.getRow(rowId)
-      const rowIndex = rows.findIndex(({ id }) => id === rowId)
+      const watchlistRowIndex = watchlistRows.findIndex(({ id }) => id === rowId)
+      const symbolsRowIndex = symbolsRows.findIndex(({ id }) => id === selectedRow.id)
 
-      if (rowIndex !== undefined) {
-        void handleRowClick(selectedRow, rowIndex)
+      if (watchlistRowIndex !== undefined) {
+        void handleRowClick(selectedRow, watchlistRowIndex, symbolsRowIndex)
       }
     }
   }
 
   return {
-    rows,
+    rows: watchlistRows,
     watchlistColumns,
     handleRowClick,
     onRowSelectionModelChange
