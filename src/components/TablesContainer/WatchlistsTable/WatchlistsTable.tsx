@@ -1,4 +1,4 @@
-import { WatchlistCustomToolbar } from './WatchlistsCustomToolbar/WatchlistsCustomToolbar'
+import { WatchlistCustomToolbar } from './WatchlistsCustomToolbar.tsx'
 import { useWatchlistStoreActions, useWatchlistStoreCurrentWatchlist } from '../../../stores/watchlistStore.ts'
 import { useMemo } from 'react'
 import { DataGrid, GridCallbackDetails, GridColDef, GridRowSelectionModel, GridRowsProp, GridSlotsComponent } from '@mui/x-data-grid'

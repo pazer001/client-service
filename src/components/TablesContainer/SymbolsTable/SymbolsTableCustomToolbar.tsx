@@ -10,8 +10,8 @@ import {
 import QueryStatsIcon from '@mui/icons-material/QueryStats'
 import SearchIcon from '@mui/icons-material/Search'
 import CancelIcon from '@mui/icons-material/Cancel'
-import { ISymbolItem } from '../../../../stores/symbataStore.types.ts'
-import { useTableCustomToolbar } from '../../../../hooks/useTableCustomToolbar.ts'
+import { ISymbolItem } from '../../../stores/symbataStore.types.ts'
+import { useTableCustomToolbar } from '../../../hooks/useTableCustomToolbar.ts'
 
 interface ITableCustomToolbarProps {
   rows: GridRowsProp<ISymbolItem>

@@ -1,5 +1,5 @@
 import { DataGrid, GridColDef, GridSlotsComponent } from '@mui/x-data-grid'
-import { SymbolsTableCustomToolbar } from './SymbolsTableCustomToolbar/SymbolsTableCustomToolbar.tsx'
+import { SymbolsTableCustomToolbar } from './SymbolsTableCustomToolbar.tsx'
 import { useEffect, useState } from 'react'
 import { EAction, ISymbolItem } from '../../../stores/symbataStore.types.ts'
 import { useSymbataStoreActions, useSymbataStoreSymbols } from '../../../stores/symbataStore.ts'

@@ -1,6 +1,6 @@
 import { GridRowsProp, Toolbar } from '@mui/x-data-grid'
-import { ISymbolItem } from '../../../../stores/symbataStore.types'
-import { useTableCustomToolbar } from '../../../../hooks/useTableCustomToolbar.ts'
+import { ISymbolItem } from '../../../stores/symbataStore.types.ts'
+import { useTableCustomToolbar } from '../../../hooks/useTableCustomToolbar.ts'
 import {
   Box,
   IconButton,
@@ -11,12 +11,12 @@ import {
   SelectChangeEvent,
   Tooltip,
 } from '@mui/material'
-import { LinearProgressToolbar, ScanToolbarButton } from '../../SymbolsTable/SymbolsTableCustomToolbar/SymbolsTableCustomToolbar.tsx'
+import { LinearProgressToolbar, ScanToolbarButton } from '../SymbolsTable/SymbolsTableCustomToolbar.tsx'
 import {
   useWatchlistStoreActions,
   useWatchlistStoreCurrentWatchlist,
   useWatchlistStoreWatchlists,
-} from '../../../../stores/watchlistStore'
+} from '../../../stores/watchlistStore.ts'
 import DeleteIcon from '@mui/icons-material/Delete'
 import StarRateRoundedIcon from '@mui/icons-material/StarRateRounded'
 import { useEffect } from 'react'
