@@ -1,6 +1,6 @@
 import { GridRowsProp, Toolbar } from '@mui/x-data-grid'
 import { ISymbolItem } from '../../../../stores/symbataStore.types'
-import { useTableCustomToolbar } from '../../SymbolsTable/SymbolsTableCustomToolbar/SymbolsTableCustomToolbar.hooks.ts'
+import { useTableCustomToolbar } from '../../../../hooks/useTableCustomToolbar.ts'
 import {
   Box,
   IconButton,
