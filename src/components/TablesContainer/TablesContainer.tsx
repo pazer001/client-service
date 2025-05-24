@@ -118,7 +118,7 @@ export const TablesContainer = () => {
           iconPosition="start"
           disabled={watchlistsDisabled}
           icon={<FolderSpecialIcon color={watchlistsDisabled ? 'inherit' : 'warning'} />}
-          label="WatchlistsTable"
+          label="Watchlists"
         />
       </Tabs>
       <CustomTabPanel value={activeIndex} index={0}>

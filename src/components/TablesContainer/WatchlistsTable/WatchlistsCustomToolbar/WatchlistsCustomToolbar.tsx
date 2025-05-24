@@ -19,6 +19,7 @@ import {
 } from '../../../../stores/watchlistStore'
 import DeleteIcon from '@mui/icons-material/Delete'
 import StarRateRoundedIcon from '@mui/icons-material/StarRateRounded'
+import { useEffect } from 'react'
 
 interface IWatchlistCustomToolbarProps {
   rows: GridRowsProp<ISymbolItem>
@@ -49,6 +50,12 @@ export const WatchlistCustomToolbar = ({ rows, symbolsToScan, updateSymbolInList
     removeWatchlist(watchlistName)
   }
 
+  useEffect(() => {
+    if(watchlists.length && !currentWatchlist) {
+      setCurrentWatchlist(watchlists[0])
+    }
+  }, [])
+
   return (
     <Box>
       <Toolbar>
@@ -69,7 +76,7 @@ export const WatchlistCustomToolbar = ({ rows, symbolsToScan, updateSymbolInList
               renderValue={(value) => {
                 if (value.length === 0) {
                   return (
-                    <Box component={'i'} sx={{ opacity: 'var(        --mui-opacity-inputPlaceholder)' }}>
+                    <Box component={'i'} sx={{ opacity: 'var(--mui-opacity-inputPlaceholder)' }}>
                       Select...
                     </Box>
                   )
