@@ -13,10 +13,23 @@ export interface IPriorityScore {
 
 export interface ISymbolItem {
   _id: string
+  id: string
+  loading?: boolean
   symbol: string
-  __v: number
-  averageVolume: number
-  createdAt: string
   priorityScore: IPriorityScore
-  updatedAt: string
+  recommendation?: IRecommendation
+}
+
+export interface IRecommendation {
+  action: EAction
+  stopLoss: number
+  riskCapitalPercent: number
+  usedStrategy: string
+}
+
+export enum EAction {
+  BUY = 'BUY',
+  SELL = 'SELL',
+  HOLD = 'HOLD',
+  ERROR = 'ERROR',
 }
