@@ -1,14 +1,55 @@
-import { Responsive as ResponsiveGridLayout } from 'react-grid-layout'
-import { Card } from 'primereact/card'
-import 'primereact/resources/themes/lara-dark-amber/theme.css' //theme
-import 'primereact/resources/primereact.min.css' //core css
-import 'primeicons/primeicons.css' //icons
-import 'primeflex/primeflex.css' // flexpa
-import { SymbolTable } from './components/SymbolTable/SymbolTable'
-import Algo from './components/Algo/Algo.tsx'
-import { useSymbataStore } from './stores/symbataStore.ts'
-import AnalyzedResult from './components/AnalyzedResult/AnalyzedResult.tsx'
+import { AppBar, Box, Grid, Paper, Stack, styled, Toolbar } from '@mui/material'
+import AnalyzedResult from './components/AnalyzedResult/AnalyzedResult'
+import { TablesContainer } from './components/TablesContainer/TablesContainer.tsx'
 
+const spacingBetween = 1
+const fullHeightStyleProp = { height: '100%' }
+
+// Item copied from MUI documentation
+// https://mui.com/material-ui/react-grid/#limitations
+const Item = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(spacingBetween),
+  ...fullHeightStyleProp,
+}))
+
+const Container = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(spacingBetween),
+  height: '100%',
+  maxHeight: '100dvh',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(spacingBetween),
+}))
+
+function App() {
+  return (
+    <Container>
+      <AppBar position="static">
+        <Toolbar variant="dense"></Toolbar>
+      </AppBar>
+      <Grid container spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
+        <Grid size={6}>
+          <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
+            <Item></Item>
+            <Item sx={{ height: 'calc(100% / 2)' }}></Item>
+          </Stack>
+        </Grid>
+        <Grid size={2}>
+          <Item>
+            <AnalyzedResult />
+          </Item>
+        </Grid>
+        <Grid size={4}>
+          <Item sx={{ paddingTop: 0 }}>
+            <TablesContainer />
+          </Item>
+        </Grid>
+      </Grid>
+    </Container>
+  )
+}
+
+/**
 const layoutLg = [
   { i: 'a', x: 0, y: 0, w: 5, h: 5 },
   { i: 'b', x: 5, y: 0, w: 3, h: 5 },
@@ -18,13 +59,12 @@ const layoutLg = [
 
 const layouts = { lg: layoutLg }
 function App() {
-  const { symbol, interval } = useSymbataStore()
   return (
     <>
       <ResponsiveGridLayout
         layouts={layouts}
         isDraggable={false}
-        autoSize={false}
+        autoSize={true}
         breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
         cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
         width={document.body.clientWidth}
@@ -36,7 +76,7 @@ function App() {
         </div>
         <div key="b">
           <Card pt={{ root: { className: 'h-full' } }} title="Analyzed Result">
-            <AnalyzedResult symbol={symbol} interval={interval} />
+            <AnalyzedResult />
           </Card>
         </div>
         <div key="c">
@@ -45,10 +85,15 @@ function App() {
             pt={{
               root: { className: 'h-full' },
               body: { className: 'h-full' },
-              content: { className: 'p-0 h-full' },
+              content: {
+                className: 'p-0 h-full',
+                style: {
+                  maxHeight: 'calc(100% - 15px)',
+                },
+              },
             }}
           >
-            <SymbolTable />
+            <SymbolsTable />
           </Card>
         </div>
         <div key="d">
@@ -60,5 +105,6 @@ function App() {
     </>
   )
 }
+  */
 
 export default App

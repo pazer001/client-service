@@ -1,19 +1,88 @@
 import { create, StateCreator } from 'zustand'
-import { devtools } from 'zustand/middleware'
+import { devtools, persist, createJSONStorage } from 'zustand/middleware'
 import { Interval } from '../components/interfaces.ts'
+import axios from '../axios'
+import { AxiosResponse } from 'axios'
+import { IRecommendation, ISymbolItem } from './symbataStore.types.ts'
 
-interface ISymbolStore {
-  interval: Interval
-  symbol: string | undefined
-  setSymbol: (symbol: string) => void
+export interface IStoreActions {
+  setSymbol: (symbol: ISymbolItem) => void
+  setSymbols: (symbols: ISymbolItem[]) => void
+  updateSymbolInList: (symbol: ISymbolItem) => void
+  getRecommendation: (symbol: ISymbolItem) => Promise<IRecommendation>
+  getSuggestedSymbols: () => Promise<void>
 }
 
-const symbataStore: StateCreator<ISymbolStore> = (set) => ({
+export interface ISymbolStore {
+  interval: Interval
+  symbol: ISymbolItem | undefined
+  symbols: ISymbolItem[]
+  actions: IStoreActions
+}
+
+const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
   interval: Interval['1d'],
   symbol: undefined,
-  setSymbol: (symbol: string) => {
-    set((state) => ({ ...state, symbol }))
+  symbols: [],
+  actions: {
+    setSymbol: (symbol: ISymbolItem) => {
+      set({ symbol })
+    },
+    setSymbols: (symbols: ISymbolItem[]) => {
+      set({ symbols })
+    },
+    updateSymbolInList: (symbol: ISymbolItem) => {
+      const { symbols } = get()
+      const updatedSymbols = symbols.map((item) => (item.symbol === symbol.symbol ? symbol : item))
+      set({ symbols: updatedSymbols })
+    },
+    getSuggestedSymbols: async () => {
+      try {
+        const supportedSymbolsResult: AxiosResponse<ISymbolItem[]> = await axios.get('analyze/suggestedSymbols')
+        set((state) => ({ ...state, symbols: supportedSymbolsResult.data }))
+      } catch (error) {
+        console.error('Error fetching suggested symbols:', error)
+      }
+    },
+    getRecommendation: async (rowData) => {
+      try {
+        const req = await axios.get(`analyze/recommendation`, {
+          params: {
+            symbol: rowData.symbol,
+            usedStrategy: rowData?.recommendation?.usedStrategy ?? '',
+          },
+        })
+        const recommendation = req.data as IRecommendation
+        return recommendation
+      } catch (error) {
+        console.error('Error fetching recommendation:', error)
+        throw error
+      }
+    },
   },
 })
 
-export const useSymbataStore = create<ISymbolStore>()(devtools(symbataStore))
+// TODO: Remove "persist" before going to PRODUCTION!!! (it is just for development usage)
+export const useSymbataStore = import.meta.env.DEV
+  ? create<ISymbolStore>()(
+      devtools(
+        persist(symbataStore, {
+          name: 'symbataStore',
+          storage: createJSONStorage(() => localStorage),
+          partialize: (state) => ({
+            symbols: state.symbols,
+          }),
+        }),
+      ),
+    )
+  : create<ISymbolStore>()(
+      devtools(symbataStore, {
+        name: 'symbataStore',
+        enabled: import.meta.env.DEV, // disable devtools on PRODUCTIONS
+        anonymousActionType: 'Unknown',
+      }),
+    )
+export const useSymbataStoreActions = () => useSymbataStore((state) => state.actions)
+export const useSymbataStoreSymbol = () => useSymbataStore((state) => state.symbol)
+export const useSymbataStoreSymbols = () => useSymbataStore((state) => state.symbols)
+export const useSymbataStoreInterval = () => useSymbataStore((state) => state.interval)
