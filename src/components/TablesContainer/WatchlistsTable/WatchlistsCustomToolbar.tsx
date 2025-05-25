@@ -1,6 +1,6 @@
 import { GridRowsProp, Toolbar } from '@mui/x-data-grid'
-import { ISymbolItem } from '../../../../stores/symbataStore.types'
-import { useTableCustomToolbar } from '../../TableCustomToolbar/TableCustomToolbar.hooks'
+import { ISymbolItem } from '../../../stores/symbataStore.types.ts'
+import { useTableCustomToolbar } from '../../../hooks/useTableCustomToolbar.ts'
 import {
   Box,
   IconButton,
@@ -11,14 +11,15 @@ import {
   SelectChangeEvent,
   Tooltip,
 } from '@mui/material'
-import { LinearProgressToolbar, ScanToolbarButton } from '../../TableCustomToolbar/TableCustomToolbar'
+import { LinearProgressToolbar, ScanToolbarButton } from '../SymbolsTable/SymbolsTableCustomToolbar.tsx'
 import {
   useWatchlistStoreActions,
   useWatchlistStoreCurrentWatchlist,
   useWatchlistStoreWatchlists,
-} from '../../../../stores/watchlistStore'
+} from '../../../stores/watchlistStore.ts'
 import DeleteIcon from '@mui/icons-material/Delete'
 import StarRateRoundedIcon from '@mui/icons-material/StarRateRounded'
+import { useEffect } from 'react'
 
 interface IWatchlistCustomToolbarProps {
   rows: GridRowsProp<ISymbolItem>
@@ -49,6 +50,12 @@ export const WatchlistCustomToolbar = ({ rows, symbolsToScan, updateSymbolInList
     removeWatchlist(watchlistName)
   }
 
+  useEffect(() => {
+    if(watchlists.length && !currentWatchlist) {
+      setCurrentWatchlist(watchlists[0])
+    }
+  }, [])
+
   return (
     <Box>
       <Toolbar>
@@ -69,7 +76,7 @@ export const WatchlistCustomToolbar = ({ rows, symbolsToScan, updateSymbolInList
               renderValue={(value) => {
                 if (value.length === 0) {
                   return (
-                    <Box component={'i'} sx={{ opacity: 'var(        --mui-opacity-inputPlaceholder)' }}>
+                    <Box component={'i'} sx={{ opacity: 'var(--mui-opacity-inputPlaceholder)' }}>
                       Select...
                     </Box>
                   )

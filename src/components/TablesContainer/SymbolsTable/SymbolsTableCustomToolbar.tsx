@@ -10,8 +10,8 @@ import {
 import QueryStatsIcon from '@mui/icons-material/QueryStats'
 import SearchIcon from '@mui/icons-material/Search'
 import CancelIcon from '@mui/icons-material/Cancel'
-import { ISymbolItem } from '../../../stores/symbataStore.types'
-import { useTableCustomToolbar } from './TableCustomToolbar.hooks'
+import { ISymbolItem } from '../../../stores/symbataStore.types.ts'
+import { useTableCustomToolbar } from '../../../hooks/useTableCustomToolbar.ts'
 
 interface ITableCustomToolbarProps {
   rows: GridRowsProp<ISymbolItem>
@@ -82,7 +82,7 @@ export const LinearProgressToolbar = ({ index, total }: ILinearProgressToolbarPr
   return <LinearProgress variant="determinate" value={(index / total) * 100} sx={{ marginInline: '-5px' }} />
 }
 
-export const TableCustomToolbar = ({ rows, symbolsToScan, updateSymbolInList }: ITableCustomToolbarProps) => {
+export const SymbolsTableCustomToolbar = ({ rows, symbolsToScan, updateSymbolInList }: ITableCustomToolbarProps) => {
   const { handleScanSymbols, isScanning, currentScanSymbolIndex, symbolsChunk } = useTableCustomToolbar({
     rows,
     symbolsToScan,

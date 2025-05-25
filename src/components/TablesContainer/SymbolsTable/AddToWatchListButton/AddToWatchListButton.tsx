@@ -1,10 +1,10 @@
 import React, { ReactNode, useCallback, useMemo, useState } from 'react'
-import { ISymbolItem } from '../../../stores/symbataStore.types'
+import { ISymbolItem } from '../../../../stores/symbataStore.types.ts'
 import { IconButton } from '@mui/material'
 import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded'
 import StarRateRoundedIcon from '@mui/icons-material/StarRateRounded'
-import { IWatchlist, useWatchlistStoreWatchlists } from '../../../stores/watchlistStore'
-import { WatchlistMenu } from './WatchListMenu'
+import { IWatchlist, useWatchlistStoreWatchlists } from '../../../../stores/watchlistStore.ts'
+import { WatchlistMenu } from './WatchlistMenu.tsx'
 
 const AddToWatchListButton = (props: ISymbolItem): ReactNode => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)

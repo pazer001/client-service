@@ -2,9 +2,9 @@ import { Divider, IconButton, ListItem, ListItemIcon, ListItemText, Menu, MenuIt
 import DeleteIcon from '@mui/icons-material/Delete'
 import StarRateRoundedIcon from '@mui/icons-material/StarRateRounded'
 import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded'
-import { WatchlistAddInput } from './WatchlistAddInput'
-import { IWatchlist, useWatchlistStoreActions, useWatchlistStoreWatchlists } from '../../../stores/watchlistStore'
-import { ISymbolItem } from '../../../stores/symbataStore.types'
+import { WatchlistAddInput } from './WatchlistAddInput.tsx'
+import { IWatchlist, useWatchlistStoreActions, useWatchlistStoreWatchlists } from '../../../../stores/watchlistStore.ts'
+import { ISymbolItem } from '../../../../stores/symbataStore.types.ts'
 
 interface IWatchlistMenuProps {
   id: string | undefined
@@ -19,7 +19,7 @@ export const WatchlistMenu = ({ id, symbolItem, onClose, anchorEl, open }: IWatc
   const { addToWatchlist, removeFromWatchlist, removeWatchlist } = useWatchlistStoreActions()
 
   const checkSymbolInWatchlist = (watchlist: IWatchlist) =>
-    watchlist.symbols.some((item) => item.symbol === symbolItem.symbol)
+    watchlist.symbols.some(({symbol}) => symbol === symbolItem.symbol)
 
   const handleToggleWatchlist =
     (isSymbolInWatchlist: boolean, watchlistName: string, symbolItem: ISymbolItem) => () => {
