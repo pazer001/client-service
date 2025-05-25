@@ -15,7 +15,7 @@
     "@fontsource/roboto": "^5.2.5",
     "@mui/icons-material": "^7.1.0",
     "@mui/material": "^7.1.0",
-    "@mui/x-data-grid": "8.3.1",
+    "@mui/x-data-grid": "8.4.0",
     "axios": "^1.9.0",
     "lodash": "^4.17.21",
     "millify": "^6.1.0",
