@@ -1,4 +1,4 @@
-import { Box, FormControl, TextField, Typography } from '@mui/material'
+import { Box, FormControl, Table, TableBody, TableCell, TableRow, TextField, Typography } from '@mui/material'
 import {
   useSymbataStoreActions,
   useSymbataStoreProfileValue,
@@ -7,12 +7,26 @@ import {
 import { ISymbolItem } from '../../stores/symbataStore.types.ts'
 import { formatNumber, getShares } from '../../utils/utils.ts'
 
+function createData(
+  label: string,
+  value: number | string | undefined,
+) {
+  return { label, value };
+}
+
 const AnalyzedResult = () => {
   const symbol: ISymbolItem | undefined = useSymbataStoreSymbol()
   const profileValue = useSymbataStoreProfileValue()
   const { setProfileValue } = useSymbataStoreActions()
 
   const shares = getShares(profileValue, symbol?.recommendation?.stopLoss ?? 0, 0.02, 20.05)
+
+  const rows = [
+    createData('Symbol', symbol?.symbol),
+    createData('Sector Last Score', formatNumber(symbol?.priorityScore?.sectorLastScore ?? 0)),
+    createData('Stop Loss', `${formatNumber(100 - (symbol?.recommendation?.stopLoss ?? 1 / 20.05 * 100))}%`),
+    createData('Amount of Shares', shares),
+  ];
 
   return (
     <Box display="flex" flexDirection="column" gap={2}>
@@ -28,10 +42,20 @@ const AnalyzedResult = () => {
       </FormControl>
       {symbol?.recommendation ? (
         <Box>
-          <Typography>Symbol: {symbol?.symbol}</Typography>
-          <Typography>Sector Last Score: {formatNumber(symbol?.priorityScore?.sectorLastScore ?? 0)}</Typography>
-          <Typography>Stop Loss: {formatNumber(100 - (symbol.recommendation.stopLoss / 20.05 * 100))}%</Typography>
-          <Typography>Amount of Shares: {shares}</Typography>
+          <Table size="small" aria-label="a dense table">
+            <TableBody>
+              {rows.map((row) => (
+                <TableRow
+                  key={row.label}
+                >
+                  <TableCell component="th" scope="row">
+                    {row.label}
+                  </TableCell>
+                  <TableCell align="right">{row.value}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </Box>
       ) : (
         <Typography>No symbol selected</Typography>
