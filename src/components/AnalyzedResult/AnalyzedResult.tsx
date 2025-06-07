@@ -1,4 +1,4 @@
-import { Box, FormControl, Table, TableBody, TableCell, TableRow, TextField, Typography } from '@mui/material'
+import { Box, Divider, FormControl, Table, TableBody, TableCell, TableRow, TextField, Typography } from '@mui/material'
 import {
   useSymbataStoreActions,
   useSymbataStoreProfileValue,
@@ -29,7 +29,7 @@ const AnalyzedResult = () => {
   ];
 
   return (
-    <Box display="flex" flexDirection="column" gap={2}>
+    <Box display="flex" flexDirection="column" gap={1}>
       <FormControl>
         <TextField
           size="small"
@@ -42,20 +42,21 @@ const AnalyzedResult = () => {
       </FormControl>
       {symbol?.recommendation ? (
         <Box>
-          <Table size="small" aria-label="a dense table">
-            <TableBody>
-              {rows.map((row) => (
-                <TableRow
-                  key={row.label}
-                >
-                  <TableCell component="th" scope="row">
-                    {row.label}
-                  </TableCell>
-                  <TableCell align="right">{row.value}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <Divider/>
+        <Table size="small" aria-label="a dense table">
+          <TableBody>
+            {rows.map((row) => (
+              <TableRow
+                key={row.label}
+              >
+                <TableCell component="th" scope="row">
+                  {row.label}
+                </TableCell>
+                <TableCell align="right">{row.value}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
         </Box>
       ) : (
         <Typography>No symbol selected</Typography>
