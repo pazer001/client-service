@@ -40,3 +40,10 @@ export function getShares(
   // Return floored integer shares
   return Math.floor(shares);
 }
+
+export function formatNumber(value: number, fractionDigits: number = 2): string {
+  return value.toLocaleString('en-US', {
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
+  });
+}

@@ -5,7 +5,7 @@ import {
   useSymbataStoreSymbol
 } from '../../stores/symbataStore.ts'
 import { ISymbolItem } from '../../stores/symbataStore.types.ts'
-import { getShares } from '../../utils/utils.ts'
+import { formatNumber, getShares } from '../../utils/utils.ts'
 
 const AnalyzedResult = () => {
   const symbol: ISymbolItem | undefined = useSymbataStoreSymbol()
@@ -29,8 +29,8 @@ const AnalyzedResult = () => {
       {symbol?.recommendation ? (
         <Box>
           <Typography>Symbol: {symbol?.symbol}</Typography>
-          <Typography>Sector Last Score: {symbol?.priorityScore?.sectorLastScore ?? 0}</Typography>
-          <Typography>Stop Loss: {100 - (symbol.recommendation.stopLoss / 20.05 * 100)}%</Typography>
+          <Typography>Sector Last Score: {formatNumber(symbol?.priorityScore?.sectorLastScore ?? 0)}</Typography>
+          <Typography>Stop Loss: {formatNumber(100 - (symbol.recommendation.stopLoss / 20.05 * 100))}%</Typography>
           <Typography>Amount of Shares: {shares}</Typography>
         </Box>
       ) : (
