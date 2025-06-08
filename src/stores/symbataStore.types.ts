@@ -20,11 +20,22 @@ export interface ISymbolItem {
   recommendation?: IRecommendation
 }
 
+export interface IPrices {
+  date?: Array<Date>;
+  volume: Array<number>;
+  high: Array<number>;
+  low: Array<number>;
+  close: Array<number>;
+  open: Array<number>;
+  timestamp: Array<number>;
+}
+
 export interface IRecommendation {
-  action: EAction
-  stopLoss: number
-  riskCapitalPercent: number
-  usedStrategy: string
+  action: EAction;
+  stopLoss: number;
+  shares: number;
+  usedStrategy: string;
+  symbolRestructurePrices: IPrices;
 }
 
 export enum EAction {

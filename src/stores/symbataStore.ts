@@ -12,6 +12,7 @@ export interface IStoreActions {
   getRecommendation: (symbol: ISymbolItem) => Promise<IRecommendation>
   getSuggestedSymbols: () => Promise<void>
   setProfileValue: (value: number) => void
+  setInterval: (interval: Interval) => void
 }
 
 export interface ISymbolStore {
@@ -28,6 +29,9 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
   symbol: undefined,
   symbols: [],
   actions: {
+    setInterval: (interval: Interval) => {
+      set({ interval })
+    },
     setProfileValue: (value: number) => {
       set({ profileValue: value })
     },
@@ -52,10 +56,12 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
     },
     getRecommendation: async (rowData) => {
       try {
+        const { interval } = get()
         const req = await axios.get(`analyze/recommendation`, {
           params: {
             symbol: rowData.symbol,
             usedStrategy: rowData?.recommendation?.usedStrategy ?? '',
+            interval: interval,
           },
         })
 

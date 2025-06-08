@@ -1,6 +1,10 @@
-import { AppBar, Box, Grid, Paper, Stack, styled, Toolbar } from '@mui/material'
+import { AppBar, Box, Grid, Paper, Stack, styled, ToggleButton, Toolbar, Typography } from '@mui/material'
 import AnalyzedResult from './components/AnalyzedResult/AnalyzedResult'
 import { TablesContainer } from './components/TablesContainer/TablesContainer.tsx'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import { useSymbataStoreActions, useSymbataStoreInterval } from './stores/symbataStore.ts'
+import { Interval } from './components/interfaces.ts'
+import { BaseSyntheticEvent } from 'react'
 
 const spacingBetween = 1
 const fullHeightStyleProp = { height: '100%' }
@@ -12,7 +16,7 @@ const Item = styled(Paper)(({ theme }) => ({
   ...fullHeightStyleProp,
 }))
 
-const Container = styled(Box)(({ theme }) => ({
+const MainContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(spacingBetween),
   height: '100%',
   maxHeight: '100dvh',
@@ -21,11 +25,44 @@ const Container = styled(Box)(({ theme }) => ({
   gap: theme.spacing(spacingBetween),
 }))
 
+const IntervalController = () => {
+  const interval = useSymbataStoreInterval()
+  const { setInterval } = useSymbataStoreActions()
+
+  return (
+    <ToggleButtonGroup
+      value={interval}
+      size="small"
+      exclusive
+      onChange={(event: BaseSyntheticEvent) => setInterval(event.target.value as Interval)}
+    >
+      <ToggleButton size="small" value={Interval['1d']}>
+        {Interval['1d']}
+      </ToggleButton>
+      <ToggleButton size="small" value={Interval['5m']}>
+        {Interval['5m']}
+      </ToggleButton>
+    </ToggleButtonGroup>
+  )
+}
+
 function App() {
   return (
-    <Container>
+    <MainContainer>
       <AppBar position="static">
-        <Toolbar variant="dense"></Toolbar>
+        <Toolbar variant="dense">
+          <Box display="flex" alignContent="center" justifyContent="space-between" width="100%">
+            <Typography
+              variant="h6"
+              noWrap
+              display="flex"
+              alignItems="center"
+            >
+              Symbata
+            </Typography>
+            <IntervalController/>
+          </Box>
+        </Toolbar>
       </AppBar>
       <Grid container spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
         <Grid size={6}>
@@ -45,7 +82,7 @@ function App() {
           </Item>
         </Grid>
       </Grid>
-    </Container>
+    </MainContainer>
   )
 }
 
