@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useWatchlistStoreWatchlists } from '../../stores/watchlistStore'
-import { Box, CircularProgress, Tab, Tabs, Tooltip } from '@mui/material'
+import { Avatar, Box, CircularProgress, Tab, Tabs, Tooltip, Typography } from '@mui/material'
 import ListIcon from '@mui/icons-material/List'
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial'
 import { WatchlistsTable } from './WatchlistsTable/WatchlistsTable.tsx'
@@ -42,7 +42,16 @@ const CustomTabPanel = (props: CustomTabPanelProps) => {
 }
 
 const columns: GridColDef<ISymbolItem>[] = [
-  { field: 'symbol', headerName: 'Symbol' },
+  { field: 'symbol', headerName: 'Symbol', renderCell: (params: GridRenderCellParams<ISymbolItem>) => {
+      return (
+        <Box height={"100%"} display="flex" alignItems="center" gap={1}>
+          <Avatar sx={{ width: 24, height: 24 }} src={params.row.logo}>
+            {params.row.symbol.charAt(0).toUpperCase()}
+          </Avatar><Typography>{params.row.symbol}</Typography>
+        </Box>
+      )
+    }
+  },
   {
     field: 'recommendation',
     headerName: 'Recommendation',

@@ -11,13 +11,19 @@ export interface IPriorityScore {
   styleLastScore: number | null
 }
 
-export interface ISymbolItem {
-  _id: string
-  id: string
+export interface ISymbolItem extends ISuggestedSymbols{
   loading?: boolean
-  symbol: string
-  priorityScore: IPriorityScore
   recommendation?: IRecommendation
+}
+
+interface ISuggestedSymbols {
+  _id: string;
+  id: string;
+  symbol: string;
+  priorityScore: {
+    symbol: number;
+  };
+  logo: string;
 }
 
 export interface IPrices {

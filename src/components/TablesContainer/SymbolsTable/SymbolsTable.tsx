@@ -36,8 +36,17 @@ export const SymbolsTable = ({ columns }: ISymbolTableProps) => {
         recommendation: {
           action: EAction.ERROR,
           stopLoss: 0,
-          riskCapitalPercent: 0,
           usedStrategy: '',
+          shares: 0,
+          symbolRestructurePrices: {
+            date: [],
+            volume: [],
+            high: [],
+            low: [],
+            close: [],
+            open: [],
+            timestamp: []
+          }
         },
         loading: false,
       } // Combine selected row with
