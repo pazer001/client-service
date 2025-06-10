@@ -21,6 +21,22 @@ interface CustomTabPanelProps {
   value: number
 }
 
+export const initErrorRecommendation = {
+  action: EAction.ERROR,
+  stopLoss: 0,
+  usedStrategy: '',
+  shares: 0,
+  symbolRestructurePrices: {
+    date: [],
+    volume: [],
+    high: [],
+    low: [],
+    close: [],
+    open: [],
+    timestamp: []
+  }
+}
+
 // this is an example code from MUI documentation
 // https://mui.com/material-ui/react-tabs/#introduction (first example)
 // the Mui TabPanel component has to much padding by default, so we need to create our own, since the table doesn't have enough space
