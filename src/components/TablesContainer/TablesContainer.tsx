@@ -13,6 +13,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import TrendingDownIcon from '@mui/icons-material/TrendingDown'
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat'
 import SyncProblemIcon from '@mui/icons-material/SyncProblem'
+import { formatNumber } from '../../utils/utils.ts'
 
 interface CustomTabPanelProps {
   children?: React.ReactNode
@@ -100,7 +101,7 @@ const columns: GridColDef<ISymbolItem>[] = [
     field: 'priorityScore',
     headerName: 'Priority Score',
     valueGetter: (priorityScore: IPriorityScore) => priorityScore.symbol,
-    renderCell: (params) => params.row.priorityScore.symbol,
+    renderCell: (params) => formatNumber(params.row.priorityScore.symbol),
   },
   {
     field: 'watchlist',
