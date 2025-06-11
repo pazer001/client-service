@@ -64,7 +64,8 @@ const columns: GridColDef<ISymbolItem>[] = [
         <Box height={"100%"} display="flex" alignItems="center" gap={1}>
           <Avatar sx={{ width: 24, height: 24 }} src={params.row.logo}>
             {params.row.symbol.charAt(0).toUpperCase()}
-          </Avatar><Typography>{params.row.symbol}</Typography>
+          </Avatar>
+          <Typography>{params.row.symbol}</Typography>
         </Box>
       )
     }
