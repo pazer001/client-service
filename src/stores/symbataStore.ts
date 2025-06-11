@@ -78,11 +78,15 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
 export const useSymbataStore = import.meta.env.DEV
   ? create<ISymbolStore>()(
       devtools(
-        persist(symbataStore, {
+        persist(
+          symbataStore
+          , {
           name: 'symbataStore',
           storage: createJSONStorage(() => localStorage),
           partialize: (state) => ({
-            symbols: state.symbols,
+            // symbols: state.symbols,
+            interval: state.interval,
+            profileValue: state.profileValue,
           }),
         }),
       ),
