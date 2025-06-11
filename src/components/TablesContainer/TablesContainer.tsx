@@ -62,18 +62,21 @@ const CustomTabPanel = (props: CustomTabPanelProps) => {
 const columns: GridColDef<ISymbolItem>[] = [
   { field: 'symbol', headerName: 'Symbol', renderCell: (params: GridRenderCellParams<ISymbolItem>) => {
       return (
-        <Box height={"100%"} display="flex" alignItems="center" gap={1}>
-          <Avatar sx={{ width: 24, height: 24 }} src={params.row.logo}>
-            {params.row.symbol.charAt(0).toUpperCase()}
-          </Avatar>
-          <Typography>{params.row.symbol}</Typography>
-        </Box>
+        <Tooltip placement="left" title={params.row.name} arrow>
+          <Box height={"100%"} display="flex" alignItems="center" gap={1}>
+            <Avatar sx={{ width: 24, height: 24 }} src={params.row.logo}>
+              {params.row.symbol.charAt(0).toUpperCase()}
+            </Avatar>
+            <Typography>{params.row.symbol}</Typography>
+          </Box>
+        </Tooltip>
       )
     }
   },
   {
     field: 'recommendation',
     headerName: 'Recommendation',
+    width: 60,
     renderCell: (params: GridRenderCellParams<ISymbolItem>) => {
       let Elm = <Box />
       let title = undefined
@@ -120,6 +123,13 @@ const columns: GridColDef<ISymbolItem>[] = [
     headerName: 'Priority Score',
     valueGetter: (priorityScore: IPriorityScore) => priorityScore.symbol,
     renderCell: (params) => formatNumber(params.row.priorityScore.symbol),
+  },
+  {
+    field: 'averageVolume',
+    headerName: 'Avg. Volume',
+    width: 110,
+    valueGetter: (averageVolume: number) => averageVolume,
+    renderCell: (params) => formatNumber(params.row.averageVolume),
   },
   {
     field: 'watchlist',
