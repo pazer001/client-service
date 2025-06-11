@@ -4,7 +4,7 @@ import {
   useSymbataStoreProfileValue,
   useSymbataStoreSymbol
 } from '../../stores/symbataStore.ts'
-import { ISymbolItem } from '../../stores/symbataStore.types.ts'
+import { EAction, ISymbolItem } from '../../stores/symbataStore.types.ts'
 import { formatNumber, getShares } from '../../utils/utils.ts'
 
 function createData(
@@ -19,14 +19,22 @@ const AnalyzedResult = () => {
   const profileValue = useSymbataStoreProfileValue()
   const { setProfileValue } = useSymbataStoreActions()
 
-  const shares = getShares(profileValue, symbol?.recommendation?.stopLoss ?? 0, 0.02, 20.05)
+  const closeValue = symbol?.recommendation?.symbolRestructurePrices.close[symbol?.recommendation?.symbolRestructurePrices.close.length - 1] ?? 0
+  const stopLoss = symbol?.recommendation?.stopLoss ?? 0;
+  const stopLossDifference = closeValue - stopLoss;
 
-  const rows = [
-    createData('Symbol', symbol?.symbol),
-    createData('Sector Last Score', formatNumber(symbol?.priorityScore?.sectorLastScore ?? 0)),
-    createData('Stop Loss', `${formatNumber(100 - (symbol?.recommendation?.stopLoss ?? 1 / 20.05 * 100))}%`),
-    createData('Amount of Shares', shares),
-  ];
+  const stopLossPercentage = (stopLossDifference * 100) / closeValue;
+  const shares = getShares(profileValue, symbol?.recommendation?.stopLoss ?? 0, 0.02, closeValue)
+
+  const rows = symbol?.recommendation?.action === EAction.BUY
+    ? [
+        createData('Symbol', symbol?.symbol),
+        createData('Stop Loss', `${formatNumber(stopLossPercentage)}%`),
+        createData('Amount of Shares', shares),
+      ]
+    : [
+        createData('Symbol', symbol?.symbol)
+    ];
 
   return (
     <Box display="flex" flexDirection="column" gap={1}>

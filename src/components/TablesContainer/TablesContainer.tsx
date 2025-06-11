@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useWatchlistStoreWatchlists } from '../../stores/watchlistStore'
-import { Box, CircularProgress, Tab, Tabs, Tooltip } from '@mui/material'
+import { Avatar, Box, CircularProgress, Tab, Tabs, Tooltip, Typography } from '@mui/material'
 import ListIcon from '@mui/icons-material/List'
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial'
 import { WatchlistsTable } from './WatchlistsTable/WatchlistsTable.tsx'
@@ -13,11 +13,28 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import TrendingDownIcon from '@mui/icons-material/TrendingDown'
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat'
 import SyncProblemIcon from '@mui/icons-material/SyncProblem'
+import { formatNumber } from '../../utils/utils.ts'
 
 interface CustomTabPanelProps {
   children?: React.ReactNode
   index: number
   value: number
+}
+
+export const initErrorRecommendation = {
+  action: EAction.ERROR,
+  stopLoss: 0,
+  usedStrategy: '',
+  shares: 0,
+  symbolRestructurePrices: {
+    date: [],
+    volume: [],
+    high: [],
+    low: [],
+    close: [],
+    open: [],
+    timestamp: []
+  }
 }
 
 // this is an example code from MUI documentation
@@ -42,7 +59,16 @@ const CustomTabPanel = (props: CustomTabPanelProps) => {
 }
 
 const columns: GridColDef<ISymbolItem>[] = [
-  { field: 'symbol', headerName: 'Symbol' },
+  { field: 'symbol', headerName: 'Symbol', renderCell: (params: GridRenderCellParams<ISymbolItem>) => {
+      return (
+        <Box height={"100%"} display="flex" alignItems="center" gap={1}>
+          <Avatar sx={{ width: 24, height: 24 }} src={params.row.logo}>
+            {params.row.symbol.charAt(0).toUpperCase()}
+          </Avatar><Typography>{params.row.symbol}</Typography>
+        </Box>
+      )
+    }
+  },
   {
     field: 'recommendation',
     headerName: 'Recommendation',
@@ -91,7 +117,7 @@ const columns: GridColDef<ISymbolItem>[] = [
     field: 'priorityScore',
     headerName: 'Priority Score',
     valueGetter: (priorityScore: IPriorityScore) => priorityScore.symbol,
-    renderCell: (params) => params.row.priorityScore.symbol,
+    renderCell: (params) => formatNumber(params.row.priorityScore.symbol),
   },
   {
     field: 'watchlist',

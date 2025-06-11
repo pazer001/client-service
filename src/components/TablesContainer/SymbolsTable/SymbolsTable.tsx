@@ -1,10 +1,11 @@
 import { DataGrid, GridColDef, GridSlotsComponent } from '@mui/x-data-grid'
 import { SymbolsTableCustomToolbar } from './SymbolsTableCustomToolbar.tsx'
 import { useEffect, useState } from 'react'
-import { EAction, ISymbolItem } from '../../../stores/symbataStore.types.ts'
+import { ISymbolItem } from '../../../stores/symbataStore.types.ts'
 import { useSymbataStoreActions, useSymbataStoreSymbols } from '../../../stores/symbataStore.ts'
 import { GridCallbackDetails, GridRowSelectionModel, GridRowsProp } from '@mui/x-data-grid'
 import { useWatchlistStoreActions } from '../../../stores/watchlistStore.ts'
+import { initErrorRecommendation } from '../TablesContainer.tsx'
 
 interface ISymbolTableProps {
   columns: GridColDef<ISymbolItem>[]
@@ -33,12 +34,7 @@ export const SymbolsTable = ({ columns }: ISymbolTableProps) => {
     } catch {
       symbol = {
         ...selectedRow,
-        recommendation: {
-          action: EAction.ERROR,
-          stopLoss: 0,
-          riskCapitalPercent: 0,
-          usedStrategy: '',
-        },
+        recommendation: initErrorRecommendation,
         loading: false,
       } // Combine selected row with
     } finally {
