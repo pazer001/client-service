@@ -5,7 +5,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import { useSymbataStoreActions, useSymbataStoreInterval } from './stores/symbataStore.ts'
 import { Interval } from './components/interfaces.ts'
 import { BaseSyntheticEvent } from 'react'
-import Logo from './assets/logos/color-logo-no-background.svg'
+import Logo from './assets/logos/horizontal-color-logo-no-background.svg'
 import Chart from './components/Chart/Chart.tsx'
 
 const spacingBetween = 1
