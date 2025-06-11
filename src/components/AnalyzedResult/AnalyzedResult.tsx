@@ -31,6 +31,7 @@ const AnalyzedResult = () => {
         createData('Symbol', symbol?.symbol),
         createData('Stop Loss', `${formatNumber(stopLossPercentage)}%`),
         createData('Amount of Shares', shares),
+        createData('Strategy', symbol.recommendation.usedStrategy),
       ]
     : [
         createData('Symbol', symbol?.symbol)
