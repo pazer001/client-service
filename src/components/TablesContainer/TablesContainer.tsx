@@ -5,7 +5,7 @@ import ListIcon from '@mui/icons-material/List'
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial'
 import { WatchlistsTable } from './WatchlistsTable/WatchlistsTable.tsx'
 import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
-import { EAction, IPriorityScore, ISymbolItem } from '../../stores/symbataStore.types'
+import { EAction, IPriorityScore, IRecommendation, ISymbolItem } from '../../stores/symbataStore.types'
 import AddToWatchListButton from './SymbolsTable/AddToWatchListButton/AddToWatchListButton'
 import { grey } from '@mui/material/colors'
 import { SymbolsTable } from './SymbolsTable/SymbolsTable.tsx'
@@ -21,8 +21,9 @@ interface CustomTabPanelProps {
   value: number
 }
 
-export const initErrorRecommendation = {
+export const initErrorRecommendation: IRecommendation = {
   action: EAction.ERROR,
+  actions: [],
   stopLoss: 0,
   usedStrategy: '',
   shares: 0,

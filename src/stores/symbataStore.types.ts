@@ -20,6 +20,8 @@ interface ISuggestedSymbols {
   _id: string;
   id: string;
   symbol: string;
+  averageVolume: number;
+  name: string;
   priorityScore: {
     symbol: number;
   };
@@ -38,6 +40,7 @@ export interface IPrices {
 
 export interface IRecommendation {
   action: EAction;
+  actions: EAction[];
   stopLoss: number;
   shares: number;
   usedStrategy: string;

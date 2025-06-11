@@ -65,7 +65,7 @@ function App() {
             <Item>
               <Chart />
             </Item>
-            <Item sx={{ height: 'calc(100% / 2)' }}></Item>
+            {/*<Item sx={{ height: 'calc(100% / 2)' }}></Item>*/}
           </Stack>
         </Grid>
         <Grid size={2}>
