@@ -54,7 +54,7 @@ function App() {
       <AppBar position="static">
         <Toolbar variant="dense">
           <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
-            <img alt="Symbata logo" src={Logo} height="35px" />
+            <img alt="Symbata logo" src={Logo} height="30px" />
             <IntervalController />
           </Box>
         </Toolbar>
