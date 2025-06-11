@@ -6,6 +6,7 @@ import {
 } from '../../stores/symbataStore.ts'
 import { EAction, ISymbolItem } from '../../stores/symbataStore.types.ts'
 import { formatNumber, getShares } from '../../utils/utils.ts'
+import { startCase } from 'lodash'
 
 function createData(
   label: string,
@@ -31,7 +32,7 @@ const AnalyzedResult = () => {
         createData('Symbol', symbol?.symbol),
         createData('Stop Loss', `${formatNumber(stopLossPercentage)}%`),
         createData('Amount of Shares', shares),
-        createData('Strategy', symbol.recommendation.usedStrategy),
+        createData('Strategy', startCase(symbol.recommendation.usedStrategy)),
       ]
     : [
         createData('Symbol', symbol?.symbol)
