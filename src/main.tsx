@@ -5,8 +5,8 @@ import { createTheme, CssBaseline, ThemeProvider } from '@mui/material'
 
 const theme = createTheme({
   cssVariables: true,
-  colorSchemes: {
-    dark: true,
+  palette: {
+    mode: 'dark',
   },
 })
 
