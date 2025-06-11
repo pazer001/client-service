@@ -17,6 +17,21 @@ function createData(
   return { label, value, renderCell };
 }
 
+const ActionLabel = (action: EAction): ReactElement => {
+  switch (action) {
+    case EAction.BUY:
+      return <Typography color="success">Buy</Typography>
+    case EAction.SELL:
+      return <Typography color="error">Sell</Typography>
+    case EAction.HOLD:
+      return <Typography>Hold</Typography>
+    case EAction.ERROR:
+      return <Typography color="warning">Error</Typography>;
+    default:
+      return <Typography color="info">Unknown Action</Typography>;
+  }
+}
+
 const AnalyzedResult = () => {
   const symbol: ISymbolItem | undefined = useSymbataStoreSymbol()
   const profileValue = useSymbataStoreProfileValue()
@@ -39,6 +54,7 @@ const AnalyzedResult = () => {
       </Box>
     )),
     createData('Company Name', symbol?.name),
+    createData('Action', symbol?.recommendation?.action, () => ActionLabel(symbol?.recommendation?.action ?? EAction.ERROR)),
   ]
 
   const rows = symbol?.recommendation?.action === EAction.BUY
