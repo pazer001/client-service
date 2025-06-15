@@ -5,7 +5,7 @@ import ListIcon from '@mui/icons-material/List'
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial'
 import { WatchlistsTable } from './WatchlistsTable/WatchlistsTable.tsx'
 import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
-import { EAction, IPriorityScore, ISymbolItem } from '../../stores/symbataStore.types'
+import { EAction, IPriorityScore, IRecommendation, ISymbolItem } from '../../stores/symbataStore.types'
 import AddToWatchListButton from './SymbolsTable/AddToWatchListButton/AddToWatchListButton'
 import { grey } from '@mui/material/colors'
 import { SymbolsTable } from './SymbolsTable/SymbolsTable.tsx'
@@ -21,8 +21,9 @@ interface CustomTabPanelProps {
   value: number
 }
 
-export const initErrorRecommendation = {
+export const initErrorRecommendation: IRecommendation = {
   action: EAction.ERROR,
+  actions: [],
   stopLoss: 0,
   usedStrategy: '',
   shares: 0,
@@ -61,18 +62,21 @@ const CustomTabPanel = (props: CustomTabPanelProps) => {
 const columns: GridColDef<ISymbolItem>[] = [
   { field: 'symbol', headerName: 'Symbol', renderCell: (params: GridRenderCellParams<ISymbolItem>) => {
       return (
-        <Box height={"100%"} display="flex" alignItems="center" gap={1}>
-          <Avatar sx={{ width: 24, height: 24 }} src={params.row.logo}>
-            {params.row.symbol.charAt(0).toUpperCase()}
-          </Avatar>
-          <Typography>{params.row.symbol}</Typography>
-        </Box>
+        <Tooltip placement="left" title={params.row.name} arrow>
+          <Box height={"100%"} display="flex" alignItems="center" gap={1}>
+            <Avatar sx={{ width: 24, height: 24 }} src={params.row.logo}>
+              {params.row.symbol.charAt(0).toUpperCase()}
+            </Avatar>
+            <Typography>{params.row.symbol}</Typography>
+          </Box>
+        </Tooltip>
       )
     }
   },
   {
     field: 'recommendation',
     headerName: 'Recommendation',
+    width: 60,
     renderCell: (params: GridRenderCellParams<ISymbolItem>) => {
       let Elm = <Box />
       let title = undefined
@@ -119,6 +123,13 @@ const columns: GridColDef<ISymbolItem>[] = [
     headerName: 'Priority Score',
     valueGetter: (priorityScore: IPriorityScore) => priorityScore.symbol,
     renderCell: (params) => formatNumber(params.row.priorityScore.symbol),
+  },
+  {
+    field: 'averageVolume',
+    headerName: 'Avg. Volume',
+    width: 110,
+    valueGetter: (averageVolume: number) => averageVolume,
+    renderCell: (params) => formatNumber(params.row.averageVolume),
   },
   {
     field: 'watchlist',

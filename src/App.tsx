@@ -5,7 +5,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import { useSymbataStoreActions, useSymbataStoreInterval } from './stores/symbataStore.ts'
 import { Interval } from './components/interfaces.ts'
 import { BaseSyntheticEvent } from 'react'
-import Logo from './assets/logos/color-logo-no-background.svg'
+import Logo from './assets/logos/horizontal-color-logo-no-background.svg'
 import Chart from './components/Chart/Chart.tsx'
 
 const spacingBetween = 1
@@ -54,7 +54,7 @@ function App() {
       <AppBar position="static">
         <Toolbar variant="dense">
           <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
-            <img alt="Symbata logo" src={Logo} height="35px" />
+            <img alt="Symbata logo" src={Logo} height="30px" />
             <IntervalController />
           </Box>
         </Toolbar>
@@ -65,7 +65,7 @@ function App() {
             <Item>
               <Chart />
             </Item>
-            <Item sx={{ height: 'calc(100% / 2)' }}></Item>
+            {/*<Item sx={{ height: 'calc(100% / 2)' }}></Item>*/}
           </Stack>
         </Grid>
         <Grid size={2}>

@@ -1,4 +1,4 @@
-import { Box, FormControl, Table, TableBody, TableCell, TableRow, TextField, Typography } from '@mui/material'
+import { Avatar, Box, FormControl, Table, TableBody, TableCell, TableRow, TextField, Typography } from '@mui/material'
 import {
   useSymbataStoreActions,
   useSymbataStoreProfileValue,
@@ -7,12 +7,29 @@ import {
 import { EAction, ISymbolItem } from '../../stores/symbataStore.types.ts'
 import { formatNumber, getShares } from '../../utils/utils.ts'
 import { startCase } from 'lodash'
+import { ReactElement } from 'react'
 
 function createData(
   label: string,
   value: number | string | undefined,
+  renderCell?: () => ReactElement
 ) {
-  return { label, value };
+  return { label, value, renderCell };
+}
+
+const ActionLabel = (action: EAction): ReactElement => {
+  switch (action) {
+    case EAction.BUY:
+      return <Typography color="success">Buy</Typography>
+    case EAction.SELL:
+      return <Typography color="error">Sell</Typography>
+    case EAction.HOLD:
+      return <Typography>Hold</Typography>
+    case EAction.ERROR:
+      return <Typography color="warning">Error</Typography>;
+    default:
+      return <Typography color="info">Unknown Action</Typography>;
+  }
 }
 
 const AnalyzedResult = () => {
@@ -27,16 +44,27 @@ const AnalyzedResult = () => {
   const stopLossPercentage = (stopLossDifference * 100) / closeValue;
   const shares = getShares(profileValue, symbol?.recommendation?.stopLoss ?? 0, 0.02, closeValue)
 
+  const initRows = [
+    createData('Symbol', symbol?.symbol, () => (
+      <Box height={"100%"} display="flex" alignItems="center" gap={1}>
+        <Avatar sx={{ width: 24, height: 24 }} src={symbol?.logo}>
+          {symbol?.symbol.charAt(0).toUpperCase()}
+        </Avatar>
+        <Typography>{symbol?.symbol}</Typography>
+      </Box>
+    )),
+    createData('Company Name', symbol?.name),
+    createData('Action', symbol?.recommendation?.action, () => ActionLabel(symbol?.recommendation?.action ?? EAction.ERROR)),
+  ]
+
   const rows = symbol?.recommendation?.action === EAction.BUY
     ? [
-        createData('Symbol', symbol?.symbol),
+      ...initRows,
         createData('Stop Loss', `${formatNumber(stopLossPercentage)}%`),
-        createData('Amount of Shares', shares),
+        createData('Buy Shares', shares),
         createData('Strategy', startCase(symbol.recommendation.usedStrategy)),
       ]
-    : [
-        createData('Symbol', symbol?.symbol)
-    ];
+    : initRows;
 
   return (
     <Box display="flex" flexDirection="column" gap={1}>
@@ -60,7 +88,7 @@ const AnalyzedResult = () => {
                 <TableCell component="th" scope="row">
                   {row.label}
                 </TableCell>
-                <TableCell align="right">{row.value}</TableCell>
+                <TableCell>{row?.renderCell ? row?.renderCell() : row.value}</TableCell>
               </TableRow>
             ))}
           </TableBody>
