@@ -7,6 +7,7 @@ import { Interval } from './components/interfaces.ts'
 import { BaseSyntheticEvent } from 'react'
 import Logo from './assets/logos/horizontal-color-logo-no-background.svg'
 import Chart from './components/Chart/Chart.tsx'
+import Algo from './components/Algo/Algo.tsx'
 
 const spacingBetween = 1
 const fullHeightStyleProp = { height: '100%' }
@@ -65,7 +66,9 @@ function App() {
             <Item>
               <Chart />
             </Item>
-            {/*<Item sx={{ height: 'calc(100% / 2)' }}></Item>*/}
+            <Item sx={{ height: 'calc(100% / 2)' }}>
+              <Algo />
+            </Item>
           </Stack>
         </Grid>
         <Grid size={2}>
