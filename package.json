@@ -13,9 +13,9 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@fontsource/roboto": "^5.2.6",
-    "@mui/icons-material": "^7.1.1",
-    "@mui/material": "^7.1.1",
-    "@mui/x-data-grid": "8.5.2",
+    "@mui/icons-material": "^7.1.2",
+    "@mui/material": "^7.1.2",
+    "@mui/x-data-grid": "8.5.3",
     "axios": "^1.10.0",
     "echarts": "^5.6.0",
     "lodash": "^4.17.21",
@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
-    "@types/lodash": "^4.17.17",
+    "@types/lodash": "^4.17.18",
     "@types/luxon": "^3.6.2",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
@@ -47,7 +47,7 @@
     "luxon": "^3.6.1",
     "prettier": "^3.5.3",
     "typescript": "~5.8.3",
-    "typescript-eslint": "^8.34.0",
+    "typescript-eslint": "^8.34.1",
     "vite": "^6.3.5",
     "vite-plugin-eslint2": "^5.0.3"
   }
