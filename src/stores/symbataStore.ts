@@ -11,10 +11,13 @@ export interface IStoreActions {
   updateSymbolInList: (symbol: ISymbolItem) => void
   getRecommendation: (symbol: ISymbolItem) => Promise<IRecommendation>
   getSuggestedSymbols: () => Promise<void>
+  setProfileValue: (value: number) => void
+  setInterval: (interval: Interval) => void
 }
 
 export interface ISymbolStore {
   interval: Interval
+  profileValue: number
   symbol: ISymbolItem | undefined
   symbols: ISymbolItem[]
   actions: IStoreActions
@@ -22,9 +25,16 @@ export interface ISymbolStore {
 
 const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
   interval: Interval['1d'],
+  profileValue: 100_000,
   symbol: undefined,
   symbols: [],
   actions: {
+    setInterval: (interval: Interval) => {
+      set({ interval })
+    },
+    setProfileValue: (value: number) => {
+      set({ profileValue: value })
+    },
     setSymbol: (symbol: ISymbolItem) => {
       set({ symbol })
     },
@@ -46,14 +56,16 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
     },
     getRecommendation: async (rowData) => {
       try {
+        const { interval } = get()
         const req = await axios.get(`analyze/recommendation`, {
           params: {
             symbol: rowData.symbol,
             usedStrategy: rowData?.recommendation?.usedStrategy ?? '',
+            interval: interval,
           },
         })
-        const recommendation = req.data as IRecommendation
-        return recommendation
+
+        return req.data as IRecommendation
       } catch (error) {
         console.error('Error fetching recommendation:', error)
         throw error
@@ -66,11 +78,15 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
 export const useSymbataStore = import.meta.env.DEV
   ? create<ISymbolStore>()(
       devtools(
-        persist(symbataStore, {
+        persist(
+          symbataStore
+          , {
           name: 'symbataStore',
           storage: createJSONStorage(() => localStorage),
           partialize: (state) => ({
-            symbols: state.symbols,
+            // symbols: state.symbols,
+            interval: state.interval,
+            profileValue: state.profileValue,
           }),
         }),
       ),
@@ -86,3 +102,4 @@ export const useSymbataStoreActions = () => useSymbataStore((state) => state.act
 export const useSymbataStoreSymbol = () => useSymbataStore((state) => state.symbol)
 export const useSymbataStoreSymbols = () => useSymbataStore((state) => state.symbols)
 export const useSymbataStoreInterval = () => useSymbataStore((state) => state.interval)
+export const useSymbataStoreProfileValue = () => useSymbataStore((state) => state.profileValue)

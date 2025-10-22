@@ -1,6 +1,13 @@
-import { AppBar, Box, Grid, Paper, Stack, styled, Toolbar } from '@mui/material'
+import { AppBar, Box, Grid, Paper, Stack, styled, ToggleButton, Toolbar } from '@mui/material'
 import AnalyzedResult from './components/AnalyzedResult/AnalyzedResult'
 import { TablesContainer } from './components/TablesContainer/TablesContainer.tsx'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import { useSymbataStoreActions, useSymbataStoreInterval } from './stores/symbataStore.ts'
+import { Interval } from './components/interfaces.ts'
+import { BaseSyntheticEvent } from 'react'
+import Logo from './assets/logos/horizontal-color-logo-no-background.svg'
+import Chart from './components/Chart/Chart.tsx'
+import Algo from './components/Algo/Algo.tsx'
 
 const spacingBetween = 1
 const fullHeightStyleProp = { height: '100%' }
@@ -12,7 +19,7 @@ const Item = styled(Paper)(({ theme }) => ({
   ...fullHeightStyleProp,
 }))
 
-const Container = styled(Box)(({ theme }) => ({
+const MainContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(spacingBetween),
   height: '100%',
   maxHeight: '100dvh',
@@ -21,17 +28,47 @@ const Container = styled(Box)(({ theme }) => ({
   gap: theme.spacing(spacingBetween),
 }))
 
+const IntervalController = () => {
+  const interval = useSymbataStoreInterval()
+  const { setInterval } = useSymbataStoreActions()
+
+  return (
+    <ToggleButtonGroup
+      value={interval}
+      size="small"
+      exclusive
+      onChange={(event: BaseSyntheticEvent) => setInterval(event.target.value as Interval)}
+    >
+      <ToggleButton size="small" value={Interval['1d']}>
+        {Interval['1d']}
+      </ToggleButton>
+      <ToggleButton size="small" value={Interval['5m']}>
+        {Interval['5m']}
+      </ToggleButton>
+    </ToggleButtonGroup>
+  )
+}
+
 function App() {
   return (
-    <Container>
+    <MainContainer>
       <AppBar position="static">
-        <Toolbar variant="dense"></Toolbar>
+        <Toolbar variant="dense">
+          <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
+            <img alt="Symbata logo" src={Logo} height="30px" />
+            <IntervalController />
+          </Box>
+        </Toolbar>
       </AppBar>
       <Grid container spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
         <Grid size={6}>
           <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
-            <Item></Item>
-            <Item sx={{ height: 'calc(100% / 2)' }}></Item>
+            <Item>
+              <Chart />
+            </Item>
+            <Item sx={{ height: 'calc(100% / 2)' }}>
+              <Algo />
+            </Item>
           </Stack>
         </Grid>
         <Grid size={2}>
@@ -45,7 +82,7 @@ function App() {
           </Item>
         </Grid>
       </Grid>
-    </Container>
+    </MainContainer>
   )
 }
 

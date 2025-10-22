@@ -2,8 +2,9 @@ import { WatchlistCustomToolbar } from './WatchlistsCustomToolbar.tsx'
 import { useWatchlistStoreActions, useWatchlistStoreCurrentWatchlist } from '../../../stores/watchlistStore.ts'
 import { useMemo } from 'react'
 import { DataGrid, GridCallbackDetails, GridColDef, GridRowSelectionModel, GridRowsProp, GridSlotsComponent } from '@mui/x-data-grid'
-import { EAction, ISymbolItem } from '../../../stores/symbataStore.types.ts'
+import { ISymbolItem } from '../../../stores/symbataStore.types.ts'
 import { useSymbataStoreActions, useSymbataStoreSymbols } from '../../../stores/symbataStore.ts'
+import { initErrorRecommendation } from '../TablesContainer.tsx'
 
 interface IWatchlistProps {
   columns: GridColDef<ISymbolItem>[]
@@ -43,12 +44,7 @@ export const WatchlistsTable = ({ columns }: IWatchlistProps) => {
     } catch {
       symbol = {
         ...selectedRow,
-        recommendation: {
-          action: EAction.ERROR,
-          stopLoss: 0,
-          riskCapitalPercent: 0,
-          usedStrategy: '',
-        },
+        recommendation: initErrorRecommendation,
         loading: false,
       }
     } finally {
