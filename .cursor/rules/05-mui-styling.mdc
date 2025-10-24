@@ -66,6 +66,53 @@ Use `sx` prop for component-specific overrides:
 
 Reference: [src/components/TablesContainer/TablesContainer.tsx](mdc:src/components/TablesContainer/TablesContainer.tsx)
 
+## Component Classes
+
+**Never hardcode MUI component class names.** Always use MUI's exported component classes for type safety and maintainability.
+
+```typescript
+// ✅ GOOD - Use MUI's exported classes
+import { LinearProgress, linearProgressClasses } from '@mui/material'
+
+<LinearProgress
+  sx={{
+    [`& .${linearProgressClasses.bar}`]: {
+      borderRadius: 1,
+      transition: 'transform 0.1s linear',
+    },
+  }}
+/>
+```
+
+```typescript
+// ❌ BAD - Hardcoded class names
+<LinearProgress
+  sx={{
+    '& .MuiLinearProgress-bar': {
+      borderRadius: 1,
+    },
+  }}
+/>
+```
+
+**Why this matters:**
+
+- **Type Safety**: Exported classes provide autocomplete and type checking
+- **Maintainability**: If MUI changes internal class names, your code continues to work
+- **Best Practice**: This is MUI's recommended approach for targeting sub-elements
+- **No Magic Strings**: Eliminates hardcoded strings that could break silently
+
+**Common component classes:**
+
+- `linearProgressClasses` - LinearProgress component
+- `buttonClasses` - Button component
+- `chipClasses` - Chip component
+- `dataGridClasses` - DataGrid component
+- `dialogClasses` - Dialog component
+- `tabClasses` - Tab component
+
+Reference: [src/components/TablesContainer/OpenPositions/OpenPositions.tsx](mdc:src/components/TablesContainer/OpenPositions/OpenPositions.tsx) lines 2, 62
+
 ## MUI Color System
 
 Import colors from MUI palette:
