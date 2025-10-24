@@ -240,8 +240,8 @@ export const OpenPositions = () => {
 
     const newFlashingFields = new Set<string>()
 
-    // Compare current positions with previous positions
-    Object.keys(openPositions).forEach((symbol) => {
+    // Compare current positions with previous positions using for...in (most efficient - no conversion)
+    for (const symbol in openPositions) {
       const currentPos = openPositions[symbol]
       const previousPos = previousPositionsRef.current[symbol]
 
@@ -259,7 +259,7 @@ export const OpenPositions = () => {
           newFlashingFields.add(`${symbol}-currentROR`)
         }
       }
-    })
+    }
 
     // Update flashing fields if there are changes
     if (newFlashingFields.size > 0) {
