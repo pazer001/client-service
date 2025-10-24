@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Box, CircularProgress, LinearProgress, Typography } from '@mui/material'
+import { Box, CircularProgress, LinearProgress, linearProgressClasses, Typography } from '@mui/material'
 import { useSymbataStoreActions, useSymbataStoreOpenPositions } from '../../../stores/symbataStore.ts'
 import { useOpenPositionsPolling } from '../../../hooks/useOpenPositionsPolling.ts'
 import { PositionItem } from './PositionItem.tsx'
@@ -59,7 +59,7 @@ export const OpenPositions = () => {
             height: 6,
             borderRadius: 1,
             backgroundColor: 'rgba(0, 0, 0, 0.1)',
-            '& .MuiLinearProgress-bar': {
+            [`& .${linearProgressClasses.bar}`]: {
               borderRadius: 1,
               transition: 'transform 0.1s linear',
             },
