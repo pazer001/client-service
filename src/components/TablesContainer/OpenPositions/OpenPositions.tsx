@@ -272,7 +272,7 @@ export const OpenPositions = () => {
   }
 
   return (
-    <Box sx={{ p: { xs: 1, sm: 2 }, height: 'calc(100dvh - 155px)', overflow: 'auto' }}>
+    <Box sx={{ p: { xs: 1, sm: 2 }, height: 'calc(100dvh - 75px)', overflow: 'auto' }}>
       <Box display="flex" flexDirection="column" gap={{ xs: 1.5, sm: 2 }}>
         {positionsArray.map((position) => (
           <PositionItem key={position.symbol} position={position} flashingFields={flashingFields} />
