@@ -182,7 +182,7 @@ const EmptyState = () => (
     flexDirection="column"
     alignItems="center"
     justifyContent="center"
-    height="calc(100dvh - 75px)"
+    height="calc(100dvh - 200px)"
     gap={2}
   >
     <Typography variant="h6" color="text.secondary">
@@ -195,7 +195,7 @@ const EmptyState = () => (
 )
 
 const LoadingState = () => (
-  <Box display="flex" alignItems="center" justifyContent="center" height="calc(100dvh - 75px)">
+  <Box display="flex" alignItems="center" justifyContent="center" height="calc(100dvh - 200px)">
     <CircularProgress size={40} />
   </Box>
 )
