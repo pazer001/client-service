@@ -1,0 +1,165 @@
+---
+globs: *.tsx,*.ts
+description: Material-UI styling patterns and conventions
+---
+
+# Material-UI (MUI) Styling
+
+## Styling Approach
+
+Use **MUI's styled components** and **sx prop** for styling. No CSS modules or plain CSS files for components.
+
+## Styled Components
+
+Create styled components using the `styled` utility:
+
+```typescript
+import { Box, Paper, styled } from '@mui/material'
+
+const Item = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(1),
+  height: '100%',
+}))
+
+const MainContainer = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(1),
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(1),
+}))
+```
+
+Reference: [src/App.tsx](mdc:src/App.tsx) lines 17-29
+
+## Theme Integration
+
+Always use theme values instead of hardcoded values:
+
+```typescript
+// ✅ GOOD - Theme values
+const Item = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(2),
+  color: theme.palette.primary.main,
+}))
+
+// ❌ BAD - Hardcoded values
+const Item = styled(Paper)({
+  padding: '16px',
+  color: '#1976d2',
+})
+```
+
+## sx Prop for Inline Styles
+
+Use `sx` prop for component-specific overrides:
+
+```typescript
+<Box sx={{
+  height: 'inherit',
+  display: 'flex',
+  alignItems: 'center',
+  gap: 1, // theme spacing multiplier
+}}>
+  {children}
+</Box>
+```
+
+Reference: [src/components/TablesContainer/TablesContainer.tsx](mdc:src/components/TablesContainer/TablesContainer.tsx)
+
+## MUI Color System
+
+Import colors from MUI palette:
+
+```typescript
+import { grey } from '@mui/material/colors'
+
+// Use in styles
+<Box sx={{ boxShadow: `0px -1px 0px 0px ${grey[500]}` }}>
+```
+
+## Layout with MUI Grid
+
+Use MUI Grid v2 (size prop):
+
+```typescript
+import { Grid } from '@mui/material'
+
+<Grid container spacing={1}>
+  <Grid size={6}>  {/* Takes 6/12 columns */}
+    <Content />
+  </Grid>
+  <Grid size={4}>  {/* Takes 4/12 columns */}
+    <Sidebar />
+  </Grid>
+</Grid>
+```
+
+Reference: [src/App.tsx](mdc:src/App.tsx) lines 63-84
+
+## Icon Usage
+
+Import icons from `@mui/icons-material`:
+
+```typescript
+import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import TrendingDownIcon from '@mui/icons-material/TrendingDown'
+
+// Use with color prop
+<TrendingUpIcon color="success" />
+<TrendingDownIcon color="error" />
+```
+
+## Responsive Design
+
+Use theme breakpoints for responsive styles:
+
+```typescript
+const Item = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(2),
+  [theme.breakpoints.down('md')]: {
+    padding: theme.spacing(1),
+  },
+}))
+```
+
+## Component Customization
+
+Use `pt` prop (passthrough) for deep component customization:
+
+```typescript
+<Card pt={{
+  root: { className: 'h-full' },
+  content: { style: { maxHeight: 'calc(100% - 15px)' } }
+}} />
+```
+
+## Spacing Constants
+
+Define spacing constants at the top of the file:
+
+```typescript
+const spacingBetween = 1
+const fullHeightStyleProp = { height: '100%' }
+```
+
+Reference: [src/App.tsx](mdc:src/App.tsx) lines 12-13
+
+## DataGrid Customization
+
+Type GridColDef with your data model:
+
+```typescript
+import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
+
+const columns: GridColDef<ISymbolItem>[] = [
+  {
+    field: 'symbol',
+    headerName: 'Symbol',
+    renderCell: (params: GridRenderCellParams<ISymbolItem>) => (
+      <Typography>{params.row.symbol}</Typography>
+    ),
+  },
+]
+```
+
+Reference: [src/components/TablesContainer/TablesContainer.tsx](mdc:src/components/TablesContainer/TablesContainer.tsx) lines 62-139

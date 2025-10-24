@@ -1,0 +1,158 @@
+---
+alwaysApply: true
+description: File and folder organization patterns
+---
+
+# File & Folder Organization
+
+## Component Organization
+
+### Feature-Based Structure
+
+Organize components by feature, not by type:
+
+```
+components/
+  ├── Algo/
+  │   ├── Algo.tsx
+  │   ├── Brokers.tsx
+  │   └── interfaces/
+  │       └── algo.interfaces.ts
+  ├── AnalyzedResult/
+  │   ├── AnalyzedResult.tsx
+  │   └── AnalyzedResult.interfaces.ts
+  └── TablesContainer/
+      ├── TablesContainer.tsx
+      ├── SymbolsTable/
+      │   ├── SymbolsTable.tsx
+      │   └── AddToWatchListButton/
+      │       ├── AddToWatchListButton.tsx
+      │       └── AddToWatchListButton.style.ts
+      └── WatchlistsTable/
+          └── WatchlistsTable.tsx
+```
+
+### File Naming Conventions
+
+- **Components**: PascalCase (`TablesContainer.tsx`, `Algo.tsx`)
+- **Utilities**: camelCase (`utils.ts`, `index.ts`)
+- **Types**: Match parent with `.types.ts` or `.interfaces.ts` suffix
+- **Styles**: Match parent with `.style.ts` suffix
+
+## Import Organization
+
+Order imports from most general to most specific:
+
+```typescript
+// 1. External libraries (React, third-party)
+import { useState, useMemo } from 'react'
+import { Box, Typography } from '@mui/material'
+import { GridColDef } from '@mui/x-data-grid'
+
+// 2. Internal modules (stores, utils)
+import { useSymbataStoreActions } from '../../stores/symbataStore.ts'
+import { formatNumber } from '../../utils/utils.ts'
+
+// 3. Types and interfaces
+import { ISymbolItem, EAction } from '../../stores/symbataStore.types'
+
+// 4. Local components
+import AddToWatchListButton from './AddToWatchListButton/AddToWatchListButton'
+
+// 5. Assets (images, icons)
+import Logo from './assets/logos/horizontal-color-logo-no-background.svg'
+```
+
+Reference: [src/components/TablesContainer/TablesContainer.tsx](mdc:src/components/TablesContainer/TablesContainer.tsx) lines 1-16
+
+## Store Files
+
+Each store should have:
+
+1. Main store file: `storeName.ts`
+2. Types file: `storeName.types.ts` (if complex types)
+
+```
+stores/
+  ├── symbataStore.ts
+  ├── symbataStore.types.ts
+  └── watchlistStore.ts
+```
+
+## Shared Code
+
+### Utilities
+
+Place shared utility functions in `src/utils/`:
+
+```typescript
+// src/utils/utils.ts
+export const formatNumber = (num: number): string => {
+  return millify(num, { precision: 2 })
+}
+```
+
+### Hooks
+
+Place custom hooks in `src/hooks/`:
+
+```typescript
+// src/hooks/useTableCustomToolbar.ts
+export const useTableCustomToolbar = () => {
+  // Custom hook logic
+}
+```
+
+### Types
+
+- **Component-specific types**: Keep in same file or adjacent `.interfaces.ts` file
+- **Shared types**: In parent folder's `interfaces.ts` or at feature level
+- **Store types**: In separate `.types.ts` file alongside store
+
+Example: [src/components/interfaces.ts](mdc:src/components/interfaces.ts) for shared types
+
+## Assets Organization
+
+```
+assets/
+  ├── logos/
+  │   ├── color-logo-no-background.svg
+  │   ├── horizontal-color-logo-no-background.svg
+  │   └── logo-without-text.svg
+  └── icons/
+      └── download.svg
+```
+
+Group assets by category (logos, icons, images)
+
+## Configuration Files
+
+Keep configuration files at project root:
+
+- `vite.config.ts` - Build configuration
+- `tsconfig.json` - TypeScript base config
+- `tsconfig.app.json` - App-specific TypeScript config
+- `eslint.config.js` - ESLint configuration
+- `package.json` - Dependencies and scripts
+
+## Barrel Exports
+
+**Avoid barrel exports** (index.ts re-exports) unless it significantly improves imports.
+
+Explicit imports are preferred:
+
+```typescript
+// ✅ GOOD - Explicit import path
+import { TablesContainer } from './components/TablesContainer/TablesContainer.tsx'
+
+// ⚠️ USE SPARINGLY - Barrel export
+import { TablesContainer } from './components/TablesContainer'
+```
+
+## File Size Guidelines
+
+- **Components**: Keep under 300 lines. If larger, split into sub-components
+- **Stores**: Consider splitting if over 200 lines
+- **Utility files**: Group related functions, split if unrelated
+
+Example of large file that could be split: [src/components/TablesContainer/TablesContainer.tsx](mdc:src/components/TablesContainer/TablesContainer.tsx) has table columns that could be extracted

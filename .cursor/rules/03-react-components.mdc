@@ -1,0 +1,112 @@
+---
+globs: *.tsx
+description: React component patterns and best practices
+---
+
+# React Component Conventions
+
+## Component Structure
+
+Use **functional components** with hooks exclusively. No class components.
+
+```typescript
+// ✅ GOOD - Functional component
+export const MyComponent = () => {
+  const [state, setState] = useState(0)
+  return <div>{state}</div>
+}
+
+// ❌ BAD - Class component
+class MyComponent extends React.Component { ... }
+```
+
+## Component Naming
+
+- **PascalCase** for component files and functions
+- Match file name to component name: `TablesContainer.tsx` exports `TablesContainer`
+
+## Props Interfaces
+
+Define props interfaces inline or at the top of the file:
+
+```typescript
+interface CustomTabPanelProps {
+  children?: React.ReactNode
+  index: number
+  value: number
+}
+
+const CustomTabPanel = (props: CustomTabPanelProps) => {
+  const { children, value, index, ...other } = props
+  // Component logic
+}
+```
+
+## State Management Integration
+
+Use Zustand store hooks for global state:
+
+```typescript
+import { useSymbataStoreActions, useSymbataStoreInterval } from './stores/symbataStore.ts'
+
+const MyComponent = () => {
+  const interval = useSymbataStoreInterval()
+  const { setInterval } = useSymbataStoreActions()
+  // Use state and actions
+}
+```
+
+See [src/App.tsx](mdc:src/App.tsx) lines 31-49 for the pattern.
+
+## Event Handlers
+
+Type event handlers appropriately:
+
+```typescript
+// ✅ GOOD - Properly typed
+const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
+  setActiveIndex(newValue)
+}
+
+// For specific events
+onChange={(event: BaseSyntheticEvent) => setInterval(event.target.value)}
+```
+
+## Memoization
+
+Use `useMemo` for expensive computations:
+
+```typescript
+const watchlistsDisabled = useMemo(() => !watchlists.some(({ symbols }) => symbols.length > 0), [watchlists])
+```
+
+Example: [src/components/TablesContainer/TablesContainer.tsx](mdc:src/components/TablesContainer/TablesContainer.tsx) line 149
+
+## Component Organization
+
+1. **Imports** - External, then internal
+2. **Type definitions** - Props interfaces
+3. **Constants** - Outside component when possible
+4. **Sub-components** - Small components used only in this file
+5. **Main component** - Export at bottom
+
+## Comments for Complex Logic
+
+Add explanatory comments when copying patterns or using workarounds:
+
+```typescript
+// This is an example code from MUI documentation
+// https://mui.com/material-ui/react-tabs/#introduction
+// The MUI TabPanel component has too much padding by default
+const CustomTabPanel = (props: CustomTabPanelProps) => { ... }
+```
+
+Example: [src/components/TablesContainer/TablesContainer.tsx](mdc:src/components/TablesContainer/TablesContainer.tsx) lines 41-43
+
+## React 19 Features
+
+This project uses React 19. Leverage modern React features:
+
+- React Compiler enabled via Babel plugin (see [vite.config.ts](mdc:vite.config.ts))
+- Automatic batching
+- Modern JSX transform (no need to import React)

@@ -1,0 +1,140 @@
+---
+globs: **/stores/*.ts
+description: Zustand state management patterns
+---
+
+# Zustand State Management
+
+## Store Structure
+
+Organize stores with **actions separated from state**:
+
+```typescript
+export interface IStoreActions {
+  setSymbol: (symbol: ISymbolItem) => void
+  getRecommendation: (symbol: ISymbolItem) => Promise<IRecommendation>
+}
+
+export interface ISymbolStore {
+  symbol: ISymbolItem | undefined
+  symbols: ISymbolItem[]
+  actions: IStoreActions
+}
+```
+
+Reference: [src/stores/symbataStore.ts](mdc:src/stores/symbataStore.ts) lines 8-24
+
+## Store Implementation Pattern
+
+Use `StateCreator` type and nest actions:
+
+```typescript
+const myStore: StateCreator<IMyStore> = (set, get) => ({
+  // State
+  data: [],
+
+  // Actions nested under 'actions'
+  actions: {
+    setData: (data) => set({ data }),
+    getData: async () => {
+      const currentState = get()
+      // Async logic
+    },
+  },
+})
+```
+
+## Middleware Configuration
+
+### Development vs Production
+
+```typescript
+export const useMyStore = import.meta.env.DEV
+  ? create<IMyStore>()(
+      devtools(
+        persist(myStore, {
+          name: 'myStore',
+          storage: createJSONStorage(() => localStorage),
+          partialize: (state) => ({
+            // Only persist specific fields
+            interval: state.interval,
+          }),
+        }),
+      ),
+    )
+  : create<IMyStore>()(
+      devtools(myStore, {
+        name: 'myStore',
+        enabled: import.meta.env.DEV,
+        anonymousActionType: 'Unknown',
+      }),
+    )
+```
+
+**Important**: Add TODO comment when using persist in development:
+
+```typescript
+// TODO: Remove "persist" before going to PRODUCTION!!! (it is just for development usage)
+```
+
+Reference: [src/stores/symbataStore.ts](mdc:src/stores/symbataStore.ts) lines 77-100
+
+## Selector Hooks
+
+Export individual selector hooks for granular re-renders:
+
+```typescript
+// Export main store
+export const useMyStore = create<IMyStore>()(...)
+
+// Export individual selectors
+export const useMyStoreActions = () => useMyStore((state) => state.actions)
+export const useMyStoreData = () => useMyStore((state) => state.data)
+export const useMyStoreField = () => useMyStore((state) => state.specificField)
+```
+
+**Benefits**: Components only re-render when their specific slice changes.
+
+Reference: [src/stores/symbataStore.ts](mdc:src/stores/symbataStore.ts) lines 101-105
+
+## Type Definitions
+
+Store complex types in separate `.types.ts` file:
+
+- `symbataStore.ts` → `symbataStore.types.ts`
+
+Example: [src/stores/symbataStore.types.ts](mdc:src/stores/symbataStore.types.ts)
+
+## Async Actions
+
+Handle errors gracefully in async actions:
+
+```typescript
+actions: {
+  fetchData: async () => {
+    try {
+      const result: AxiosResponse<IData[]> = await axios.get('endpoint')
+      set({ data: result.data })
+    } catch (error) {
+      console.error('Error fetching data:', error)
+      // Don't silently fail - either throw or set error state
+    }
+  }
+}
+```
+
+## State Updates
+
+Use functional updates when accessing current state:
+
+```typescript
+// ✅ GOOD - Functional update
+set((state) => ({ ...state, symbols: newSymbols }))
+
+// ✅ GOOD - Using get()
+const { symbols } = get()
+const updated = symbols.map(...)
+set({ symbols: updated })
+```
+
+Reference: [src/stores/symbataStore.ts](mdc:src/stores/symbataStore.ts) lines 44-47

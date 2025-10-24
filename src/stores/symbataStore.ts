@@ -3,7 +3,7 @@ import { devtools, persist, createJSONStorage } from 'zustand/middleware'
 import { Interval } from '../components/interfaces.ts'
 import axios from '../axios'
 import { AxiosResponse } from 'axios'
-import { IRecommendation, ISymbolItem } from './symbataStore.types.ts'
+import { IRecommendation, ISymbolItem, IOpenPositionsResponse } from './symbataStore.types.ts'
 
 export interface IStoreActions {
   setSymbol: (symbol: ISymbolItem) => void
@@ -11,6 +11,7 @@ export interface IStoreActions {
   updateSymbolInList: (symbol: ISymbolItem) => void
   getRecommendation: (symbol: ISymbolItem) => Promise<IRecommendation>
   getSuggestedSymbols: () => Promise<void>
+  getOpenPositions: () => Promise<void>
   setProfileValue: (value: number) => void
   setInterval: (interval: Interval) => void
 }
@@ -20,6 +21,7 @@ export interface ISymbolStore {
   profileValue: number
   symbol: ISymbolItem | undefined
   symbols: ISymbolItem[]
+  openPositions: IOpenPositionsResponse | undefined
   actions: IStoreActions
 }
 
@@ -28,6 +30,7 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
   profileValue: 100_000,
   symbol: undefined,
   symbols: [],
+  openPositions: undefined,
   actions: {
     setInterval: (interval: Interval) => {
       set({ interval })
@@ -54,6 +57,14 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
         console.error('Error fetching suggested symbols:', error)
       }
     },
+    getOpenPositions: async () => {
+      try {
+        const result: AxiosResponse<IOpenPositionsResponse> = await axios.get('algo/getCurrentOpenPositions')
+        set({ openPositions: result.data })
+      } catch (error) {
+        console.error('Error fetching open positions:', error)
+      }
+    },
     getRecommendation: async (rowData) => {
       try {
         const { interval } = get()
@@ -78,9 +89,7 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
 export const useSymbataStore = import.meta.env.DEV
   ? create<ISymbolStore>()(
       devtools(
-        persist(
-          symbataStore
-          , {
+        persist(symbataStore, {
           name: 'symbataStore',
           storage: createJSONStorage(() => localStorage),
           partialize: (state) => ({
@@ -103,3 +112,4 @@ export const useSymbataStoreSymbol = () => useSymbataStore((state) => state.symb
 export const useSymbataStoreSymbols = () => useSymbataStore((state) => state.symbols)
 export const useSymbataStoreInterval = () => useSymbataStore((state) => state.interval)
 export const useSymbataStoreProfileValue = () => useSymbataStore((state) => state.profileValue)
+export const useSymbataStoreOpenPositions = () => useSymbataStore((state) => state.openPositions)

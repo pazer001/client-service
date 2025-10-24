@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { Activity, useMemo, useState } from 'react'
 import { useWatchlistStoreWatchlists } from '../../stores/watchlistStore'
 import { Avatar, Box, CircularProgress, Tab, Tabs, Tooltip, Typography } from '@mui/material'
 import ListIcon from '@mui/icons-material/List'
@@ -14,6 +14,9 @@ import TrendingDownIcon from '@mui/icons-material/TrendingDown'
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat'
 import SyncProblemIcon from '@mui/icons-material/SyncProblem'
 import { formatNumber } from '../../utils/utils.ts'
+import { useSymbataStoreInterval } from '../../stores/symbataStore.ts'
+import { Interval } from '../interfaces.ts'
+import { OpenPositions } from './OpenPositions/OpenPositions.tsx'
 
 interface CustomTabPanelProps {
   children?: React.ReactNode
@@ -34,8 +37,8 @@ export const initErrorRecommendation: IRecommendation = {
     low: [],
     close: [],
     open: [],
-    timestamp: []
-  }
+    timestamp: [],
+  },
 }
 
 // this is an example code from MUI documentation
@@ -60,10 +63,13 @@ const CustomTabPanel = (props: CustomTabPanelProps) => {
 }
 
 const columns: GridColDef<ISymbolItem>[] = [
-  { field: 'symbol', headerName: 'Symbol', renderCell: (params: GridRenderCellParams<ISymbolItem>) => {
+  {
+    field: 'symbol',
+    headerName: 'Symbol',
+    renderCell: (params: GridRenderCellParams<ISymbolItem>) => {
       return (
         <Tooltip placement="left" title={params.row.name} arrow>
-          <Box height={"100%"} display="flex" alignItems="center" gap={1}>
+          <Box height={'100%'} display="flex" alignItems="center" gap={1}>
             <Avatar sx={{ width: 24, height: 24 }} src={params.row.logo}>
               {params.row.symbol.charAt(0).toUpperCase()}
             </Avatar>
@@ -71,7 +77,7 @@ const columns: GridColDef<ISymbolItem>[] = [
           </Box>
         </Tooltip>
       )
-    }
+    },
   },
   {
     field: 'recommendation',
@@ -139,6 +145,7 @@ const columns: GridColDef<ISymbolItem>[] = [
 ]
 
 export const TablesContainer = () => {
+  const interval = useSymbataStoreInterval()
   const watchlists = useWatchlistStoreWatchlists()
   const [activeIndex, setActiveIndex] = useState(0)
 
@@ -149,22 +156,27 @@ export const TablesContainer = () => {
   const watchlistsDisabled = useMemo(() => !watchlists.some(({ symbols }) => symbols.length > 0), [watchlists])
 
   return (
-    <Box sx={{ height: 'inherit' }}>
-      <Tabs variant="fullWidth" value={activeIndex} onChange={handleChange} aria-label="basic tabs example">
-        <Tab iconPosition="start" icon={<ListIcon />} label="Symbols" />
-        <Tab
-          iconPosition="start"
-          disabled={watchlistsDisabled}
-          icon={<FolderSpecialIcon color={watchlistsDisabled ? 'inherit' : 'warning'} />}
-          label="Watchlists"
-        />
-      </Tabs>
-      <CustomTabPanel value={activeIndex} index={0}>
-        <SymbolsTable columns={columns} />
-      </CustomTabPanel>
-      <CustomTabPanel value={activeIndex} index={1}>
-        <WatchlistsTable columns={columns} />
-      </CustomTabPanel>
+    <Box sx={{ height: 'calc(100vh - 82px)' }}>
+      <Activity mode={interval === Interval['1d'] ? 'visible' : 'hidden'}>
+        <Tabs variant="fullWidth" value={activeIndex} onChange={handleChange} aria-label="basic tabs example">
+          <Tab iconPosition="start" icon={<ListIcon />} label="Symbols" />
+          <Tab
+            iconPosition="start"
+            disabled={watchlistsDisabled}
+            icon={<FolderSpecialIcon color={watchlistsDisabled ? 'inherit' : 'warning'} />}
+            label="Watchlists"
+          />
+        </Tabs>
+        <CustomTabPanel value={activeIndex} index={0}>
+          <SymbolsTable columns={columns} />
+        </CustomTabPanel>
+        <CustomTabPanel value={activeIndex} index={1}>
+          <WatchlistsTable columns={columns} />
+        </CustomTabPanel>
+      </Activity>
+      <Activity mode={interval === Interval['5m'] ? 'visible' : 'hidden'}>
+        <OpenPositions />
+      </Activity>
     </Box>
   )
 }

@@ -1,0 +1,117 @@
+---
+globs: *.ts,*.tsx
+description: TypeScript coding conventions and best practices
+---
+
+# TypeScript Conventions
+
+## Strict Type Safety
+
+This project uses TypeScript strict mode. **Never use `any` type** unless absolutely necessary with documented justification.
+
+```typescript
+// ❌ BAD - Using 'any'
+const data: any = fetchData()
+
+// ✅ GOOD - Proper typing
+const data: ISymbolItem[] = await fetchData()
+```
+
+## Naming Conventions
+
+### Interfaces
+
+Prefix with `I`:
+
+```typescript
+export interface ISymbolItem {
+  symbol: string
+  name: string
+  averageVolume: number
+}
+```
+
+### Enums
+
+Prefix with `E`:
+
+```typescript
+export enum EAction {
+  BUY = 'BUY',
+  SELL = 'SELL',
+  HOLD = 'HOLD',
+}
+```
+
+### Type Aliases
+
+Prefix with `T`:
+
+```typescript
+type TWatchlistSource = 'manual' | 'broker'
+```
+
+## File Organization
+
+### Separate Type Definitions
+
+Store complex types in separate `.types.ts` files:
+
+- `symbataStore.ts` → `symbataStore.types.ts`
+- Import types explicitly: `import { ISymbolItem } from './symbataStore.types.ts'`
+
+Example: [src/stores/symbataStore.types.ts](mdc:src/stores/symbataStore.types.ts)
+
+### File Extensions in Imports
+
+**Always include .ts/.tsx extensions** in import statements:
+
+```typescript
+// ✅ GOOD
+import { useSymbataStore } from './stores/symbataStore.ts'
+import { TablesContainer } from './components/TablesContainer/TablesContainer.tsx'
+
+// ❌ BAD
+import { useSymbataStore } from './stores/symbataStore'
+```
+
+## Type Inference
+
+Let TypeScript infer types when obvious:
+
+```typescript
+// ✅ GOOD - Type inferred
+const [activeIndex, setActiveIndex] = useState(0)
+
+// ❌ BAD - Unnecessary type annotation
+const [activeIndex, setActiveIndex] = useState<number>(0)
+```
+
+## Function Return Types
+
+Explicitly type async function returns:
+
+```typescript
+// ✅ GOOD
+async getSuggestedSymbols(): Promise<void> {
+  const result: AxiosResponse<ISymbolItem[]> = await axios.get('analyze/suggestedSymbols')
+}
+```
+
+## Generic Types
+
+Use descriptive generic constraints:
+
+```typescript
+// From GridColDef usage
+const columns: GridColDef<ISymbolItem>[] = [...]
+```
+
+## Compiler Options
+
+Reference [tsconfig.app.json](mdc:tsconfig.app.json):
+
+- `strict: true` - All strict checks enabled
+- `noUnusedLocals: true` - No unused variables
+- `noUnusedParameters: true` - No unused parameters
+- `noFallthroughCasesInSwitch: true` - Explicit switch fallthrough

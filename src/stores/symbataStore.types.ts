@@ -11,40 +11,40 @@ export interface IPriorityScore {
   styleLastScore: number | null
 }
 
-export interface ISymbolItem extends ISuggestedSymbols{
+export interface ISymbolItem extends ISuggestedSymbols {
   loading?: boolean
   recommendation?: IRecommendation
 }
 
 interface ISuggestedSymbols {
-  _id: string;
-  id: string;
-  symbol: string;
-  averageVolume: number;
-  name: string;
+  _id: string
+  id: string
+  symbol: string
+  averageVolume: number
+  name: string
   priorityScore: {
-    symbol: number;
-  };
-  logo: string;
+    symbol: number
+  }
+  logo: string
 }
 
 export interface IPrices {
-  date?: Array<Date>;
-  volume: Array<number>;
-  high: Array<number>;
-  low: Array<number>;
-  close: Array<number>;
-  open: Array<number>;
-  timestamp: Array<number>;
+  date?: Array<Date>
+  volume: Array<number>
+  high: Array<number>
+  low: Array<number>
+  close: Array<number>
+  open: Array<number>
+  timestamp: Array<number>
 }
 
 export interface IRecommendation {
-  action: EAction;
-  actions: EAction[];
-  stopLoss: number;
-  shares: number;
-  usedStrategy: string;
-  symbolRestructurePrices: IPrices;
+  action: EAction
+  actions: EAction[]
+  stopLoss: number
+  shares: number
+  usedStrategy: string
+  symbolRestructurePrices: IPrices
 }
 
 export enum EAction {
@@ -53,3 +53,18 @@ export enum EAction {
   HOLD = 'HOLD',
   ERROR = 'ERROR',
 }
+
+export interface IOpenPosition {
+  buyPrice: number
+  currentPrice: number
+  currentROR: number
+  profit: number
+  usedStrategy: string
+  symbol: string
+  tradeType: 'long' | 'short'
+  buyAmount: number
+  shares: number
+}
+
+// Response is an object with symbol keys mapping to position data
+export type IOpenPositionsResponse = Record<string, IOpenPosition>
