@@ -1,0 +1,162 @@
+---
+globs: **/axios/*.ts,**/stores/*.ts
+description: API integration and data fetching patterns
+---
+
+# API Integration Patterns
+
+## Axios Configuration
+
+Centralized axios instance in [src/axios/index.ts](mdc:src/axios/index.ts):
+
+```typescript
+import axios from 'axios'
+
+export default axios.create({
+  baseURL: import.meta.env.VITE_API_HOST,
+})
+```
+
+## API Calls in Store Actions
+
+Make API calls within Zustand store actions, not in components:
+
+```typescript
+import axios from '../axios'
+import { AxiosResponse } from 'axios'
+
+actions: {
+  fetchData: async () => {
+    try {
+      const result: AxiosResponse<IData[]> = await axios.get('endpoint')
+      set({ data: result.data })
+    } catch (error) {
+      console.error('Error fetching data:', error)
+      throw error // Re-throw to allow component-level handling
+    }
+  }
+}
+```
+
+Reference: [src/stores/symbataStore.ts](mdc:src/stores/symbataStore.ts) lines 49-56
+
+## Type API Responses
+
+Always type AxiosResponse with expected data shape:
+
+```typescript
+// ✅ GOOD - Typed response
+const result: AxiosResponse<ISymbolItem[]> = await axios.get('analyze/suggestedSymbols')
+
+// ❌ BAD - Untyped response
+const result = await axios.get('analyze/suggestedSymbols')
+```
+
+## Request Parameters
+
+Use params object for query parameters:
+
+```typescript
+const response = await axios.get('analyze/recommendation', {
+  params: {
+    symbol: rowData.symbol,
+    interval: interval,
+    usedStrategy: rowData?.recommendation?.usedStrategy ?? '',
+  },
+})
+```
+
+Reference: [src/stores/symbataStore.ts](mdc:src/stores/symbataStore.ts) lines 60-66
+
+## Error Handling
+
+Always handle errors in async operations:
+
+```typescript
+try {
+  const result = await axios.get('endpoint')
+  return result.data as IData
+} catch (error) {
+  console.error('Error fetching data:', error)
+  throw error // Or return default value, set error state, etc.
+}
+```
+
+**Never silently swallow errors** - always log or propagate them.
+
+## Loading States
+
+Manage loading states in Zustand store or component state:
+
+```typescript
+// In store state
+interface ISymbolItem {
+  loading?: boolean
+  data?: IData
+}
+
+// Update loading state
+actions: {
+  fetchData: async (id: string) => {
+    set({ loading: true })
+    try {
+      const result = await axios.get(`/data/${id}`)
+      set({ data: result.data, loading: false })
+    } catch (error) {
+      console.error(error)
+      set({ loading: false })
+    }
+  }
+}
+```
+
+## Return Types
+
+Explicitly type return values from API actions:
+
+```typescript
+getRecommendation: async (rowData): Promise<IRecommendation> => {
+  try {
+    const req = await axios.get('analyze/recommendation', { params })
+    return req.data as IRecommendation
+  } catch (error) {
+    console.error('Error fetching recommendation:', error)
+    throw error
+  }
+}
+```
+
+Reference: [src/stores/symbataStore.ts](mdc:src/stores/symbataStore.ts) lines 57-73
+
+## Default/Error States
+
+Define error state constants for fallback:
+
+```typescript
+export const initErrorRecommendation: IRecommendation = {
+  action: EAction.ERROR,
+  actions: [],
+  stopLoss: 0,
+  usedStrategy: '',
+  shares: 0,
+  symbolRestructurePrices: {
+    date: [],
+    volume: [],
+    // ... other fields
+  },
+}
+```
+
+Reference: [src/components/TablesContainer/TablesContainer.tsx](mdc:src/components/TablesContainer/TablesContainer.tsx) lines 24-39
+
+## Environment Variables
+
+Access API configuration via Vite env variables:
+
+```typescript
+// ✅ GOOD
+baseURL: import.meta.env.VITE_API_HOST
+
+// ❌ BAD
+baseURL: process.env.REACT_APP_API_HOST // Wrong for Vite
+```

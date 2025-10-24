@@ -1,0 +1,195 @@
+---
+alwaysApply: true
+description: Code quality standards and best practices
+---
+
+# Code Quality Standards
+
+## DRY and KISS Principles
+
+- **Don't Repeat Yourself (DRY)**: Extract common logic into utilities, hooks, or components
+- **Keep It Simple, Stupid (KISS)**: Prefer simple, readable solutions over clever ones
+
+## Self-Documenting Code
+
+Write code that explains itself through clear naming:
+
+```typescript
+// ✅ GOOD - Self-explanatory
+const watchlistsDisabled = useMemo(() => !watchlists.some(({ symbols }) => symbols.length > 0), [watchlists])
+
+// ❌ BAD - Unclear intent
+const disabled = useMemo(() => !wl.some((x) => x.s.length > 0), [wl])
+```
+
+## Comments
+
+### When to Comment
+
+**DO** comment to explain:
+
+- **Why** a decision was made
+- Workarounds or non-obvious solutions
+- References to external documentation
+- TODOs for future improvements
+
+```typescript
+// TODO: Remove "persist" before going to PRODUCTION!!! (it is just for development usage)
+export const useSymbataStore = import.meta.env.DEV ? ...
+
+// The MUI TabPanel component has too much padding by default, so we create our own
+const CustomTabPanel = (props: CustomTabPanelProps) => { ... }
+```
+
+**DON'T** comment to explain:
+
+- What the code does (should be obvious from reading)
+- Obvious variable names or simple operations
+
+```typescript
+// ❌ BAD - Obvious comment
+// Set the symbol to the new value
+setSymbol(newSymbol)
+
+// ✅ GOOD - No comment needed, code is clear
+setSymbol(newSymbol)
+```
+
+### Documentation Links
+
+Include links to external documentation when using copied patterns:
+
+```typescript
+// This is an example code from MUI documentation
+// https://mui.com/material-ui/react-grid/#limitations
+const Item = styled(Paper)(({ theme }) => ({ ... }))
+```
+
+Reference: [src/App.tsx](mdc:src/App.tsx) lines 15-16
+
+## Variable Naming
+
+Use descriptive, unambiguous names:
+
+```typescript
+// ✅ GOOD
+const suggestedSymbols = await fetchSymbols()
+const isWatchlistEmpty = watchlist.symbols.length === 0
+
+// ❌ BAD
+const data = await fetchSymbols()
+const flag = watchlist.symbols.length === 0
+```
+
+## Error Handling
+
+### Never Silently Fail
+
+Always log errors at minimum:
+
+```typescript
+// ✅ GOOD
+catch (error) {
+  console.error('Error fetching suggested symbols:', error)
+  // Optionally: throw, set error state, show toast, etc.
+}
+
+// ❌ BAD
+catch (error) {
+  // Empty catch block - error disappears
+}
+```
+
+### Meaningful Error Messages
+
+Include context in error messages:
+
+```typescript
+console.error('Error fetching recommendation:', error)
+console.warn('Symbol not found in any watchlist')
+```
+
+## TypeScript Rigor
+
+### Fix Type Errors Immediately
+
+**Don't work around TypeScript errors** - fix them:
+
+```typescript
+// ❌ BAD - Working around type error
+const data = response.data as any
+
+// ✅ GOOD - Fix the type
+interface IResponse {
+  data: ISymbolItem[]
+}
+const response: AxiosResponse<ISymbolItem[]> = await axios.get(...)
+```
+
+### No Type Suppression
+
+Avoid suppression comments unless absolutely necessary:
+
+```typescript
+// ❌ BAD
+// @ts-ignore
+const value = obj.unknownProp
+
+// ✅ GOOD - Define proper types
+interface IObj {
+  unknownProp?: string
+}
+const value = obj.unknownProp
+```
+
+## Consistent Formatting
+
+Follow existing formatting conventions:
+
+- **Indentation**: 2 spaces (configured in ESLint)
+- **Quotes**: Single quotes for strings
+- **Semicolons**: Consistent usage (check ESLint rules)
+- **Trailing commas**: Yes (where valid)
+
+## Unused Code
+
+Remove unused imports, variables, and code:
+
+```typescript
+// ❌ BAD
+import { unused } from 'library'
+const unusedVar = 42
+
+// ✅ GOOD - Only import what you use
+import { useState } from 'react'
+```
+
+This is enforced by TypeScript config ([tsconfig.app.json](mdc:tsconfig.app.json)):
+
+- `noUnusedLocals: true`
+- `noUnusedParameters: true`
+
+## Magic Numbers
+
+Extract magic numbers into named constants:
+
+```typescript
+// ✅ GOOD
+const DEFAULT_PROFILE_VALUE = 100_000
+const spacingBetween = 1
+
+// ❌ BAD
+set({ profileValue: 100000 })
+```
+
+Reference: [src/stores/symbataStore.ts](mdc:src/stores/symbataStore.ts) line 28
+
+## Production Readiness
+
+All code should be production-ready:
+
+- ✅ No console.log statements in production code
+- ✅ Proper error boundaries
+- ✅ Loading and error states handled
+- ✅ No technical debt or workarounds without justification
+- ✅ Remove development-only code (or gate with `import.meta.env.DEV`)

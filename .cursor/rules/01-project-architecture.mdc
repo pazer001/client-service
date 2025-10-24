@@ -1,0 +1,52 @@
+---
+alwaysApply: true
+description: Core project architecture and structure guidelines
+---
+
+# Project Architecture & Structure
+
+This is a React 19 + TypeScript + Vite application for financial/trading analysis (Symbata).
+
+## Tech Stack
+
+- **Frontend**: React 19, TypeScript 5.9
+- **Build Tool**: Vite 7
+- **UI Framework**: Material-UI (MUI) v7
+- **State Management**: Zustand v5 with persist middleware
+- **HTTP Client**: Axios
+- **Data Visualization**: ECharts
+- **Data Grid**: MUI X DataGrid
+
+## Project Structure
+
+```
+src/
+  ├── components/        # React components organized by feature
+  ├── stores/           # Zustand stores with separate .types.ts files
+  ├── axios/            # Axios configuration
+  ├── hooks/            # Custom React hooks
+  ├── utils/            # Utility functions
+  └── assets/           # Static assets (logos, images, SVGs)
+```
+
+## Key Configuration Files
+
+- [vite.config.ts](mdc:vite.config.ts) - Vite build configuration with React Compiler plugin
+- [tsconfig.app.json](mdc:tsconfig.app.json) - TypeScript strict mode configuration
+- [eslint.config.js](mdc:eslint.config.js) - ESLint flat config setup
+- [package.json](mdc:package.json) - Dependencies and scripts
+
+## Environment Variables
+
+Use Vite environment variables accessed via `import.meta.env`:
+
+- `VITE_API_HOST` - API base URL for axios instance
+
+## Development vs Production
+
+Conditional logic based on `import.meta.env.DEV`:
+
+- Development: Zustand persist middleware enabled for debugging
+- Production: Persist middleware disabled, devtools disabled
+
+Refer to [src/stores/symbataStore.ts](mdc:src/stores/symbataStore.ts) lines 78-100 for the pattern.
