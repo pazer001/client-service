@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
+import react from '@vitejs/plugin-react'
 import eslint from 'vite-plugin-eslint2'
 import svgr from 'vite-plugin-svgr'
 // import basicSsl from '@vitejs/plugin-basic-ssl'
@@ -8,7 +8,11 @@ import svgr from 'vite-plugin-svgr'
 export default defineConfig({
   plugins: [
     // basicSsl(),
-    react(),
+    react({
+      babel: {
+        plugins: ['babel-plugin-react-compiler'],
+      },
+    }),
     eslint(),
     svgr(),
   ],
