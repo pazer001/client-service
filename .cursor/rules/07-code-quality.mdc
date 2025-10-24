@@ -81,6 +81,45 @@ const data = await fetchSymbols()
 const flag = watchlist.symbols.length === 0
 ```
 
+## Performance Best Practices
+
+### Object Iteration
+
+Use `for...in` for iterating over object properties - it's the most efficient approach with zero overhead:
+
+```typescript
+// ✅ BEST - Most efficient, no conversions
+for (const key in obj) {
+  const value = obj[key]
+  // Process key and value
+}
+
+// ⚠️ ACCEPTABLE - Creates array of [key, value] pairs
+for (const [key, value] of Object.entries(obj)) {
+  // Process key and value
+}
+
+// ❌ AVOID - Creates intermediate array + function overhead
+Object.keys(obj).forEach((key) => {
+  const value = obj[key]
+  // Process key and value
+})
+```
+
+**Performance Comparison:**
+
+- `for...in`: Zero allocations, direct property enumeration
+- `Object.entries()`: Creates array of [key, value] pairs
+- `Object.keys().forEach()`: Creates array + function call overhead
+
+**When to use each:**
+
+- **`for...in`**: Default choice for iterating over object properties
+- **`Object.entries()`**: When you need to use array methods (map, filter, etc.)
+- **`Object.keys()`**: When you only need the keys and will use array methods
+
+Reference: [src/components/TablesContainer/OpenPositions/OpenPositions.tsx](mdc:src/components/TablesContainer/OpenPositions/OpenPositions.tsx) line 244
+
 ## Error Handling
 
 ### Never Silently Fail
