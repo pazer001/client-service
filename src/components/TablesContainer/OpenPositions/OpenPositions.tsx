@@ -1,11 +1,21 @@
-import { useEffect, useMemo } from 'react'
-import { Box, Card, CardContent, CircularProgress, Grid, styled, Typography } from '@mui/material'
+import { useEffect, useMemo, useState, useRef } from 'react'
+import { Box, Card, CardContent, CircularProgress, Grid, styled, Typography, keyframes } from '@mui/material'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import TrendingDownIcon from '@mui/icons-material/TrendingDown'
 import { useSymbataStoreActions, useSymbataStoreOpenPositions } from '../../../stores/symbataStore.ts'
 import { IOpenPosition } from '../../../stores/symbataStore.types.ts'
 import { formatNumber } from '../../../utils/utils.ts'
-import { green, red } from '@mui/material/colors'
+import { green, red, yellow } from '@mui/material/colors'
+
+// Flash animation for updated values
+const flashAnimation = keyframes`
+  0% {
+    background-color: ${yellow[200]};
+  }
+  100% {
+    background-color: transparent;
+  }
+`
 
 const PositionCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.spacing(1.5),
@@ -13,6 +23,13 @@ const PositionCard = styled(Card)(({ theme }) => ({
   '&:hover': {
     boxShadow: theme.shadows[4],
   },
+}))
+
+const FlashBox = styled(Box)<{ flash?: boolean }>(({ flash }) => ({
+  animation: flash ? `${flashAnimation} 1s ease-out` : 'none',
+  padding: '4px 8px',
+  borderRadius: '4px',
+  display: 'inline-block',
 }))
 
 const MetricBox = styled(Box)(({ theme }) => ({
@@ -36,12 +53,18 @@ const MetricValue = styled(Typography)(() => ({
 
 interface PositionItemProps {
   position: IOpenPosition
+  flashingFields: Set<string>
 }
 
-const PositionItem = ({ position }: PositionItemProps) => {
+const PositionItem = ({ position, flashingFields }: PositionItemProps) => {
   const isProfit = position.profit > 0
   const profitColor = isProfit ? green[700] : red[700]
   const profitBgColor = isProfit ? green[50] : red[50]
+
+  // Check if specific fields are flashing for this symbol
+  const isCurrentPriceFlashing = flashingFields.has(`${position.symbol}-currentPrice`)
+  const isProfitFlashing = flashingFields.has(`${position.symbol}-profit`)
+  const isRORFlashing = flashingFields.has(`${position.symbol}-currentROR`)
 
   return (
     <PositionCard>
@@ -80,22 +103,26 @@ const PositionItem = ({ position }: PositionItemProps) => {
           <Box display="flex" gap={2}>
             <MetricBox sx={{ alignItems: { xs: 'flex-end', sm: 'flex-start' } }}>
               <MetricLabel>Profit/Loss</MetricLabel>
-              <MetricValue sx={{ color: profitColor, fontWeight: 700, fontSize: { xs: '1rem', sm: '1.1rem' } }}>
-                {isProfit ? '+' : ''}${Math.abs(position.profit).toFixed(2)}
-              </MetricValue>
+              <FlashBox flash={isProfitFlashing}>
+                <MetricValue sx={{ color: profitColor, fontWeight: 700, fontSize: { xs: '1rem', sm: '1.1rem' } }}>
+                  {isProfit ? '+' : ''}${Math.abs(position.profit).toFixed(2)}
+                </MetricValue>
+              </FlashBox>
             </MetricBox>
             <MetricBox sx={{ alignItems: { xs: 'flex-end', sm: 'flex-start' } }}>
               <MetricLabel>ROR</MetricLabel>
-              <MetricValue sx={{ color: profitColor, fontWeight: 700, fontSize: { xs: '1rem', sm: '1.1rem' } }}>
-                {position.currentROR > 0 ? '+' : ''}
-                {position.currentROR.toFixed(2)}%
-              </MetricValue>
+              <FlashBox flash={isRORFlashing}>
+                <MetricValue sx={{ color: profitColor, fontWeight: 700, fontSize: { xs: '1rem', sm: '1.1rem' } }}>
+                  {position.currentROR > 0 ? '+' : ''}
+                  {position.currentROR.toFixed(2)}%
+                </MetricValue>
+              </FlashBox>
             </MetricBox>
           </Box>
         </Box>
 
         {/* Details Grid - Responsive layout */}
-        <Grid container spacing={{ xs: 1.5, sm: 2 }}>
+        <Grid container spacing={{ xs: 1.5, sm: 2 }} columnGap={3}>
           <Grid size={{ xs: 6, sm: 3, md: 2 }}>
             <MetricBox>
               <MetricLabel>Buy Price</MetricLabel>
@@ -108,9 +135,11 @@ const PositionItem = ({ position }: PositionItemProps) => {
           <Grid size={{ xs: 6, sm: 3, md: 2 }}>
             <MetricBox>
               <MetricLabel>Current</MetricLabel>
-              <MetricValue sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
-                ${position.currentPrice.toFixed(2)}
-              </MetricValue>
+              <FlashBox flash={isCurrentPriceFlashing}>
+                <MetricValue sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                  ${position.currentPrice.toFixed(2)}
+                </MetricValue>
+              </FlashBox>
             </MetricBox>
           </Grid>
 
@@ -170,6 +199,8 @@ const LoadingState = () => (
 export const OpenPositions = () => {
   const { getOpenPositions } = useSymbataStoreActions()
   const openPositions = useSymbataStoreOpenPositions()
+  const [flashingFields, setFlashingFields] = useState<Set<string>>(new Set())
+  const previousPositionsRef = useRef<Record<string, IOpenPosition>>({})
 
   useEffect(() => {
     // Fetch immediately on mount
@@ -185,6 +216,47 @@ export const OpenPositions = () => {
       clearInterval(intervalId)
     }
   }, [getOpenPositions])
+
+  // Detect changes and trigger flash animation
+  useEffect(() => {
+    if (!openPositions) return
+
+    const newFlashingFields = new Set<string>()
+
+    // Compare current positions with previous positions
+    Object.keys(openPositions).forEach((symbol) => {
+      const currentPos = openPositions[symbol]
+      const previousPos = previousPositionsRef.current[symbol]
+
+      if (previousPos) {
+        // Check if currentPrice changed
+        if (currentPos.currentPrice !== previousPos.currentPrice) {
+          newFlashingFields.add(`${symbol}-currentPrice`)
+        }
+        // Check if profit changed
+        if (currentPos.profit !== previousPos.profit) {
+          newFlashingFields.add(`${symbol}-profit`)
+        }
+        // Check if ROR changed
+        if (currentPos.currentROR !== previousPos.currentROR) {
+          newFlashingFields.add(`${symbol}-currentROR`)
+        }
+      }
+    })
+
+    // Update flashing fields if there are changes
+    if (newFlashingFields.size > 0) {
+      setFlashingFields(newFlashingFields)
+
+      // Clear flashing after animation completes (1 second)
+      setTimeout(() => {
+        setFlashingFields(new Set())
+      }, 1000)
+    }
+
+    // Update previous positions reference
+    previousPositionsRef.current = { ...openPositions }
+  }, [openPositions])
 
   const positionsArray = useMemo(() => {
     if (!openPositions) return []
@@ -203,7 +275,7 @@ export const OpenPositions = () => {
     <Box sx={{ p: { xs: 1, sm: 2 }, height: 'calc(100dvh - 155px)', overflow: 'auto' }}>
       <Box display="flex" flexDirection="column" gap={{ xs: 1.5, sm: 2 }}>
         {positionsArray.map((position) => (
-          <PositionItem key={position.symbol} position={position} />
+          <PositionItem key={position.symbol} position={position} flashingFields={flashingFields} />
         ))}
       </Box>
     </Box>
