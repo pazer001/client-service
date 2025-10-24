@@ -1,5 +1,15 @@
 import { useEffect, useMemo, useState, useRef } from 'react'
-import { Box, Card, CardContent, CircularProgress, Grid, styled, Typography, keyframes } from '@mui/material'
+import {
+  Box,
+  Card,
+  CardContent,
+  CircularProgress,
+  Grid,
+  styled,
+  Typography,
+  keyframes,
+  LinearProgress,
+} from '@mui/material'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import TrendingDownIcon from '@mui/icons-material/TrendingDown'
 import { useSymbataStoreActions, useSymbataStoreOpenPositions } from '../../../stores/symbataStore.ts'
@@ -160,12 +170,6 @@ const PositionItem = ({ position, flashingFields }: PositionItemProps) => {
               </MetricValue>
             </MetricBox>
           </Grid>
-
-          <Grid size={12}>
-            <Typography variant="caption" color="text.secondary" sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}>
-              {position.usedStrategy}
-            </Typography>
-          </Grid>
         </Grid>
       </CardContent>
     </PositionCard>
@@ -200,20 +204,33 @@ export const OpenPositions = () => {
   const { getOpenPositions } = useSymbataStoreActions()
   const openPositions = useSymbataStoreOpenPositions()
   const [flashingFields, setFlashingFields] = useState<Set<string>>(new Set())
+  const [progress, setProgress] = useState(0)
   const previousPositionsRef = useRef<Record<string, IOpenPosition>>({})
+  const startTimeRef = useRef<number>(Date.now())
 
   useEffect(() => {
     // Fetch immediately on mount
     getOpenPositions()
+    startTimeRef.current = Date.now()
 
     // Set up polling every 1 minute (60000ms)
     const intervalId = setInterval(() => {
       getOpenPositions()
+      startTimeRef.current = Date.now()
+      setProgress(0)
     }, 60000)
 
-    // Cleanup interval on unmount
+    // Update progress bar every 100ms for smooth animation
+    const progressInterval = setInterval(() => {
+      const elapsed = Date.now() - startTimeRef.current
+      const newProgress = Math.min((elapsed / 60000) * 100, 100)
+      setProgress(newProgress)
+    }, 100)
+
+    // Cleanup intervals on unmount
     return () => {
       clearInterval(intervalId)
+      clearInterval(progressInterval)
     }
   }, [getOpenPositions])
 
@@ -273,6 +290,28 @@ export const OpenPositions = () => {
 
   return (
     <Box sx={{ p: { xs: 1, sm: 2 }, height: 'calc(100dvh - 75px)', overflow: 'auto' }}>
+      {/* Progress bar indicating time until next fetch */}
+      <Box sx={{ mb: 2 }}>
+        <LinearProgress
+          variant="determinate"
+          value={progress}
+          sx={{
+            height: 6,
+            borderRadius: 1,
+            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+            '& .MuiLinearProgress-bar': {
+              borderRadius: 1,
+              transition: 'transform 0.1s linear',
+            },
+          }}
+        />
+        <Box display="flex" justifyContent="space-between" alignItems="center" mt={0.5}>
+          <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+            Next update: {Math.ceil((60000 - (progress / 100) * 60000) / 1000)}s
+          </Typography>
+        </Box>
+      </Box>
+
       <Box display="flex" flexDirection="column" gap={{ xs: 1.5, sm: 2 }}>
         {positionsArray.map((position) => (
           <PositionItem key={position.symbol} position={position} flashingFields={flashingFields} />
