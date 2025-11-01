@@ -20,5 +20,6 @@ export default defineConfig({
     // https: true,
     host: true,
     port: 3001,
+    open: true,
   },
 })

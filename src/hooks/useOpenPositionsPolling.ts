@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { IOpenPosition, IOpenPositionsResponse } from '../stores/symbataStore.types.ts'
 
 /**
@@ -14,6 +14,14 @@ export const useOpenPositionsPolling = (
   const previousPositionsRef = useRef<Record<string, IOpenPosition>>({})
   const startTimeRef = useRef<number>(Date.now())
 
+  const refreshOpenPositions = useEffectEvent(() => {
+    getOpenPositions().catch((error) => {
+      console.error('Error refreshing open positions:', error)
+    })
+    startTimeRef.current = Date.now()
+    setProgress(0)
+  })
+
   // Poll open positions every 60 seconds with progress tracking
   useEffect(() => {
     // Fetch immediately on mount
@@ -22,9 +30,7 @@ export const useOpenPositionsPolling = (
 
     // Set up polling every 1 minute (60000ms)
     const intervalId = setInterval(() => {
-      getOpenPositions()
-      startTimeRef.current = Date.now()
-      setProgress(0)
+      refreshOpenPositions()
     }, 60000)
 
     // Update progress bar every 100ms for smooth animation
@@ -85,5 +91,6 @@ export const useOpenPositionsPolling = (
   return {
     flashingFields,
     progress,
+    refreshOpenPositions,
   }
 }
