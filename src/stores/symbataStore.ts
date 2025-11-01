@@ -14,6 +14,8 @@ export interface IStoreActions {
   getOpenPositions: () => Promise<void>
   setProfileValue: (value: number) => void
   setInterval: (interval: Interval) => void
+  startAlgo: (userId: string) => Promise<boolean>
+  stopAlgo: (userId: string) => Promise<boolean>
 }
 
 export interface ISymbolStore {
@@ -22,6 +24,7 @@ export interface ISymbolStore {
   symbol: ISymbolItem | undefined
   symbols: ISymbolItem[]
   openPositions: IOpenPositionsResponse | undefined
+  isAlgoStarted: boolean
   actions: IStoreActions
 }
 
@@ -31,6 +34,7 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
   symbol: undefined,
   symbols: [],
   openPositions: undefined,
+  isAlgoStarted: false,
   actions: {
     setInterval: (interval: Interval) => {
       set({ interval })
@@ -82,6 +86,26 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
         throw error
       }
     },
+    startAlgo: async (userId: string) => {
+      try {
+        const result: AxiosResponse<boolean> = await axios.post(`algo/start?userId=${userId}`)
+        set({ isAlgoStarted: result.data })
+        return result.data
+      } catch (error) {
+        console.error('Error starting algo:', error)
+        throw error
+      }
+    },
+    stopAlgo: async (userId: string) => {
+      try {
+        const result: AxiosResponse<boolean> = await axios.post(`algo/stop?userId=${userId}`)
+        set({ isAlgoStarted: result.data })
+        return result.data
+      } catch (error) {
+        console.error('Error stopping algo:', error)
+        throw error
+      }
+    },
   },
 })
 
@@ -113,3 +137,4 @@ export const useSymbataStoreSymbols = () => useSymbataStore((state) => state.sym
 export const useSymbataStoreInterval = () => useSymbataStore((state) => state.interval)
 export const useSymbataStoreProfileValue = () => useSymbataStore((state) => state.profileValue)
 export const useSymbataStoreOpenPositions = () => useSymbataStore((state) => state.openPositions)
+export const useSymbataStoreIsAlgoStarted = () => useSymbataStore((state) => state.isAlgoStarted)

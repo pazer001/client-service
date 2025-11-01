@@ -8,6 +8,7 @@ import { BaseSyntheticEvent } from 'react'
 import Logo from './assets/logos/horizontal-color-logo-no-background.svg'
 import Chart from './components/Chart/Chart.tsx'
 import Algo from './components/Algo/Algo.tsx'
+import { StartAlgo } from './components/Algo/StartAlgo.tsx'
 
 const spacingBetween = 1
 const fullHeightStyleProp = { height: '100%' }
@@ -56,7 +57,10 @@ function App() {
         <Toolbar variant="dense">
           <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
             <img alt="Symbata logo" src={Logo} height="30px" />
-            <IntervalController />
+            <Box display="flex" alignItems="center" gap={2}>
+              <StartAlgo />
+              <IntervalController />
+            </Box>
           </Box>
         </Toolbar>
       </AppBar>
