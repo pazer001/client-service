@@ -45,7 +45,7 @@ export const OpenPositions = () => {
     return <LoadingState />
   }
 
-  if (positionsArray.length !== 0) {
+  if (positionsArray.length === 0) {
     return <EmptyState />
   }
 
