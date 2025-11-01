@@ -28,6 +28,11 @@ export interface ISymbolStore {
   actions: IStoreActions
 }
 
+const algoApiUrl: Record<Interval, { start: string; stop: string }> = {
+  [Interval['1d']]: { start: 'algo/runSwing/', stop: 'algo/stopSwing/' },
+  [Interval['5m']]: { start: 'algo/runIntraday/', stop: 'algo/stopIntraday/' },
+}
+
 const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
   interval: Interval['1d'],
   profileValue: 100_000,
@@ -88,7 +93,9 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
     },
     startAlgo: async (userId: string) => {
       try {
-        const result: AxiosResponse<boolean> = await axios.post(`algo/start?userId=${userId}`)
+        const { interval } = get()
+        const url = algoApiUrl[interval].start + userId
+        const result: AxiosResponse<boolean> = await axios.post(url)
         set({ isAlgoStarted: result.data })
         return result.data
       } catch (error) {
@@ -98,7 +105,9 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
     },
     stopAlgo: async (userId: string) => {
       try {
-        const result: AxiosResponse<boolean> = await axios.post(`algo/stop?userId=${userId}`)
+        const { interval } = get()
+        const url = algoApiUrl[interval].stop + userId
+        const result: AxiosResponse<boolean> = await axios.post(url)
         set({ isAlgoStarted: result.data })
         return result.data
       } catch (error) {
