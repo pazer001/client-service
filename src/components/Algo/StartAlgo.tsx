@@ -2,13 +2,17 @@ import { useState } from 'react'
 import { Box, IconButton, TextField, Tooltip } from '@mui/material'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import StopIcon from '@mui/icons-material/Stop'
-import { useSymbataStoreActions, useSymbataStoreIsAlgoStarted } from '../../stores/symbataStore.ts'
+import {
+  useSymbataStoreActions,
+  useSymbataStoreIsAlgoStarted,
+  useSymbataStoreUserId,
+} from '../../stores/symbataStore.ts'
 
 export const StartAlgo = () => {
-  const [userId, setUserId] = useState('')
+  const userId = useSymbataStoreUserId()
   const [isLoading, setIsLoading] = useState(false)
   const isAlgoStarted = useSymbataStoreIsAlgoStarted()
-  const { startAlgo, stopAlgo } = useSymbataStoreActions()
+  const { startAlgo, stopAlgo, setUserId } = useSymbataStoreActions()
 
   const handleToggleAlgo = async () => {
     if (!userId.trim()) return

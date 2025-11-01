@@ -16,6 +16,8 @@ export interface IStoreActions {
   setInterval: (interval: Interval) => void
   startAlgo: (userId: string) => Promise<boolean>
   stopAlgo: (userId: string) => Promise<boolean>
+  setIsAlgoStarted: (isAlgoStarted: boolean) => void
+  setUserId: (userId: string) => void
 }
 
 export interface ISymbolStore {
@@ -25,6 +27,7 @@ export interface ISymbolStore {
   symbols: ISymbolItem[]
   openPositions: IOpenPositionsResponse | undefined
   isAlgoStarted: boolean
+  userId: string
   actions: IStoreActions
 }
 
@@ -40,7 +43,11 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
   symbols: [],
   openPositions: undefined,
   isAlgoStarted: false,
+  userId: '',
   actions: {
+    setUserId: (userId: string) => {
+      set({ userId })
+    },
     setInterval: (interval: Interval) => {
       set({ interval })
     },
@@ -90,6 +97,9 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
         console.error('Error fetching recommendation:', error)
         throw error
       }
+    },
+    setIsAlgoStarted: (isAlgoStarted: boolean) => {
+      set({ isAlgoStarted })
     },
     startAlgo: async (userId: string) => {
       try {
@@ -147,3 +157,4 @@ export const useSymbataStoreInterval = () => useSymbataStore((state) => state.in
 export const useSymbataStoreProfileValue = () => useSymbataStore((state) => state.profileValue)
 export const useSymbataStoreOpenPositions = () => useSymbataStore((state) => state.openPositions)
 export const useSymbataStoreIsAlgoStarted = () => useSymbataStore((state) => state.isAlgoStarted)
+export const useSymbataStoreUserId = () => useSymbataStore((state) => state.userId)

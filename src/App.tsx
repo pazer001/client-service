@@ -2,7 +2,12 @@ import { AppBar, Box, Grid, Paper, Stack, styled, ToggleButton, Toolbar } from '
 import AnalyzedResult from './components/AnalyzedResult/AnalyzedResult'
 import { TablesContainer } from './components/TablesContainer/TablesContainer.tsx'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import { useSymbataStoreActions, useSymbataStoreInterval } from './stores/symbataStore.ts'
+import {
+  useSymbataStoreActions,
+  useSymbataStoreInterval,
+  useSymbataStoreIsAlgoStarted,
+  useSymbataStoreUserId,
+} from './stores/symbataStore.ts'
 import { Interval } from './components/interfaces.ts'
 import { BaseSyntheticEvent } from 'react'
 import Logo from './assets/logos/horizontal-color-logo-no-background.svg'
@@ -31,15 +36,20 @@ const MainContainer = styled(Box)(({ theme }) => ({
 
 const IntervalController = () => {
   const interval = useSymbataStoreInterval()
-  const { setInterval } = useSymbataStoreActions()
+  const userId = useSymbataStoreUserId()
+  const isAlgoStared = useSymbataStoreIsAlgoStarted()
+  const { setInterval, setIsAlgoStarted, stopAlgo } = useSymbataStoreActions()
+
+  const onChangeInterval = (event: BaseSyntheticEvent) => {
+    setInterval(event.target.value as Interval)
+    if (isAlgoStared) {
+      setIsAlgoStarted(false)
+      stopAlgo(userId)
+    }
+  }
 
   return (
-    <ToggleButtonGroup
-      value={interval}
-      size="small"
-      exclusive
-      onChange={(event: BaseSyntheticEvent) => setInterval(event.target.value as Interval)}
-    >
+    <ToggleButtonGroup value={interval} size="small" exclusive onChange={onChangeInterval}>
       <ToggleButton size="small" value={Interval['1d']}>
         {Interval['1d']}
       </ToggleButton>
