@@ -69,7 +69,7 @@ const Balance = () => {
   }
 
   const formatPercentage = (value: number) => {
-    return `${(value * 100).toFixed(2)}%`
+    return `${value.toFixed(2)}%`
   }
 
   return (
