@@ -12,7 +12,7 @@ import { Interval } from './components/interfaces.ts'
 import { BaseSyntheticEvent } from 'react'
 import Logo from './assets/logos/horizontal-color-logo-no-background.svg'
 import Chart from './components/Chart/Chart.tsx'
-import Algo from './components/Algo/Algo.tsx'
+import Balance from './components/Balance/Balance.tsx'
 import { StartAlgo } from './components/Algo/StartAlgo.tsx'
 
 const spacingBetween = 1
@@ -81,7 +81,7 @@ function App() {
               <Chart />
             </Item>
             <Item sx={{ height: 'calc(100% / 2)' }}>
-              <Algo />
+              <Balance />
             </Item>
           </Stack>
         </Grid>

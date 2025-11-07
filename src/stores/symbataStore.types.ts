@@ -68,3 +68,13 @@ export interface IOpenPosition {
 
 // Response is an object with symbol keys mapping to position data
 export type IOpenPositionsResponse = Record<string, IOpenPosition>
+
+export interface IAlpacaBalancesResponse {
+  currency: string
+  buyingPower: number
+  cash: number
+  equity: number
+  lastEquity: number
+  todayProfit: number
+  todayROR: number
+}

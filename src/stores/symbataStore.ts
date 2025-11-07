@@ -3,7 +3,7 @@ import { devtools, persist, createJSONStorage } from 'zustand/middleware'
 import { Interval } from '../components/interfaces.ts'
 import axios from '../axios'
 import { AxiosResponse } from 'axios'
-import { IRecommendation, ISymbolItem, IOpenPositionsResponse } from './symbataStore.types.ts'
+import { IRecommendation, ISymbolItem, IOpenPositionsResponse, IAlpacaBalancesResponse } from './symbataStore.types.ts'
 
 export interface IStoreActions {
   setSymbol: (symbol: ISymbolItem) => void
@@ -12,6 +12,7 @@ export interface IStoreActions {
   getRecommendation: (symbol: ISymbolItem) => Promise<IRecommendation>
   getSuggestedSymbols: () => Promise<void>
   getOpenPositions: () => Promise<void>
+  getBalance: (userId: string) => Promise<void>
   setProfileValue: (value: number) => void
   setInterval: (interval: Interval) => void
   startAlgo: (userId: string) => Promise<boolean>
@@ -26,6 +27,7 @@ export interface ISymbolStore {
   symbol: ISymbolItem | undefined
   symbols: ISymbolItem[]
   openPositions: IOpenPositionsResponse | undefined
+  balance: IAlpacaBalancesResponse | undefined
   isAlgoStarted: boolean
   userId: string
   actions: IStoreActions
@@ -42,6 +44,7 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
   symbol: undefined,
   symbols: [],
   openPositions: undefined,
+  balance: undefined,
   isAlgoStarted: false,
   userId: '',
   actions: {
@@ -79,6 +82,15 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
         set({ openPositions: result.data })
       } catch (error) {
         console.error('Error fetching open positions:', error)
+      }
+    },
+    getBalance: async (userId: string) => {
+      try {
+        const result: AxiosResponse<IAlpacaBalancesResponse> = await axios.get(`algo/balances/${userId}`)
+        set({ balance: result.data })
+      } catch (error) {
+        console.error('Error fetching balance:', error)
+        throw error
       }
     },
     getRecommendation: async (rowData) => {
@@ -156,5 +168,6 @@ export const useSymbataStoreSymbols = () => useSymbataStore((state) => state.sym
 export const useSymbataStoreInterval = () => useSymbataStore((state) => state.interval)
 export const useSymbataStoreProfileValue = () => useSymbataStore((state) => state.profileValue)
 export const useSymbataStoreOpenPositions = () => useSymbataStore((state) => state.openPositions)
+export const useSymbataStoreBalance = () => useSymbataStore((state) => state.balance)
 export const useSymbataStoreIsAlgoStarted = () => useSymbataStore((state) => state.isAlgoStarted)
 export const useSymbataStoreUserId = () => useSymbataStore((state) => state.userId)
