@@ -13,10 +13,10 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@fontsource/roboto": "^5.2.8",
-    "@mui/icons-material": "^7.3.4",
-    "@mui/material": "^7.3.4",
-    "@mui/x-data-grid": "8.16.0",
-    "axios": "^1.13.1",
+    "@mui/icons-material": "^7.3.5",
+    "@mui/material": "^7.3.5",
+    "@mui/x-data-grid": "8.17.0",
+    "axios": "^1.13.2",
     "echarts": "^6.0.0",
     "lodash": "^4.17.21",
     "millify": "^6.1.0",
@@ -29,7 +29,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.0",
+    "@eslint/js": "^9.39.1",
     "@types/lodash": "^4.17.20",
     "@types/luxon": "^3.7.1",
     "@types/react": "^19.2.2",
@@ -38,10 +38,10 @@
     "@types/react-resizable": "^3.0.8",
     "@vitejs/plugin-basic-ssl": "^2.1.0",
     "@vitejs/plugin-react": "^5.1.0",
-    "@vitejs/plugin-react-swc": "^4.2.0",
+    "@vitejs/plugin-react-swc": "^4.2.1",
     "babel-plugin-react-compiler": "^1.0.0",
-    "echarts-for-react": "^3.0.2",
-    "eslint": "^9.39.0",
+    "echarts-for-react": "^3.0.5",
+    "eslint": "^9.39.1",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
@@ -49,8 +49,8 @@
     "luxon": "^3.7.2",
     "prettier": "^3.6.2",
     "typescript": "~5.9.3",
-    "typescript-eslint": "^8.46.2",
-    "vite": "^7.1.12",
+    "typescript-eslint": "^8.46.3",
+    "vite": "^7.2.2",
     "vite-plugin-eslint2": "^5.0.4"
   }
 }
