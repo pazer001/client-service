@@ -46,7 +46,7 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
   openPositions: undefined,
   balance: undefined,
   isAlgoStarted: false,
-  userId: '',
+  userId: '1f71bd6d-be84-456f-89e5-925528431139',
   actions: {
     setUserId: (userId: string) => {
       set({ userId })
