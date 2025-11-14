@@ -14,12 +14,17 @@ export const useOpenPositionsPolling = (
   const previousPositionsRef = useRef<Record<string, IOpenPosition>>({})
   const startTimeRef = useRef<number>(Date.now())
 
-  const refreshOpenPositions = useEffectEvent(() => {
-    getOpenPositions().catch((error) => {
+  // Async wrapper to ensure timer resets only after API call completes
+  const refreshOpenPositions = useEffectEvent(async () => {
+    try {
+      await getOpenPositions()
+    } catch (error) {
       console.error('Error refreshing open positions:', error)
-    })
-    startTimeRef.current = Date.now()
-    setProgress(0)
+    } finally {
+      // Reset timer and progress only after API call completes (success or failure)
+      startTimeRef.current = Date.now()
+      setProgress(0)
+    }
   })
 
   // Poll open positions every 60 seconds with progress tracking
