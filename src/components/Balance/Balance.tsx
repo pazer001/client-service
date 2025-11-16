@@ -124,7 +124,7 @@ const Balance = () => {
           <BalanceItem
             elevation={1}
             sx={{
-              backgroundColor: balance.todayProfit >= 0 ? 'success.light' : 'error.light',
+              backgroundColor: balance.todayProfit >= 0 ? 'success.dark' : 'error.light',
             }}
           >
             <Typography variant="body2" color="text.secondary">
@@ -137,7 +137,7 @@ const Balance = () => {
           <BalanceItem
             elevation={1}
             sx={{
-              backgroundColor: balance.todayROR >= 0 ? 'success.light' : 'error.light',
+              backgroundColor: balance.todayROR >= 0 ? 'success.dark' : 'error.light',
             }}
           >
             <Typography variant="body2" color="text.secondary">
