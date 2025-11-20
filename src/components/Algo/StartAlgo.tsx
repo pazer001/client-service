@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, IconButton, TextField, Tooltip } from '@mui/material'
+import { Box, IconButton, MenuItem, Select, SelectChangeEvent, Tooltip } from '@mui/material'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import StopIcon from '@mui/icons-material/Stop'
 import {
@@ -35,13 +35,15 @@ export const StartAlgo = () => {
 
   return (
     <Box display="flex" alignItems="center" gap={1}>
-      <TextField
+      <Select
         size="small"
-        placeholder="User ID"
         value={userId}
-        onChange={(e) => setUserId(e.target.value)}
+        onChange={(e: SelectChangeEvent) => setUserId(e.target.value)}
         disabled={isLoading}
-      />
+      >
+        <MenuItem value="1f71bd6d-be84-456f-89e5-925528431139">Paz</MenuItem>
+        <MenuItem value="963caa3a-03f8-4730-be71-046cb1b7aaac">Ben</MenuItem>
+      </Select>
       <Tooltip title={isAlgoStarted ? 'Stop Algo' : 'Start Algo'}>
         <span>
           <IconButton
