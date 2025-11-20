@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import { Box, IconButton, MenuItem, Select, SelectChangeEvent, Tooltip } from '@mui/material'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import StopIcon from '@mui/icons-material/Stop'
+import { Box, IconButton, MenuItem, Select, SelectChangeEvent, Tooltip } from '@mui/material'
+import { useState } from 'react'
 import {
   useSymbataStoreActions,
   useSymbataStoreIsAlgoStarted,

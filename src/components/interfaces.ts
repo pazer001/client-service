@@ -8,8 +8,8 @@ export enum Interval {
 }
 
 export enum Verdict {
-  'Buy' = 'Buy',
-  'Sell' = 'Sell',
-  'Hold' = 'Hold',
+  Buy = 'Buy',
+  Sell = 'Sell',
+  Hold = 'Hold',
   '' = '',
 }

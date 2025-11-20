@@ -1,22 +1,22 @@
-import { Activity, useMemo, useState } from 'react'
-import { useWatchlistStoreWatchlists } from '../../stores/watchlistStore'
-import { Avatar, Box, CircularProgress, Tab, Tabs, Tooltip, Typography } from '@mui/material'
-import ListIcon from '@mui/icons-material/List'
 import FolderSpecialIcon from '@mui/icons-material/FolderSpecial'
-import { WatchlistsTable } from './WatchlistsTable/WatchlistsTable.tsx'
-import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
-import { EAction, IPriorityScore, IRecommendation, ISymbolItem } from '../../stores/symbataStore.types'
-import AddToWatchListButton from './SymbolsTable/AddToWatchListButton/AddToWatchListButton'
-import { grey } from '@mui/material/colors'
-import { SymbolsTable } from './SymbolsTable/SymbolsTable.tsx'
-import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import ListIcon from '@mui/icons-material/List'
+import SyncProblemIcon from '@mui/icons-material/SyncProblem'
 import TrendingDownIcon from '@mui/icons-material/TrendingDown'
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat'
-import SyncProblemIcon from '@mui/icons-material/SyncProblem'
-import { formatNumber } from '../../utils/utils.ts'
+import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import { Avatar, Box, CircularProgress, Tab, Tabs, Tooltip, Typography } from '@mui/material'
+import { grey } from '@mui/material/colors'
+import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
+import { Activity, useMemo, useState } from 'react'
 import { useSymbataStoreInterval } from '../../stores/symbataStore.ts'
+import { EAction, IPriorityScore, IRecommendation, ISymbolItem } from '../../stores/symbataStore.types'
+import { useWatchlistStoreWatchlists } from '../../stores/watchlistStore'
+import { formatNumber } from '../../utils/utils.ts'
 import { Interval } from '../interfaces.ts'
 import { OpenPositions } from './OpenPositions/OpenPositions.tsx'
+import AddToWatchListButton from './SymbolsTable/AddToWatchListButton/AddToWatchListButton'
+import { SymbolsTable } from './SymbolsTable/SymbolsTable.tsx'
+import { WatchlistsTable } from './WatchlistsTable/WatchlistsTable.tsx'
 
 interface CustomTabPanelProps {
   children?: React.ReactNode
@@ -56,7 +56,15 @@ const CustomTabPanel = (props: CustomTabPanelProps) => {
       {...other}
     >
       {value === index && (
-        <Box sx={{ pt: 1, boxShadow: `0px -1px 0px 0px ${grey[500]}`, height: 'calc(100dvh - 155px)' }}>{children}</Box>
+        <Box
+          sx={{
+            pt: 1,
+            boxShadow: `0px -1px 0px 0px ${grey[500]}`,
+            height: 'calc(100dvh - 155px)',
+          }}
+        >
+          {children}
+        </Box>
       )}
     </Box>
   )

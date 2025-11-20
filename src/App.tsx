@@ -1,19 +1,19 @@
 import { AppBar, Box, Grid, Paper, Stack, styled, ToggleButton, Toolbar } from '@mui/material'
-import AnalyzedResult from './components/AnalyzedResult/AnalyzedResult'
-import { TablesContainer } from './components/TablesContainer/TablesContainer.tsx'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import { BaseSyntheticEvent } from 'react'
+import Logo from './assets/logos/horizontal-color-logo-no-background.svg'
+import { StartAlgo } from './components/Algo/StartAlgo.tsx'
+import AnalyzedResult from './components/AnalyzedResult/AnalyzedResult'
+import Balance from './components/Balance/Balance.tsx'
+import Chart from './components/Chart/Chart.tsx'
+import { Interval } from './components/interfaces.ts'
+import { TablesContainer } from './components/TablesContainer/TablesContainer.tsx'
 import {
   useSymbataStoreActions,
   useSymbataStoreInterval,
   useSymbataStoreIsAlgoStarted,
   useSymbataStoreUserId,
 } from './stores/symbataStore.ts'
-import { Interval } from './components/interfaces.ts'
-import { BaseSyntheticEvent } from 'react'
-import Logo from './assets/logos/horizontal-color-logo-no-background.svg'
-import Chart from './components/Chart/Chart.tsx'
-import Balance from './components/Balance/Balance.tsx'
-import { StartAlgo } from './components/Algo/StartAlgo.tsx'
 
 const spacingBetween = 1
 const fullHeightStyleProp = { height: '100%' }

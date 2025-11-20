@@ -1,8 +1,8 @@
-import React, { ReactNode, useCallback, useMemo, useState } from 'react'
-import { ISymbolItem } from '../../../../stores/symbataStore.types.ts'
-import { IconButton } from '@mui/material'
 import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded'
 import StarRateRoundedIcon from '@mui/icons-material/StarRateRounded'
+import { IconButton } from '@mui/material'
+import React, { ReactNode, useCallback, useMemo, useState } from 'react'
+import { ISymbolItem } from '../../../../stores/symbataStore.types.ts'
 import { IWatchlist, useWatchlistStoreWatchlists } from '../../../../stores/watchlistStore.ts'
 import { WatchlistMenu } from './WatchlistMenu.tsx'
 

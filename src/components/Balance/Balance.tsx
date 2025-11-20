@@ -1,6 +1,6 @@
-import { Box, Typography, Grid, Paper, styled, IconButton } from '@mui/material'
 import RefreshIcon from '@mui/icons-material/Refresh'
-import { useEffect, useCallback, useState } from 'react'
+import { Box, Grid, IconButton, Paper, styled, Typography } from '@mui/material'
+import { useCallback, useEffect, useState } from 'react'
 import { useSymbataStoreActions, useSymbataStoreBalance, useSymbataStoreUserId } from '../../stores/symbataStore.ts'
 
 const BalanceItem = styled(Paper)(({ theme }) => ({

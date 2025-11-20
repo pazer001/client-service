@@ -1,4 +1,7 @@
-import { InputAdornment, Box, TextField, Tooltip, LinearProgress } from '@mui/material'
+import CancelIcon from '@mui/icons-material/Cancel'
+import QueryStatsIcon from '@mui/icons-material/QueryStats'
+import SearchIcon from '@mui/icons-material/Search'
+import { Box, InputAdornment, LinearProgress, TextField, Tooltip } from '@mui/material'
 import {
   GridRowsProp,
   QuickFilter,
@@ -7,11 +10,8 @@ import {
   Toolbar,
   ToolbarButton,
 } from '@mui/x-data-grid'
-import QueryStatsIcon from '@mui/icons-material/QueryStats'
-import SearchIcon from '@mui/icons-material/Search'
-import CancelIcon from '@mui/icons-material/Cancel'
-import { ISymbolItem } from '../../../stores/symbataStore.types.ts'
 import { useTableCustomToolbar } from '../../../hooks/useTableCustomToolbar.ts'
+import { ISymbolItem } from '../../../stores/symbataStore.types.ts'
 
 interface ITableCustomToolbarProps {
   rows: GridRowsProp<ISymbolItem>

@@ -1,10 +1,17 @@
-import { WatchlistCustomToolbar } from './WatchlistsCustomToolbar.tsx'
-import { useWatchlistStoreActions, useWatchlistStoreCurrentWatchlist } from '../../../stores/watchlistStore.ts'
+import {
+  DataGrid,
+  GridCallbackDetails,
+  GridColDef,
+  GridRowSelectionModel,
+  GridRowsProp,
+  GridSlotsComponent,
+} from '@mui/x-data-grid'
 import { useMemo } from 'react'
-import { DataGrid, GridCallbackDetails, GridColDef, GridRowSelectionModel, GridRowsProp, GridSlotsComponent } from '@mui/x-data-grid'
-import { ISymbolItem } from '../../../stores/symbataStore.types.ts'
 import { useSymbataStoreActions, useSymbataStoreSymbols } from '../../../stores/symbataStore.ts'
+import { ISymbolItem } from '../../../stores/symbataStore.types.ts'
+import { useWatchlistStoreActions, useWatchlistStoreCurrentWatchlist } from '../../../stores/watchlistStore.ts'
 import { initErrorRecommendation } from '../TablesContainer.tsx'
+import { WatchlistCustomToolbar } from './WatchlistsCustomToolbar.tsx'
 
 interface IWatchlistProps {
   columns: GridColDef<ISymbolItem>[]

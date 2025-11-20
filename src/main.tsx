@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client'
 import './index.css'
+import { CssBaseline, createTheme, ThemeProvider } from '@mui/material'
 import App from './App.tsx'
-import { createTheme, CssBaseline, ThemeProvider } from '@mui/material'
 
 const theme = createTheme({
   cssVariables: true,

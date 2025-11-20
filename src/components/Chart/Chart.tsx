@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import ReactECharts, { EChartsOption } from 'echarts-for-react'
-import { IPrices, ISymbolItem } from '../../stores/symbataStore.types.ts'
-import { useSymbataStoreSymbol } from '../../stores/symbataStore.ts'
-import { DateTime } from 'luxon'
-import { red, green } from '@mui/material/colors'
+import { green, red } from '@mui/material/colors'
 import type { CallbackDataParams } from 'echarts/types/dist/shared'
+import ReactECharts, { EChartsOption } from 'echarts-for-react'
+import { DateTime } from 'luxon'
+import React, { useEffect, useState } from 'react'
+import { useSymbataStoreSymbol } from '../../stores/symbataStore.ts'
+import { IPrices, ISymbolItem } from '../../stores/symbataStore.types.ts'
 
 const Chart = () => {
   const [option, setOption] = useState<EChartsOption>({

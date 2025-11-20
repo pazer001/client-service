@@ -1,8 +1,8 @@
-import { useMemo, useState } from 'react'
-import { ISymbolItem } from '../stores/symbataStore.types.ts'
-import { chunk } from 'lodash'
 import { GridRowsProp } from '@mui/x-data-grid'
+import { chunk } from 'lodash'
+import { useMemo, useState } from 'react'
 import { useSymbataStoreActions } from '../stores/symbataStore.ts'
+import { ISymbolItem } from '../stores/symbataStore.types.ts'
 
 interface ITableCustomToolbarProps {
   rows: GridRowsProp<ISymbolItem>

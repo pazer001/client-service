@@ -1,6 +1,6 @@
-import React from 'react'
 import { Box, BoxProps, Card, CardProps, keyframes, styled, Typography, TypographyProps } from '@mui/material'
 import { yellow } from '@mui/material/colors'
+import React from 'react'
 
 // Flash animation for updated values
 export const flashAnimation = keyframes`

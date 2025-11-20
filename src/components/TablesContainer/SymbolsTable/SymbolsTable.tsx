@@ -1,11 +1,17 @@
-import { DataGrid, GridColDef, GridSlotsComponent } from '@mui/x-data-grid'
-import { SymbolsTableCustomToolbar } from './SymbolsTableCustomToolbar.tsx'
+import {
+  DataGrid,
+  GridCallbackDetails,
+  GridColDef,
+  GridRowSelectionModel,
+  GridRowsProp,
+  GridSlotsComponent,
+} from '@mui/x-data-grid'
 import { useEffect, useState } from 'react'
-import { ISymbolItem } from '../../../stores/symbataStore.types.ts'
 import { useSymbataStoreActions, useSymbataStoreSymbols } from '../../../stores/symbataStore.ts'
-import { GridCallbackDetails, GridRowSelectionModel, GridRowsProp } from '@mui/x-data-grid'
+import { ISymbolItem } from '../../../stores/symbataStore.types.ts'
 import { useWatchlistStoreActions } from '../../../stores/watchlistStore.ts'
 import { initErrorRecommendation } from '../TablesContainer.tsx'
+import { SymbolsTableCustomToolbar } from './SymbolsTableCustomToolbar.tsx'
 
 interface ISymbolTableProps {
   columns: GridColDef<ISymbolItem>[]
@@ -73,11 +79,7 @@ export const SymbolsTable = ({ columns }: ISymbolTableProps) => {
 
   const slots: Partial<GridSlotsComponent> = {
     toolbar: () => (
-      <SymbolsTableCustomToolbar
-        rows={rows}
-        symbolsToScan={symbolsToScan}
-        updateSymbolInList={updateSymbolInList}
-      />
+      <SymbolsTableCustomToolbar rows={rows} symbolsToScan={symbolsToScan} updateSymbolInList={updateSymbolInList} />
     ),
   }
 

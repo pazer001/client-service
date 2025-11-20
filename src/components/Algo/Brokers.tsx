@@ -1,6 +1,7 @@
 import { Avatar, Box, ButtonBase, Card, CardContent, Typography } from '@mui/material'
 import React from 'react'
 import { Broker } from './interfaces/algo.interfaces.ts'
+
 const brokers = [
   { id: Broker.charlesSchwab, name: 'Charles Schwab', logo: 'https://developer.schwab.com/assets/schwab-logo.svg' },
   {

@@ -1,9 +1,9 @@
-import { create, StateCreator } from 'zustand'
-import { devtools, persist, createJSONStorage } from 'zustand/middleware'
-import { Interval } from '../components/interfaces.ts'
-import axios from '../axios'
 import { AxiosResponse } from 'axios'
-import { IRecommendation, ISymbolItem, IOpenPositionsResponse, IAlpacaBalancesResponse } from './symbataStore.types.ts'
+import { create, StateCreator } from 'zustand'
+import { createJSONStorage, devtools, persist } from 'zustand/middleware'
+import axios from '../axios'
+import { Interval } from '../components/interfaces.ts'
+import { IAlpacaBalancesResponse, IOpenPositionsResponse, IRecommendation, ISymbolItem } from './symbataStore.types.ts'
 
 export interface IStoreActions {
   setSymbol: (symbol: ISymbolItem) => void

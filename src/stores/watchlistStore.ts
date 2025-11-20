@@ -1,5 +1,5 @@
 import { create, StateCreator } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
+import { createJSONStorage, persist } from 'zustand/middleware'
 import { ISymbolItem } from './symbataStore.types.ts'
 
 interface IWatchListStoreActions {
@@ -38,7 +38,6 @@ const watchlistStore: StateCreator<IWatchListStore> = (set, get) => ({
       set((state) => {
         const watchlist = state.watchlists.find((watchlist) => watchlist.name === name)
         if (watchlist) {
-
           return {
             watchlists: state.watchlists.map((wl) =>
               wl.name === name ? { ...wl, symbols: [...wl.symbols, symbol] } : wl,
@@ -57,9 +56,7 @@ const watchlistStore: StateCreator<IWatchListStore> = (set, get) => ({
       })
     },
     updateSymbolInCurrentWatchlist: (symbol: ISymbolItem) => {
-      const watchlist = get().watchlists.find((watchlist) =>
-        watchlist.symbols.some((s) => s.symbol === symbol.symbol),
-      )
+      const watchlist = get().watchlists.find((watchlist) => watchlist.symbols.some((s) => s.symbol === symbol.symbol))
       if (!watchlist) {
         console.warn('Symbol not found in any watchlist')
         return
@@ -74,9 +71,7 @@ const watchlistStore: StateCreator<IWatchListStore> = (set, get) => ({
             wl.name === name
               ? {
                   ...wl,
-                  symbols: wl.symbols.map((s) =>
-                    s.symbol === symbol.symbol ? symbol : s,
-                  ),
+                  symbols: wl.symbols.map((s) => (s.symbol === symbol.symbol ? symbol : s)),
                 }
               : wl,
           )

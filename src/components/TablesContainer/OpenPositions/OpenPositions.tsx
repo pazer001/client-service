@@ -1,9 +1,9 @@
-import { useMemo } from 'react'
-import { Box, CircularProgress, IconButton, LinearProgress, linearProgressClasses, Typography } from '@mui/material'
-import { useSymbataStoreActions, useSymbataStoreOpenPositions } from '../../../stores/symbataStore.ts'
-import { useOpenPositionsPolling } from '../../../hooks/useOpenPositionsPolling.ts'
-import { PositionItem } from './PositionItem.tsx'
 import RefreshIconOutlined from '@mui/icons-material/RefreshOutlined'
+import { Box, CircularProgress, IconButton, LinearProgress, linearProgressClasses, Typography } from '@mui/material'
+import { useMemo } from 'react'
+import { useOpenPositionsPolling } from '../../../hooks/useOpenPositionsPolling.ts'
+import { useSymbataStoreActions, useSymbataStoreOpenPositions } from '../../../stores/symbataStore.ts'
+import { PositionItem } from './PositionItem.tsx'
 
 const EmptyState = () => (
   <Box

@@ -1,7 +1,7 @@
+import AddBoxIcon from '@mui/icons-material/AddBox'
+import { FormControl, FormHelperText, IconButton, InputAdornment, TextField } from '@mui/material'
 import { useMemo, useState } from 'react'
 import { useWatchlistStoreActions, useWatchlistStoreWatchlists } from '../../../../stores/watchlistStore.ts'
-import { FormControl, FormHelperText, IconButton, InputAdornment, TextField } from '@mui/material'
-import AddBoxIcon from '@mui/icons-material/AddBox'
 
 export const WatchlistAddInput = () => {
   const [value, setValue] = useState('')

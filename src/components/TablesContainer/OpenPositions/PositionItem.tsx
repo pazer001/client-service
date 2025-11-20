@@ -1,10 +1,10 @@
-import { Box, CardContent, Grid, Typography } from '@mui/material'
-import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import TrendingDownIcon from '@mui/icons-material/TrendingDown'
+import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import { Box, CardContent, Grid, Typography } from '@mui/material'
 import { green, red } from '@mui/material/colors'
 import { IOpenPosition } from '../../../stores/symbataStore.types.ts'
 import { formatNumber } from '../../../utils/utils.ts'
-import { PositionCard, FlashBox, MetricBox, MetricLabel, MetricValue } from './PositionItem.style.ts'
+import { FlashBox, MetricBox, MetricLabel, MetricValue, PositionCard } from './PositionItem.style.ts'
 
 interface PositionItemProps {
   position: IOpenPosition
@@ -59,7 +59,13 @@ export const PositionItem = ({ position, flashingFields }: PositionItemProps) =>
             <MetricBox sx={{ alignItems: { xs: 'flex-end', sm: 'flex-start' } }}>
               <MetricLabel>Profit/Loss</MetricLabel>
               <FlashBox flash={isProfitFlashing}>
-                <MetricValue sx={{ color: profitColor, fontWeight: 700, fontSize: { xs: '1rem', sm: '1.1rem' } }}>
+                <MetricValue
+                  sx={{
+                    color: profitColor,
+                    fontWeight: 700,
+                    fontSize: { xs: '1rem', sm: '1.1rem' },
+                  }}
+                >
                   {isProfit ? '+' : ''}${Math.abs(position.profit).toFixed(2)}
                 </MetricValue>
               </FlashBox>
@@ -67,7 +73,13 @@ export const PositionItem = ({ position, flashingFields }: PositionItemProps) =>
             <MetricBox sx={{ alignItems: { xs: 'flex-end', sm: 'flex-start' } }}>
               <MetricLabel>ROR</MetricLabel>
               <FlashBox flash={isRORFlashing}>
-                <MetricValue sx={{ color: profitColor, fontWeight: 700, fontSize: { xs: '1rem', sm: '1.1rem' } }}>
+                <MetricValue
+                  sx={{
+                    color: profitColor,
+                    fontWeight: 700,
+                    fontSize: { xs: '1rem', sm: '1.1rem' },
+                  }}
+                >
                   {position.currentROR > 0 ? '+' : ''}
                   {position.currentROR.toFixed(2)}%
                 </MetricValue>
