@@ -1,5 +1,5 @@
 import RefreshIcon from '@mui/icons-material/Refresh'
-import { Box, Grid, IconButton, Paper, styled, Typography } from '@mui/material'
+import { Box, Grid, IconButton, Paper, styled, Typography, useMediaQuery } from '@mui/material'
 import { useCallback, useEffect, useState } from 'react'
 import { useSymbataStoreActions, useSymbataStoreBalance, useSymbataStoreUserId } from '../../stores/symbataStore.ts'
 
@@ -14,6 +14,7 @@ const Balance = () => {
   const { getBalance } = useSymbataStoreActions()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const isMobile = useMediaQuery('(max-width:900px)')
 
   const fetchBalance = useCallback(async () => {
     if (!userId) {
@@ -73,7 +74,7 @@ const Balance = () => {
   }
 
   return (
-    <Box sx={{ height: '100%', overflow: 'auto' }}>
+    <Box sx={{ height: '100%', overflow: isMobile ? 'visible' : 'auto' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1, mb: 2 }}>
         <Typography variant="h6">Account Balance</Typography>
         <IconButton

@@ -1,6 +1,23 @@
-import { AppBar, Box, Grid, Paper, Stack, styled, ToggleButton, Toolbar } from '@mui/material'
+import BusinessCenterIcon from '@mui/icons-material/BusinessCenter'
+import CurrencyExchangeRoundedIcon from '@mui/icons-material/CurrencyExchangeRounded'
+import ScaleIcon from '@mui/icons-material/Scale'
+import WaterfallChartIcon from '@mui/icons-material/WaterfallChart'
+import {
+  AppBar,
+  BottomNavigation,
+  BottomNavigationAction,
+  Box,
+  Grid,
+  Paper,
+  type PaperProps,
+  Stack,
+  styled,
+  ToggleButton,
+  Toolbar,
+} from '@mui/material'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import { BaseSyntheticEvent } from 'react'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { BaseSyntheticEvent, useState } from 'react'
 import Logo from './assets/logos/horizontal-color-logo-no-background.svg'
 import { StartAlgo } from './components/Algo/StartAlgo.tsx'
 import AnalyzedResult from './components/AnalyzedResult/AnalyzedResult'
@@ -8,6 +25,7 @@ import Balance from './components/Balance/Balance.tsx'
 import Chart from './components/Chart/Chart.tsx'
 import { Interval } from './components/interfaces.ts'
 import { TablesContainer } from './components/TablesContainer/TablesContainer.tsx'
+
 import {
   useSymbataStoreActions,
   useSymbataStoreInterval,
@@ -18,11 +36,20 @@ import {
 const spacingBetween = 1
 const fullHeightStyleProp = { height: '100%' }
 
+// Define custom props interface for styled component
+interface ItemProps extends PaperProps {
+  isMobile?: boolean
+}
+
 // Item copied from MUI documentation
 // https://mui.com/material-ui/react-grid/#limitations
-const Item = styled(Paper)(({ theme }) => ({
+const Item = styled(Paper)<ItemProps>(({ theme, isMobile }) => ({
   padding: theme.spacing(spacingBetween),
   ...fullHeightStyleProp,
+  ...(isMobile && {
+    height: 'calc(100vh - 122px)',
+    overflowY: 'auto',
+  }),
 }))
 
 const MainContainer = styled(Box)(({ theme }) => ({
@@ -61,12 +88,17 @@ const IntervalController = () => {
 }
 
 function App() {
+  const isMobile = useMediaQuery('(max-width:900px)')
+  const [value, setValue] = useState(0)
+
+  console.log(value)
+
   return (
     <MainContainer>
       <AppBar position="static">
         <Toolbar variant="dense">
           <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
-            <img alt="Symbata logo" src={Logo} height="30px" />
+            <img alt="Symbata logo" src={Logo} height={isMobile ? '20px' : '30px'} />
             <Box display="flex" alignItems="center" gap={2}>
               <StartAlgo />
               <IntervalController />
@@ -74,28 +106,87 @@ function App() {
           </Box>
         </Toolbar>
       </AppBar>
-      <Grid container spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
-        <Grid size={6}>
-          <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
-            <Item>
-              <Chart />
-            </Item>
-            <Item sx={{ height: 'calc(100% / 2)' }}>
-              <Balance />
-            </Item>
-          </Stack>
-        </Grid>
-        <Grid size={2}>
-          <Item>
-            <AnalyzedResult />
-          </Item>
-        </Grid>
-        <Grid size={4}>
-          <Item sx={{ paddingTop: 0 }}>
-            <TablesContainer />
-          </Item>
-        </Grid>
-      </Grid>
+      {isMobile ? (
+        <>
+          <Grid container spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
+            {value === 0 && (
+              <Grid size={12}>
+                <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
+                  <Item isMobile={isMobile}>
+                    <Chart />
+                  </Item>
+                </Stack>
+              </Grid>
+            )}
+            {value === 1 && (
+              <Grid size={12}>
+                <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
+                  <Item isMobile={isMobile}>
+                    <Balance />
+                  </Item>
+                </Stack>
+              </Grid>
+            )}
+            {value === 2 && (
+              <Grid size={12}>
+                <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
+                  <Item isMobile={isMobile}>
+                    <AnalyzedResult />
+                  </Item>
+                </Stack>
+              </Grid>
+            )}
+            {value === 3 && (
+              <Grid size={12}>
+                <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
+                  <Item isMobile={isMobile}>
+                    <TablesContainer />
+                  </Item>
+                </Stack>
+              </Grid>
+            )}
+          </Grid>
+          <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
+            <BottomNavigation
+              showLabels
+              value={value}
+              onChange={(_event, newValue) => {
+                setValue(newValue)
+              }}
+            >
+              <BottomNavigationAction label="Chart" icon={<WaterfallChartIcon />} />
+              <BottomNavigationAction label="Balance" icon={<ScaleIcon />} />
+              <BottomNavigationAction label="Analyzed Result" icon={<BusinessCenterIcon />} />
+              <BottomNavigationAction label="Positions" icon={<CurrencyExchangeRoundedIcon />} />
+            </BottomNavigation>
+          </Paper>
+        </>
+      ) : (
+        <>
+          <Grid container spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
+            <Grid size={6}>
+              <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
+                <Item>
+                  <Chart />
+                </Item>
+                <Item sx={{ height: 'calc(100% / 2)' }}>
+                  <Balance />
+                </Item>
+              </Stack>
+            </Grid>
+            <Grid size={2}>
+              <Item>
+                <AnalyzedResult />
+              </Item>
+            </Grid>
+            <Grid size={4}>
+              <Item sx={{ paddingTop: 0 }}>
+                <TablesContainer />
+              </Item>
+            </Grid>
+          </Grid>
+        </>
+      )}
     </MainContainer>
   )
 }
