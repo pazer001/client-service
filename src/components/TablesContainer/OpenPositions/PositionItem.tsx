@@ -75,7 +75,7 @@ export const PositionItem = ({ position, flashingFields }: PositionItemProps) =>
                       fontSize: { xs: '1rem', sm: '1.1rem' },
                     }}
                   >
-                    {isProfit ? '+' : ''}${Math.abs(position.profit).toFixed(isCrypto ? 4 : 2)}
+                    {isProfit ? '+' : ''}${Math.abs(position.profit).toFixed(2)}
                   </MetricValue>
                 </FlashBox>
               </MetricBox>
@@ -90,7 +90,7 @@ export const PositionItem = ({ position, flashingFields }: PositionItemProps) =>
                     }}
                   >
                     {position.currentROR > 0 ? '+' : ''}
-                    {position.currentROR.toFixed(isCrypto ? 4 : 2)}%
+                    {position.currentROR.toFixed(2)}%
                   </MetricValue>
                 </FlashBox>
               </MetricBox>

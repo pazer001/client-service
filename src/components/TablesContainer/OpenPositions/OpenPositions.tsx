@@ -61,7 +61,19 @@ export const OpenPositions = () => {
   return (
     <Box sx={{ p: { xs: 1, sm: 2 }, height: 'calc(100dvh - 75px)', overflow: isMobile ? 'visible' : 'auto' }}>
       {/* Progress bar indicating time until next fetch */}
-      <Box display="flex" alignItems="center" width="100%" sx={{ mb: 2 }}>
+      <Box
+        display="flex"
+        alignItems="center"
+        width="100%"
+        sx={{
+          mb: 2,
+          position: 'sticky',
+          top: 0,
+          zIndex: 1000,
+          backgroundColor: '#1e1e1e',
+          boxShadow: '0px 5px 7px 0px #1E1E1E',
+        }}
+      >
         <Box flex={1}>
           <LinearProgress
             variant="determinate"
