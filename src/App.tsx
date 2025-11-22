@@ -22,10 +22,9 @@ import Logo from './assets/logos/horizontal-color-logo-no-background.svg'
 import { StartAlgo } from './components/Algo/StartAlgo.tsx'
 import AnalyzedResult from './components/AnalyzedResult/AnalyzedResult'
 import Balance from './components/Balance/Balance.tsx'
-import Chart from './components/Chart/Chart.tsx'
+import TradingViewWidget from './components/Chart/TradingView/TradingView.tsx'
 import { Interval } from './components/interfaces.ts'
 import { TablesContainer } from './components/TablesContainer/TablesContainer.tsx'
-
 import {
   useSymbataStoreActions,
   useSymbataStoreInterval,
@@ -113,7 +112,7 @@ function App() {
               <Grid size={12}>
                 <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
                   <Item isMobile={isMobile}>
-                    <Chart />
+                    <TradingViewWidget />
                   </Item>
                 </Stack>
               </Grid>
@@ -167,7 +166,7 @@ function App() {
             <Grid size={6}>
               <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
                 <Item>
-                  <Chart />
+                  <TradingViewWidget />
                 </Item>
                 <Item sx={{ height: 'calc(100% / 2)' }}>
                   <Balance />

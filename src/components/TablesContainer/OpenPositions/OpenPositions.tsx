@@ -1,5 +1,13 @@
 import RefreshIconOutlined from '@mui/icons-material/RefreshOutlined'
-import { Box, CircularProgress, IconButton, LinearProgress, linearProgressClasses, Typography } from '@mui/material'
+import {
+  Box,
+  CircularProgress,
+  IconButton,
+  LinearProgress,
+  linearProgressClasses,
+  Typography,
+  useMediaQuery,
+} from '@mui/material'
 import { useMemo } from 'react'
 import { useOpenPositionsPolling } from '../../../hooks/useOpenPositionsPolling.ts'
 import { useSymbataStoreActions, useSymbataStoreOpenPositions } from '../../../stores/symbataStore.ts'
@@ -32,6 +40,7 @@ const LoadingState = () => (
 export const OpenPositions = () => {
   const { getOpenPositions } = useSymbataStoreActions()
   const openPositions = useSymbataStoreOpenPositions()
+  const isMobile = useMediaQuery('(max-width:900px)')
 
   // Custom hook handles polling and change detection for flash animations
   const { flashingFields, progress, refreshOpenPositions } = useOpenPositionsPolling(openPositions, getOpenPositions)
@@ -50,7 +59,7 @@ export const OpenPositions = () => {
   }
 
   return (
-    <Box sx={{ p: { xs: 1, sm: 2 }, height: 'calc(100dvh - 75px)', overflow: 'auto' }}>
+    <Box sx={{ p: { xs: 1, sm: 2 }, height: 'calc(100dvh - 75px)', overflow: isMobile ? 'visible' : 'auto' }}>
       {/* Progress bar indicating time until next fetch */}
       <Box display="flex" alignItems="center" width="100%" sx={{ mb: 2 }}>
         <Box flex={1}>

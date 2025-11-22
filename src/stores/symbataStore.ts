@@ -19,11 +19,13 @@ export interface IStoreActions {
   stopAlgo: (userId: string) => Promise<boolean>
   setIsAlgoStarted: (isAlgoStarted: boolean) => void
   setUserId: (userId: string) => void
+  setTradingViewSymbol: (symbol: string) => void
 }
 
 export interface ISymbolStore {
   interval: Interval
   profileValue: number
+  tradingViewSymbol: string | undefined
   symbol: ISymbolItem | undefined
   symbols: ISymbolItem[]
   openPositions: IOpenPositionsResponse | undefined
@@ -41,6 +43,7 @@ const algoApiUrl: Record<Interval, { start: string; stop: string }> = {
 const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
   interval: Interval['1d'],
   profileValue: 100_000,
+  tradingViewSymbol: 'VOO',
   symbol: undefined,
   symbols: [],
   openPositions: undefined,
@@ -48,6 +51,9 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
   isAlgoStarted: false,
   userId: '1f71bd6d-be84-456f-89e5-925528431139',
   actions: {
+    setTradingViewSymbol: (symbol: string) => {
+      set({ tradingViewSymbol: symbol })
+    },
     setUserId: (userId: string) => {
       set({ userId })
     },
@@ -171,3 +177,4 @@ export const useSymbataStoreOpenPositions = () => useSymbataStore((state) => sta
 export const useSymbataStoreBalance = () => useSymbataStore((state) => state.balance)
 export const useSymbataStoreIsAlgoStarted = () => useSymbataStore((state) => state.isAlgoStarted)
 export const useSymbataStoreUserId = () => useSymbataStore((state) => state.userId)
+export const useSymbataStoreTradingViewSymbol = () => useSymbataStore((state) => state.tradingViewSymbol)
