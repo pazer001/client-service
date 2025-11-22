@@ -1,29 +1,14 @@
-import BusinessCenterIcon from '@mui/icons-material/BusinessCenter'
-import CurrencyExchangeRoundedIcon from '@mui/icons-material/CurrencyExchangeRounded'
-import ScaleIcon from '@mui/icons-material/Scale'
-import WaterfallChartIcon from '@mui/icons-material/WaterfallChart'
-import {
-  AppBar,
-  BottomNavigation,
-  BottomNavigationAction,
-  Box,
-  Grid,
-  Paper,
-  type PaperProps,
-  Stack,
-  styled,
-  ToggleButton,
-  Toolbar,
-} from '@mui/material'
+import { AppBar, Box, Grid, Paper, type PaperProps, Stack, styled, ToggleButton, Toolbar } from '@mui/material'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { BaseSyntheticEvent, useState } from 'react'
+import { BaseSyntheticEvent } from 'react'
 import Logo from './assets/logos/horizontal-color-logo-no-background.svg'
 import { StartAlgo } from './components/Algo/StartAlgo.tsx'
 import AnalyzedResult from './components/AnalyzedResult/AnalyzedResult'
 import Balance from './components/Balance/Balance.tsx'
 import TradingViewWidget from './components/Chart/TradingView/TradingView.tsx'
 import { Interval } from './components/interfaces.ts'
+import { MobileView } from './components/MobileView/MobileView.tsx'
 import { TablesContainer } from './components/TablesContainer/TablesContainer.tsx'
 import {
   useSymbataStoreActions,
@@ -88,9 +73,6 @@ const IntervalController = () => {
 
 function App() {
   const isMobile = useMediaQuery('(max-width:900px)')
-  const [value, setValue] = useState(0)
-
-  console.log(value)
 
   return (
     <MainContainer>
@@ -106,60 +88,7 @@ function App() {
         </Toolbar>
       </AppBar>
       {isMobile ? (
-        <>
-          <Grid container spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
-            {value === 0 && (
-              <Grid size={12}>
-                <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
-                  <Item isMobile={isMobile}>
-                    <TradingViewWidget />
-                  </Item>
-                </Stack>
-              </Grid>
-            )}
-            {value === 1 && (
-              <Grid size={12}>
-                <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
-                  <Item isMobile={isMobile}>
-                    <Balance />
-                  </Item>
-                </Stack>
-              </Grid>
-            )}
-            {value === 2 && (
-              <Grid size={12}>
-                <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
-                  <Item isMobile={isMobile}>
-                    <AnalyzedResult />
-                  </Item>
-                </Stack>
-              </Grid>
-            )}
-            {value === 3 && (
-              <Grid size={12}>
-                <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
-                  <Item isMobile={isMobile}>
-                    <TablesContainer />
-                  </Item>
-                </Stack>
-              </Grid>
-            )}
-          </Grid>
-          <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
-            <BottomNavigation
-              showLabels
-              value={value}
-              onChange={(_event, newValue) => {
-                setValue(newValue)
-              }}
-            >
-              <BottomNavigationAction label="Chart" icon={<WaterfallChartIcon />} />
-              <BottomNavigationAction label="Balance" icon={<ScaleIcon />} />
-              <BottomNavigationAction label="Analyzed Result" icon={<BusinessCenterIcon />} />
-              <BottomNavigationAction label="Positions" icon={<CurrencyExchangeRoundedIcon />} />
-            </BottomNavigation>
-          </Paper>
-        </>
+        <MobileView Item={Item} spacingBetween={spacingBetween} fullHeightStyleProp={fullHeightStyleProp} />
       ) : (
         <>
           <Grid container spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
