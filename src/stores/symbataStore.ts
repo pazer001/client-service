@@ -83,8 +83,9 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
       }
     },
     getOpenPositions: async () => {
+      const { userId } = get()
       try {
-        const result: AxiosResponse<IOpenPositionsResponse> = await axios.get('algo/getCurrentOpenPositions')
+        const result: AxiosResponse<IOpenPositionsResponse> = await axios.get('algo/getCurrentOpenPositions/' + userId)
         set({ openPositions: result.data })
       } catch (error) {
         console.error('Error fetching open positions:', error)

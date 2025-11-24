@@ -1,4 +1,5 @@
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
+import { useSymbataStore, useSymbataStoreUserId } from '../stores/symbataStore.ts'
 import { IOpenPosition, IOpenPositionsResponse } from '../stores/symbataStore.types.ts'
 
 /**
@@ -9,6 +10,7 @@ export const useOpenPositionsPolling = (
   openPositions: IOpenPositionsResponse | undefined,
   getOpenPositions: () => Promise<void>,
 ) => {
+  const userId = useSymbataStoreUserId()
   const [flashingFields, setFlashingFields] = useState<Set<string>>(new Set())
   const [progress, setProgress] = useState(0)
   const previousPositionsRef = useRef<Record<string, IOpenPosition>>({})
@@ -92,6 +94,10 @@ export const useOpenPositionsPolling = (
     // Update previous positions reference
     previousPositionsRef.current = { ...openPositions }
   }, [openPositions])
+
+  useEffect(() => {
+    getOpenPositions()
+  }, [userId])
 
   return {
     flashingFields,

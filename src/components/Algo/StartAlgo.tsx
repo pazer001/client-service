@@ -38,7 +38,9 @@ export const StartAlgo = () => {
       <Select
         size="small"
         value={userId}
-        onChange={(e: SelectChangeEvent) => setUserId(e.target.value)}
+        onChange={(e: SelectChangeEvent) => {
+          setUserId(e.target.value)
+        }}
         disabled={isLoading}
       >
         <MenuItem value="1f71bd6d-be84-456f-89e5-925528431139">Paz (Crypto)</MenuItem>
