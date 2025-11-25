@@ -20,14 +20,11 @@ export const PositionCard: React.ComponentType<CardProps> = styled(Card)(({ them
   },
 }))
 
-export const FlashBox: React.ComponentType<BoxProps & { flash?: boolean }> = styled(Box)<{ flash?: boolean }>(
-  ({ flash }) => ({
-    animation: flash ? `${flashAnimation} 1s ease-out` : 'none',
-    padding: '4px 8px',
-    borderRadius: '4px',
-    display: 'inline-block',
-  }),
-)
+export const FlashBox: React.ComponentType<BoxProps> = styled(Box)(() => ({
+  padding: '4px 8px',
+  borderRadius: '4px',
+  display: 'inline-block',
+}))
 
 export const MetricBox: React.ComponentType<BoxProps> = styled(Box)(({ theme }) => ({
   display: 'flex',

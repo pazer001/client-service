@@ -10,7 +10,7 @@ import {
 } from '@mui/material'
 import { useMemo } from 'react'
 import { useOpenPositionsPolling } from '../../../hooks/useOpenPositionsPolling.ts'
-import { useSymbataStoreActions, useSymbataStoreOpenPositions } from '../../../stores/symbataStore.ts'
+import { useSymbataStoreOpenPositions } from '../../../stores/symbataStore.ts'
 import { PositionItem } from './PositionItem.tsx'
 
 const EmptyState = () => (
@@ -38,12 +38,11 @@ const LoadingState = () => (
 )
 
 export const OpenPositions = () => {
-  const { getOpenPositions } = useSymbataStoreActions()
   const openPositions = useSymbataStoreOpenPositions()
   const isMobile = useMediaQuery('(max-width:900px)')
 
   // Custom hook handles polling and change detection for flash animations
-  const { flashingFields, progress, refreshOpenPositions } = useOpenPositionsPolling(openPositions, getOpenPositions)
+  const { progress, refreshOpenPositions } = useOpenPositionsPolling(openPositions)
 
   const positionsArray = useMemo(() => {
     if (!openPositions) return []
@@ -66,12 +65,11 @@ export const OpenPositions = () => {
         alignItems="center"
         width="100%"
         sx={{
-          mb: 2,
           position: 'sticky',
           top: 0,
           zIndex: 1000,
           backgroundColor: '#1e1e1e',
-          boxShadow: '0px 5px 7px 0px #1E1E1E',
+          boxShadow: '0px 5px 7px 0px #1E1E1E, 0px -9px 0px 0px #1E1E1E',
         }}
       >
         <Box flex={1}>
@@ -101,7 +99,7 @@ export const OpenPositions = () => {
 
       <Box display="flex" flexDirection="column" gap={{ xs: 1.5, sm: 2 }}>
         {positionsArray.map((position) => (
-          <PositionItem key={position.symbol} position={position} flashingFields={flashingFields} />
+          <PositionItem key={position.symbol} position={position} />
         ))}
       </Box>
     </Box>

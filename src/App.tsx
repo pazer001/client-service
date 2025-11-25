@@ -31,15 +31,14 @@ const Item = styled(Paper)<ItemProps>(({ theme, isMobile }) => ({
   padding: theme.spacing(spacingBetween),
   ...fullHeightStyleProp,
   ...(isMobile && {
-    height: 'calc(100vh - 122px)',
+    height: 'inherit',
     overflowY: 'auto',
   }),
 }))
 
 const MainContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(spacingBetween),
-  height: '100%',
-  maxHeight: '100dvh',
+  height: '100dvh',
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(spacingBetween),
@@ -88,7 +87,7 @@ function App() {
         </Toolbar>
       </AppBar>
       {isMobile ? (
-        <MobileView Item={Item} spacingBetween={spacingBetween} fullHeightStyleProp={fullHeightStyleProp} />
+        <MobileView Item={Item} spacingBetween={spacingBetween} />
       ) : (
         <>
           <Grid container spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>

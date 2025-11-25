@@ -2,7 +2,6 @@ import TrendingDownIcon from '@mui/icons-material/TrendingDown'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import { Box, CardActionArea, CardContent, Grid, Typography } from '@mui/material'
 import { green, red } from '@mui/material/colors'
-import { useMemo } from 'react'
 import { useSymbataStoreActions } from '../../../stores/symbataStore.ts'
 import { IOpenPosition } from '../../../stores/symbataStore.types.ts'
 import { formatNumber } from '../../../utils/utils.ts'
@@ -10,24 +9,13 @@ import { FlashBox, MetricBox, MetricLabel, MetricValue, PositionCard } from './P
 
 interface PositionItemProps {
   position: IOpenPosition
-  flashingFields: Set<string>
 }
 
-export const PositionItem = ({ position, flashingFields }: PositionItemProps) => {
+export const PositionItem = ({ position }: PositionItemProps) => {
   const { setTradingViewSymbol } = useSymbataStoreActions()
   const isProfit = position.profit > 0
   const profitColor = isProfit ? green[700] : red[700]
   const profitBgColor = isProfit ? green[50] : red[50]
-
-  // Check if specific fields are flashing for this symbol
-  const isCurrentPriceFlashing = flashingFields.has(`${position.symbol}-currentPrice`)
-  const isProfitFlashing = flashingFields.has(`${position.symbol}-profit`)
-  const isRORFlashing = flashingFields.has(`${position.symbol}-currentROR`)
-
-  const isCrypto = useMemo(
-    () => position.symbol?.length && position.symbol?.length >= 6 && position.symbol?.endsWith('USD'),
-    [position.symbol],
-  )
 
   return (
     <PositionCard>
@@ -67,7 +55,7 @@ export const PositionItem = ({ position, flashingFields }: PositionItemProps) =>
             <Box display="flex" gap={2}>
               <MetricBox sx={{ alignItems: { xs: 'flex-end', sm: 'flex-start' } }}>
                 <MetricLabel>Profit/Loss</MetricLabel>
-                <FlashBox flash={isProfitFlashing}>
+                <FlashBox>
                   <MetricValue
                     sx={{
                       color: profitColor,
@@ -81,7 +69,7 @@ export const PositionItem = ({ position, flashingFields }: PositionItemProps) =>
               </MetricBox>
               <MetricBox sx={{ alignItems: { xs: 'flex-end', sm: 'flex-start' } }}>
                 <MetricLabel>ROR</MetricLabel>
-                <FlashBox flash={isRORFlashing}>
+                <FlashBox>
                   <MetricValue
                     sx={{
                       color: profitColor,
@@ -98,23 +86,19 @@ export const PositionItem = ({ position, flashingFields }: PositionItemProps) =>
           </Box>
 
           {/* Details Grid - Responsive layout */}
-          <Grid container spacing={{ xs: 1.5, sm: 2 }} columnGap={3}>
+          <Grid container spacing={{ xs: 1.5, sm: 2 }} columnGap={2} justifyContent="space-between">
             <Grid size={{ xs: 6, sm: 3, md: 2 }}>
               <MetricBox>
                 <MetricLabel>Buy Price</MetricLabel>
-                <MetricValue sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
-                  ${position.buyPrice.toFixed(isCrypto ? 4 : 2)}
-                </MetricValue>
+                <MetricValue sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>${position.buyPrice}</MetricValue>
               </MetricBox>
             </Grid>
 
             <Grid size={{ xs: 6, sm: 3, md: 2 }}>
               <MetricBox>
                 <MetricLabel>Current</MetricLabel>
-                <FlashBox flash={isCurrentPriceFlashing}>
-                  <MetricValue sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
-                    ${position.currentPrice.toFixed(isCrypto ? 4 : 2)}
-                  </MetricValue>
+                <FlashBox>
+                  <MetricValue sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>${position.currentPrice}</MetricValue>
                 </FlashBox>
               </MetricBox>
             </Grid>

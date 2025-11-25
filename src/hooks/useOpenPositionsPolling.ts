@@ -1,17 +1,14 @@
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
-import { useSymbataStore, useSymbataStoreUserId } from '../stores/symbataStore.ts'
+import { useSymbataStoreActions, useSymbataStoreUserId } from '../stores/symbataStore.ts'
 import { IOpenPosition, IOpenPositionsResponse } from '../stores/symbataStore.types.ts'
 
 /**
  * Custom hook to handle polling open positions and detecting changes
  * Polls every 60 seconds and tracks field changes to trigger flash animations
  */
-export const useOpenPositionsPolling = (
-  openPositions: IOpenPositionsResponse | undefined,
-  getOpenPositions: () => Promise<void>,
-) => {
+export const useOpenPositionsPolling = (openPositions: IOpenPositionsResponse | undefined) => {
   const userId = useSymbataStoreUserId()
-  const [flashingFields, setFlashingFields] = useState<Set<string>>(new Set())
+  const { getBalance, getOpenPositions } = useSymbataStoreActions()
   const [progress, setProgress] = useState(0)
   const previousPositionsRef = useRef<Record<string, IOpenPosition>>({})
   const startTimeRef = useRef<number>(Date.now())
@@ -20,6 +17,7 @@ export const useOpenPositionsPolling = (
   const refreshOpenPositions = useEffectEvent(async () => {
     try {
       await getOpenPositions()
+      await getBalance(userId)
     } catch (error) {
       console.error('Error refreshing open positions:', error)
     } finally {
@@ -81,26 +79,16 @@ export const useOpenPositionsPolling = (
       }
     }
 
-    // Update flashing fields if there are changes
-    if (newFlashingFields.size > 0) {
-      setFlashingFields(newFlashingFields)
-
-      // Clear flashing after animation completes (1 second)
-      setTimeout(() => {
-        setFlashingFields(new Set())
-      }, 1000)
-    }
-
     // Update previous positions reference
     previousPositionsRef.current = { ...openPositions }
   }, [openPositions])
 
   useEffect(() => {
     getOpenPositions()
+    getBalance(userId)
   }, [userId])
 
   return {
-    flashingFields,
     progress,
     refreshOpenPositions,
   }

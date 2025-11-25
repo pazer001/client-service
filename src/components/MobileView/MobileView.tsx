@@ -5,7 +5,7 @@ import BusinessCenterIcon from '@mui/icons-material/BusinessCenter'
 import CurrencyExchangeRoundedIcon from '@mui/icons-material/CurrencyExchangeRounded'
 import ScaleIcon from '@mui/icons-material/Scale'
 import WaterfallChartIcon from '@mui/icons-material/WaterfallChart'
-import { BottomNavigation, BottomNavigationAction, Grid, Paper, Stack } from '@mui/material'
+import { BottomNavigation, BottomNavigationAction, Grid, Stack } from '@mui/material'
 import AnalyzedResult from '../AnalyzedResult/AnalyzedResult'
 import Balance from '../Balance/Balance.tsx'
 import TradingViewWidget from '../Chart/TradingView/TradingView.tsx'
@@ -15,10 +15,9 @@ import 'swiper/css' // Import Swiper styles
 interface MobileViewProps {
   Item: React.ComponentType<{ isMobile?: boolean; children: React.ReactNode }>
   spacingBetween: number
-  fullHeightStyleProp: { height: string }
 }
 
-export const MobileView = ({ Item, spacingBetween, fullHeightStyleProp }: MobileViewProps) => {
+export const MobileView = ({ Item, spacingBetween }: MobileViewProps) => {
   const swiperRef = useRef<SwiperRef | null>(null)
   const [activeIndex, setActiveIndex] = useState(0)
 
@@ -31,14 +30,15 @@ export const MobileView = ({ Item, spacingBetween, fullHeightStyleProp }: Mobile
 
   return (
     <>
-      <Grid container spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
+      <Grid container spacing={spacingBetween} sx={{ flex: 1 }}>
         <Swiper
           onSwiper={(swiper) => (swiperRef.current = { swiper })}
           onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
+          style={{ height: 'inherit' }}
         >
           <SwiperSlide>
-            <Grid size={12}>
-              <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
+            <Grid size={12} sx={{ height: 'inherit' }}>
+              <Stack spacing={spacingBetween} sx={{ height: 'inherit' }}>
                 <Item isMobile={true}>
                   <TradingViewWidget />
                 </Item>
@@ -46,8 +46,8 @@ export const MobileView = ({ Item, spacingBetween, fullHeightStyleProp }: Mobile
             </Grid>
           </SwiperSlide>
           <SwiperSlide>
-            <Grid size={12}>
-              <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
+            <Grid size={12} sx={{ height: 'inherit' }}>
+              <Stack spacing={spacingBetween} sx={{ height: 'inherit' }}>
                 <Item isMobile={true}>
                   <Balance />
                 </Item>
@@ -55,8 +55,8 @@ export const MobileView = ({ Item, spacingBetween, fullHeightStyleProp }: Mobile
             </Grid>
           </SwiperSlide>
           <SwiperSlide>
-            <Grid size={12}>
-              <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
+            <Grid size={12} sx={{ height: 'inherit' }}>
+              <Stack spacing={spacingBetween} sx={{ height: 'inherit' }}>
                 <Item isMobile={true}>
                   <AnalyzedResult />
                 </Item>
@@ -64,8 +64,8 @@ export const MobileView = ({ Item, spacingBetween, fullHeightStyleProp }: Mobile
             </Grid>
           </SwiperSlide>
           <SwiperSlide>
-            <Grid size={12}>
-              <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
+            <Grid size={12} sx={{ height: 'inherit' }}>
+              <Stack spacing={spacingBetween} sx={{ height: 'inherit' }}>
                 <Item isMobile={true}>
                   <TablesContainer />
                 </Item>
@@ -74,20 +74,18 @@ export const MobileView = ({ Item, spacingBetween, fullHeightStyleProp }: Mobile
           </SwiperSlide>
         </Swiper>
       </Grid>
-      <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
-        <BottomNavigation
-          showLabels
-          value={activeIndex}
-          onChange={(_event, newValue) => {
-            handleSlideTo(newValue)
-          }}
-        >
-          <BottomNavigationAction label="Chart" icon={<WaterfallChartIcon />} />
-          <BottomNavigationAction label="Balance" icon={<ScaleIcon />} />
-          <BottomNavigationAction label="Analyzed Result" icon={<BusinessCenterIcon />} />
-          <BottomNavigationAction label="Positions" icon={<CurrencyExchangeRoundedIcon />} />
-        </BottomNavigation>
-      </Paper>
+      <BottomNavigation
+        showLabels
+        value={activeIndex}
+        onChange={(_event, newValue) => {
+          handleSlideTo(newValue)
+        }}
+      >
+        <BottomNavigationAction label="Chart" icon={<WaterfallChartIcon />} />
+        <BottomNavigationAction label="Balance" icon={<ScaleIcon />} />
+        <BottomNavigationAction label="Analyzed Result" icon={<BusinessCenterIcon />} />
+        <BottomNavigationAction label="Positions" icon={<CurrencyExchangeRoundedIcon />} />
+      </BottomNavigation>
     </>
   )
 }

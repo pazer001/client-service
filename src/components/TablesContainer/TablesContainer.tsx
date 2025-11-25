@@ -164,7 +164,7 @@ export const TablesContainer = () => {
   const watchlistsDisabled = useMemo(() => !watchlists.some(({ symbols }) => symbols.length > 0), [watchlists])
 
   return (
-    <Box sx={{ height: 'calc(100vh - 82px)' }}>
+    <Box sx={{ height: 'calc(100vh - 224px)' }}>
       <Activity mode={interval === Interval['1d'] ? 'visible' : 'hidden'}>
         <Tabs variant="fullWidth" value={activeIndex} onChange={handleChange} aria-label="basic tabs example">
           <Tab iconPosition="start" icon={<ListIcon />} label="Symbols" />
