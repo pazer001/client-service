@@ -70,7 +70,7 @@ export const OpenPositions = () => {
           top: 0,
           zIndex: 1000,
           backgroundColor: '#1e1e1e',
-          boxShadow: '0px 5px 7px 0px #1E1E1E, 0px -16px 0px 0px #1E1E1E',
+          boxShadow: '0px 5px 7px 0px #1E1E1E, 0px -16px 0px 10px #1E1E1E',
         }}
       >
         <Box flex={1}>
