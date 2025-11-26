@@ -4,7 +4,7 @@ import SyncProblemIcon from '@mui/icons-material/SyncProblem'
 import TrendingDownIcon from '@mui/icons-material/TrendingDown'
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
-import { Avatar, Box, CircularProgress, Tab, Tabs, Tooltip, Typography } from '@mui/material'
+import { Avatar, Box, CircularProgress, Tab, Tabs, Tooltip, Typography, useMediaQuery } from '@mui/material'
 import { grey } from '@mui/material/colors'
 import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { Activity, useMemo, useState } from 'react'
@@ -46,6 +46,7 @@ export const initErrorRecommendation: IRecommendation = {
 // the Mui TabPanel component has to much padding by default, so we need to create our own, since the table doesn't have enough space
 const CustomTabPanel = (props: CustomTabPanelProps) => {
   const { children, value, index, ...other } = props
+  const isMobile = useMediaQuery('(max-width:900px)')
 
   return (
     <Box
@@ -60,7 +61,7 @@ const CustomTabPanel = (props: CustomTabPanelProps) => {
           sx={{
             pt: 1,
             boxShadow: `0px -1px 0px 0px ${grey[500]}`,
-            height: 'calc(100dvh - 155px)',
+            height: isMobile ? 'calc(100dvh - 224px)' : 'calc(100dvh - 155px)',
           }}
         >
           {children}
