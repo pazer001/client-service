@@ -37,6 +37,9 @@ export const StartAlgo = () => {
     <Box display="flex" alignItems="center" gap={1}>
       <Select
         size="small"
+        sx={{
+          maxWidth: '140px',
+        }}
         value={userId}
         onChange={(e: SelectChangeEvent) => {
           setUserId(e.target.value)

@@ -3,6 +3,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { BaseSyntheticEvent } from 'react'
 import Logo from './assets/logos/horizontal-color-logo-no-background.svg'
+import LogoWithoutText from './assets/logos/logo-without-text.svg'
 import { StartAlgo } from './components/Algo/StartAlgo.tsx'
 import AnalyzedResult from './components/AnalyzedResult/AnalyzedResult'
 import Balance from './components/Balance/Balance.tsx'
@@ -78,7 +79,7 @@ function App() {
       <AppBar position="static">
         <Toolbar variant="dense">
           <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
-            <img alt="Symbata logo" src={Logo} height={isMobile ? '20px' : '30px'} />
+            <img alt="Symbata logo" src={isMobile ? LogoWithoutText : Logo} height={isMobile ? '20px' : '30px'} />
             <Box display="flex" alignItems="center" gap={2}>
               <StartAlgo />
               <IntervalController />
