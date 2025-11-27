@@ -7,7 +7,7 @@ import LogoWithoutText from './assets/logos/logo-without-text.svg'
 import { StartAlgo } from './components/Algo/StartAlgo.tsx'
 import AnalyzedResult from './components/AnalyzedResult/AnalyzedResult'
 import Balance from './components/Balance/Balance.tsx'
-import TradingViewWidget from './components/Chart/TradingView/TradingView.tsx'
+import Finlogix from './components/Chart/Finlogix/Finlogix.tsx'
 import { Interval } from './components/interfaces.ts'
 import { MobileView } from './components/MobileView/MobileView.tsx'
 import { TablesContainer } from './components/TablesContainer/TablesContainer.tsx'
@@ -95,7 +95,7 @@ function App() {
             <Grid size={6}>
               <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
                 <Item>
-                  <TradingViewWidget />
+                  <Finlogix />
                 </Item>
                 <Item sx={{ height: 'calc(100% / 2)' }}>
                   <Balance />
