@@ -9,7 +9,7 @@ import {
   useMediaQuery,
 } from '@mui/material'
 import { useMemo } from 'react'
-import { useOpenPositionsPolling } from '../../../hooks/useOpenPositionsPolling.ts'
+import { POLLING_INTERVAL, useOpenPositionsPolling } from '../../../hooks/useOpenPositionsPolling.ts'
 import { useSymbataStoreOpenPositions } from '../../../stores/symbataStore.ts'
 import { PositionItem } from './PositionItem.tsx'
 
@@ -89,7 +89,7 @@ export const OpenPositions = () => {
           />
           <Box display="flex" justifyContent="space-between" alignItems="center" mt={0.5}>
             <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-              Next update: {Math.ceil((60000 - (progress / 100) * 60000) / 1000)}s
+              Next update: {Math.ceil((POLLING_INTERVAL - (progress / 100) * POLLING_INTERVAL) / 1000)}s
             </Typography>
             <IconButton size="small" onClick={refreshOpenPositions} sx={{ display: 'flex', alignItems: 'center' }}>
               <RefreshIconOutlined sx={{ fontSize: '1rem' }} />
