@@ -3,6 +3,7 @@ import { create, StateCreator } from 'zustand'
 import { createJSONStorage, devtools, persist } from 'zustand/middleware'
 import axios from '../axios'
 import { Interval } from '../components/interfaces.ts'
+import { users } from '../utils/utils.ts'
 import { IAlpacaBalancesResponse, IOpenPositionsResponse, IRecommendation, ISymbolItem } from './symbataStore.types.ts'
 
 export interface IStoreActions {
@@ -41,7 +42,7 @@ const algoApiUrl: Record<Interval, { start: string; stop: string }> = {
 }
 
 const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
-  interval: Interval['1d'],
+  interval: Interval['15m'],
   profileValue: 100_000,
   tradingViewSymbol: 'VOO',
   symbol: undefined,
@@ -49,7 +50,7 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
   openPositions: undefined,
   balance: undefined,
   isAlgoStarted: false,
-  userId: '1f71bd6d-be84-456f-89e5-925528431139',
+  userId: users.pazStocks.id,
   actions: {
     setTradingViewSymbol: (symbol: string) => {
       set({ tradingViewSymbol: symbol })

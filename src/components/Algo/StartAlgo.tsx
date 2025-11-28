@@ -7,6 +7,7 @@ import {
   useSymbataStoreIsAlgoStarted,
   useSymbataStoreUserId,
 } from '../../stores/symbataStore.ts'
+import { users } from '../../utils/utils.ts'
 
 export const StartAlgo = () => {
   const userId = useSymbataStoreUserId()
@@ -46,9 +47,11 @@ export const StartAlgo = () => {
         }}
         disabled={isLoading}
       >
-        <MenuItem value="1f71bd6d-be84-456f-89e5-925528431139">Paz (Crypto)</MenuItem>
-        <MenuItem value="dcf89638-5297-41e2-a75c-f6fe50057d77">Paz (Stocks)</MenuItem>
-        <MenuItem value="963caa3a-03f8-4730-be71-046cb1b7aaac">Ben</MenuItem>
+        {Object.values(users).map((user: { id: string; name: string }) => (
+          <MenuItem key={user.id} value={user.id}>
+            {user.name}
+          </MenuItem>
+        ))}
       </Select>
       <Tooltip title={isAlgoStarted ? 'Stop Algo' : 'Start Algo'}>
         <span>
