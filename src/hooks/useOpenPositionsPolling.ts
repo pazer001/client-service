@@ -2,9 +2,11 @@ import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { useSymbataStoreActions, useSymbataStoreUserId } from '../stores/symbataStore.ts'
 import { IOpenPosition, IOpenPositionsResponse } from '../stores/symbataStore.types.ts'
 
+export const POLLING_INTERVAL = 30_000 // 30 seconds
+
 /**
  * Custom hook to handle polling open positions and detecting changes
- * Polls every 60 seconds and tracks field changes to trigger flash animations
+ * Polls every 30 seconds and tracks field changes to trigger flash animations
  */
 export const useOpenPositionsPolling = (openPositions: IOpenPositionsResponse | undefined) => {
   const userId = useSymbataStoreUserId()
@@ -27,21 +29,21 @@ export const useOpenPositionsPolling = (openPositions: IOpenPositionsResponse | 
     }
   })
 
-  // Poll open positions every 60 seconds with progress tracking
+  // Poll open positions every 30 seconds with progress tracking
   useEffect(() => {
     // Fetch immediately on mount
     getOpenPositions()
     startTimeRef.current = Date.now()
 
-    // Set up polling every 1 minute (60000ms)
+    // Set up polling every 30 seconds
     const intervalId = setInterval(() => {
       refreshOpenPositions()
-    }, 60000)
+    }, POLLING_INTERVAL)
 
     // Update progress bar every 100ms for smooth animation
     const progressInterval = setInterval(() => {
       const elapsed = Date.now() - startTimeRef.current
-      const newProgress = Math.min((elapsed / 60000) * 100, 100)
+      const newProgress = Math.min((elapsed / POLLING_INTERVAL) * 100, 100)
       setProgress(newProgress)
     }, 100)
 

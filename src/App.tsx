@@ -64,8 +64,8 @@ const IntervalController = () => {
       <ToggleButton size="small" value={Interval['1d']}>
         {Interval['1d']}
       </ToggleButton>
-      <ToggleButton size="small" value={Interval['5m']}>
-        {Interval['5m']}
+      <ToggleButton size="small" value={Interval['15m']}>
+        {Interval['15m']}
       </ToggleButton>
     </ToggleButtonGroup>
   )

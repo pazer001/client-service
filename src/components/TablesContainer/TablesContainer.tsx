@@ -183,7 +183,7 @@ export const TablesContainer = () => {
           <WatchlistsTable columns={columns} />
         </CustomTabPanel>
       </Activity>
-      <Activity mode={interval === Interval['5m'] ? 'visible' : 'hidden'}>
+      <Activity mode={interval === Interval['15m'] ? 'visible' : 'hidden'}>
         <OpenPositions />
       </Activity>
     </Box>

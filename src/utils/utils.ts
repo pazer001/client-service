@@ -42,3 +42,18 @@ export function formatNumber(value: number, fractionDigits: number = 2): string 
     maximumFractionDigits: fractionDigits,
   })
 }
+
+export const users = {
+  pazCrypto: {
+    id: '1f71bd6d-be84-456f-89e5-925528431139',
+    name: 'Paz (Crypto)',
+  },
+  pazStocks: {
+    id: 'dcf89638-5297-41e2-a75c-f6fe50057d77',
+    name: 'Paz (Stocks)',
+  },
+  benStocks: {
+    id: '963caa3a-03f8-4730-be71-046cb1b7aaac',
+    name: 'Ben (Stocks)',
+  },
+}

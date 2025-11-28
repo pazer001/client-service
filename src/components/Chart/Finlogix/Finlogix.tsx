@@ -25,9 +25,9 @@ interface IFinlogixConfig {
   isAdaptive: boolean
 }
 
-// Map interval to Finlogix timePeriod format (M5 for 5-minute, D1 for daily)
+// Map interval to Finlogix timePeriod format (M15 for 15-minute, D1 for daily)
 const getTimePeriod = (intervalValue: Interval): string => {
-  return intervalValue === Interval['5m'] ? 'M5' : 'D1'
+  return intervalValue === Interval['15m'] ? 'M15' : 'D1'
 }
 
 function FinlogixWidget() {
