@@ -11,7 +11,7 @@ import {
   useMediaQuery,
 } from '@mui/material'
 import { green, red } from '@mui/material/colors'
-import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
+import { DataGrid, GridColDef, GridRenderCellParams, gridClasses } from '@mui/x-data-grid'
 import { useMemo } from 'react'
 import { POLLING_INTERVAL, useOpenPositionsPolling } from '../../../hooks/useOpenPositionsPolling.ts'
 import { useSymbataStoreActions, useSymbataStoreOpenPositions } from '../../../stores/symbataStore.ts'
@@ -255,13 +255,13 @@ export const OpenPositions = () => {
           onRowClick={(params) => setTradingViewSymbol(params.row.symbol)}
           density="compact"
           sx={{
-            '& .MuiDataGrid-row': {
+            [`& .${gridClasses.row}`]: {
               cursor: 'pointer',
               '&:hover': {
                 backgroundColor: 'action.hover',
               },
             },
-            '& .MuiDataGrid-cell': {
+            [`& .${gridClasses.cell}`]: {
               display: 'flex',
               alignItems: 'center',
               padding: '0 8px',
