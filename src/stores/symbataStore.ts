@@ -37,7 +37,7 @@ export interface ISymbolStore {
 
 const algoApiUrl: Record<Interval, { start: string; stop: string }> = {
   [Interval['1d']]: { start: 'algo/runSwing/', stop: 'algo/stopSwing/' },
-  [Interval['5m']]: { start: 'algo/runIntraday/', stop: 'algo/stopIntraday/' },
+  [Interval['15m']]: { start: 'algo/runIntraday/', stop: 'algo/stopIntraday/' },
 }
 
 const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
