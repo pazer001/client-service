@@ -77,7 +77,7 @@ function FinlogixWidget() {
         hasSymbolChange: false,
         hasButton: false,
         chartShape: 'candles',
-        timePeriod: getTimePeriod(interval),
+        timePeriod: "M15",//getTimePeriod(interval),
         isAdaptive: true,
       })
     }
