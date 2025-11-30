@@ -1,6 +1,8 @@
 import { Avatar, Box, FormControl, Table, TableBody, TableCell, TableRow, TextField, Typography } from '@mui/material'
 import { startCase } from 'lodash'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react';
+import { io, Socket } from 'socket.io-client';
+
 import {
   useSymbataStoreActions,
   useSymbataStoreProfileValue,
@@ -70,6 +72,7 @@ const AnalyzedResult = () => {
 
   return (
     <Box display="flex" flexDirection="column" gap={1}>
+      <WebsocketTest />
       <FormControl>
         <TextField
           size="small"
@@ -98,6 +101,58 @@ const AnalyzedResult = () => {
       )}
     </Box>
   )
+}
+
+const WebsocketTest = () => {
+  const [_, setSocket] = useState<Socket | null>(null);
+  const [messages, setMessages] = useState<string[]>([]);
+  const [accountId] = useState("1f71bd6d-be84-456f-89e5-925528431139"); // Your account ID
+
+  useEffect(() => {
+    // Connect to WebSocket server
+    const newSocket = io('http://localhost:3000');
+
+    newSocket.on('connect', () => {
+      console.log('Connected:', newSocket.id);
+
+      // Register accountId
+      newSocket.emit('register', { accountId });
+    });
+
+    // Listen for messages
+    newSocket.on('msgToClient', (message: string) => {
+      console.log('Received:', message);
+      setMessages(prev => [...prev, message]);
+    });
+
+    newSocket.on('algoStatus', (message: string) => {
+      console.log('Received:', message);
+      setMessages(prev => [...prev, message]);
+    });
+
+    newSocket.on('registered', (data) => {
+      console.log('Registered:', data);
+    });
+
+    setSocket(newSocket);
+
+    // Cleanup on unmount
+    return () => {
+      newSocket.close();
+    };
+  }, [accountId]);
+
+  return (
+    <div style={{ padding: '20px' }}>
+      <h2>Account: {accountId}</h2>
+      <div>
+        <h3>Messages:</h3>
+        {messages.map((msg, index) => (
+          <div key={index}>{msg}</div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default AnalyzedResult
