@@ -1,6 +1,5 @@
 import { memo, useEffect, useRef } from 'react'
 import { useSymbataStoreInterval, useSymbataStoreTradingViewSymbol } from '../../../stores/symbataStore'
-import { Interval } from '../../interfaces'
 
 // Extend Window interface to include the Finlogix Widget
 declare global {
@@ -26,9 +25,9 @@ interface IFinlogixConfig {
 }
 
 // Map interval to Finlogix timePeriod format (M15 for 15-minute, D1 for daily)
-const getTimePeriod = (intervalValue: Interval): string => {
-  return intervalValue === Interval['15m'] ? 'M15' : 'D1'
-}
+// const getTimePeriod = (intervalValue: Interval): string => {
+//   return intervalValue === Interval['15m'] ? 'M15' : 'D1'
+// }
 
 function FinlogixWidget() {
   const containerRef = useRef<HTMLDivElement>(null)
