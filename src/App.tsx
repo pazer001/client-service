@@ -5,7 +5,7 @@ import { BaseSyntheticEvent } from 'react'
 import Logo from './assets/logos/horizontal-color-logo-no-background.svg'
 import LogoWithoutText from './assets/logos/logo-without-text.svg'
 import { StartAlgo } from './components/Algo/StartAlgo.tsx'
-import AnalyzedResult from './components/AnalyzedResult/AnalyzedResult'
+// import AnalyzedResult from './components/AnalyzedResult/AnalyzedResult'
 import Balance from './components/Balance/Balance.tsx'
 import Finlogix from './components/Chart/Finlogix/Finlogix.tsx'
 import { Interval } from './components/interfaces.ts'
@@ -17,6 +17,7 @@ import {
   useSymbataStoreIsAlgoStarted,
   useSymbataStoreUserId,
 } from './stores/symbataStore.ts'
+import Messages from './components/AnalyzedResult/AnalyzedResult';
 
 const spacingBetween = 1
 const fullHeightStyleProp = { height: '100%' }
@@ -104,7 +105,7 @@ function App() {
             </Grid>
             <Grid size={2}>
               <Item>
-                <AnalyzedResult />
+                <Messages />
               </Item>
             </Grid>
             <Grid size={4}>
