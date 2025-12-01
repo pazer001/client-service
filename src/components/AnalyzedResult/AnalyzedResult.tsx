@@ -171,9 +171,9 @@ const Messages = () => {
     return type === 'algoLog' ? 'primary' : 'secondary';
   };
 
-  const getMessageTypeLabel = (type: LogMessage['type']) => {
-    return type === 'algoLog' ? 'Algorithm' : 'Server';
-  };
+  // const getMessageTypeLabel = (type: LogMessage['type']) => {
+  //   return type === 'algoLog' ? 'Algorithm' : 'Server';
+  // };
 
   return (
     <Card 
