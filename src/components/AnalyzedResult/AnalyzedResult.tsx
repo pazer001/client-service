@@ -196,10 +196,10 @@ const Messages = () => {
         <Paper 
           variant="outlined" 
           sx={{ 
-            flex: 1,
+            // flex: 1,
             overflowY: 'scroll',
-            p: 2,
-            borderRadius: 1
+            p: 1,
+            // borderRadius: 1
           }}
         >
           {messages.length === 0 ? (
@@ -210,23 +210,23 @@ const Messages = () => {
             </Box>
           ) : (
             <Box>
-              {messages.slice().reverse().map((msg, index) => (
+              {messages.slice().map((msg, index) => (
                 <Paper
                   key={index}
                   elevation={1}
                   sx={{
-                    p: 2,
-                    mb: 1.5,
+                    p: 1,
+                    mb: 1,
                     borderLeft: 4,
                     borderColor: msg.type === 'algoLog' ? '#1976d2' : '#9c27b0',
                     borderRadius: 1,
                     transition: 'all 0.2s ease',
-                    '&:hover': {
-                      boxShadow: 2
-                    },
-                    '&:last-child': {
-                      mb: 0
-                    }
+                    // '&:hover': {
+                    //   boxShadow: 2
+                    // },
+                    // '&:last-child': {
+                    //   mb: 0
+                    // }
                   }}
                 >
                   <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={1}>
