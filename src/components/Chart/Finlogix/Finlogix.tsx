@@ -85,4 +85,112 @@ function FinlogixWidget() {
   return <div ref={containerRef} style={{ height: '100%', width: '100%' }} />
 }
 
-export default memo(FinlogixWidget)
+
+declare global {
+  interface Window {
+    DukascopyApplet?: {
+      type: string;
+      params: Record<string, any>;
+    };
+  }
+}
+
+interface DukascopyChartProps {
+  instrument?: string;
+  period?: string;
+  height?: string;
+  width?: string;
+  theme?: string;
+  offerSide?: string;
+  live?: boolean;
+  presentationType?: string;
+}
+
+const DukascopyChart: React.FC<DukascopyChartProps> = ({
+                                                         instrument = "EUR/USD",
+                                                         period = "7",
+                                                         height = "600",
+                                                         width = "100%",
+                                                         theme = "Pastelle",
+                                                         offerSide = "BID",
+                                                         live = true,
+                                                         presentationType = "candle"
+                                                       }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const scriptLoadedRef = useRef(false);
+
+  useEffect(() => {
+    // Prevent double loading in React StrictMode
+    if (scriptLoadedRef.current) return;
+    scriptLoadedRef.current = true;
+
+    // Define the global DukascopyApplet configuration
+    window.DukascopyApplet = {
+      type: "chart",
+      params: {
+        showUI: true,
+        showTabs: true,
+        showParameterToolbar: true,
+        showOfferSide: true,
+        allowInstrumentChange: true,
+        allowPeriodChange: true,
+        allowOfferSideChange: true,
+        showAdditionalToolbar: true,
+        showDetachButton: true,
+        presentationType: presentationType,
+        axisX: true,
+        axisY: true,
+        legend: true,
+        timeline: true,
+        showDateSeparators: true,
+        showZoom: true,
+        showScrollButtons: true,
+        showAutoShiftButton: true,
+        crosshair: true,
+        borders: false,
+        theme: theme,
+        uiColor: "#000",
+        availableInstruments: "l:",
+        instrument: instrument,
+        period: period,
+        offerSide: offerSide,
+        timezone: 0,
+        live: live,
+        panLock: false,
+        width: width,
+        height: height,
+        adv: "popup"
+      }
+    };
+
+    // Load the Dukascopy script into body
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'https://freeserv-static.dukascopy.com/2.0/core.js';
+    script.async = false; // Make it synchronous
+
+    document.body.appendChild(script);
+
+    // Cleanup function
+    return () => {
+      const scripts = document.querySelectorAll('script[src*="dukascopy"]');
+      scripts.forEach(s => s.remove());
+
+      if (window.DukascopyApplet) {
+        delete window.DukascopyApplet;
+      }
+
+      scriptLoadedRef.current = false;
+    };
+  }, [instrument, period, height, width, theme, offerSide, live, presentationType]);
+
+  return (
+    <div
+      ref={containerRef}
+      style={{ width: width, height: height }}
+      id="dukascopy-chart-container"
+    />
+  );
+};
+
+export default DukascopyChart
