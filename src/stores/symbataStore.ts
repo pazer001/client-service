@@ -45,7 +45,7 @@ const algoApiUrl: Record<Interval, { start: string; stop: string }> = {
 const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
   interval: Interval['15m'],
   profileValue: 100_000,
-  tradingViewSymbol: 'VOO',
+  tradingViewSymbol: 'SPY',
   symbol: undefined,
   symbols: [],
   openPositions: undefined,

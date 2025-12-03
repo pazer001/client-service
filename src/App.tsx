@@ -18,6 +18,7 @@ import {
   useSymbataStoreUserId,
 } from './stores/symbataStore.ts'
 import Messages from './components/AnalyzedResult/AnalyzedResult';
+import TradingViewWidget from './components/Chart/TradingViewWidget.tsx';
 
 const spacingBetween = 1
 const fullHeightStyleProp = { height: '100%' }
@@ -96,7 +97,7 @@ function App() {
             <Grid size={6}>
               <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
                 <Item>
-                  <Finlogix />
+                  <TradingViewWidget />
                 </Item>
                 <Item sx={{ height: 'calc(100% / 2)' }}>
                   <Balance />
