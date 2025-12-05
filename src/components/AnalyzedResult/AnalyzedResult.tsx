@@ -106,7 +106,7 @@ return <Messages />
 
 interface LogMessage {
   text: string;
-  type: 'msgToClient' | 'algoLog';
+  type: "general" | "recommendation" | "buy" | "sell"
   timestamp: Date;
 }
 
@@ -135,15 +135,11 @@ const Messages = () => {
       newSocket.emit('register', { accountId });
     });
 
-    // Listen for messages
-    newSocket.on('msgToClient', (message: string) => {
-      console.log('Received:', message);
-      setMessages(prev => [...prev, { text: message, type: 'msgToClient', timestamp: new Date() }]);
-    });
 
-    newSocket.on('algoLog', (message: string) => {
+
+    newSocket.on('algoLog', (message: {type: "general" | "recommendation" | "buy" | "sell", message: string}) => {
       console.log('Received:', message);
-      setMessages(prev => [...prev, { text: message, type: 'algoLog', timestamp: new Date() }]);
+      setMessages(prev => [...prev, { text: message.message, type: message.type, timestamp: new Date() }]);
     });
 
     newSocket.on('registered', (data) => {
@@ -167,13 +163,8 @@ const Messages = () => {
     });
   };
 
-  const getMessageTypeColor = (type: LogMessage['type']) => {
-    return type === 'algoLog' ? 'primary' : 'secondary';
-  };
 
-  // const getMessageTypeLabel = (type: LogMessage['type']) => {
-  //   return type === 'algoLog' ? 'Algorithm' : 'Server';
-  // };
+
 
   return (
     <Card 
@@ -218,7 +209,6 @@ const Messages = () => {
                     p: 1,
                     mb: 1,
                     borderLeft: 4,
-                    borderColor: msg.type === 'algoLog' ? '#1976d2' : '#9c27b0',
                     borderRadius: 1,
                     transition: 'all 0.2s ease',
                     // '&:hover': {
@@ -235,7 +225,6 @@ const Messages = () => {
                         <Chip
                           label={formatTime(msg.timestamp)}
                           size="small"
-                          color={getMessageTypeColor(msg.type)}
                           sx={{ 
                             height: 22, 
                             fontSize: '0.75rem',
