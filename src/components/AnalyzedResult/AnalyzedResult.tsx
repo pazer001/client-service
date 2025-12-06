@@ -1,13 +1,28 @@
-import { Avatar, Box, Card, CardContent, Chip, FormControl, Paper, Table, TableBody, TableCell, TableRow, TextField, Typography } from '@mui/material'
+import {
+  Avatar,
+  Box,
+  Card,
+  CardContent,
+  Chip,
+  FormControl,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  TextField,
+  Typography,
+} from '@mui/material'
 import { startCase } from 'lodash'
-import { ReactElement, useEffect, useRef, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
+import { ReactElement, useEffect, useRef, useState } from 'react'
+import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
+import { io, Socket } from 'socket.io-client'
 
 import {
   useSymbataStoreActions,
   useSymbataStoreProfileValue,
   useSymbataStoreSymbol,
-  useSymbataStoreUserId
+  useSymbataStoreUserId,
 } from '../../stores/symbataStore.ts'
 import { EAction, ISymbolItem } from '../../stores/symbataStore.types.ts'
 import { formatNumber, getShares } from '../../utils/utils.ts'
@@ -70,7 +85,7 @@ const AnalyzedResult = () => {
           createData('Strategy', startCase(symbol.recommendation.usedStrategy)),
         ]
       : initRows
-return <Messages />
+  return <Messages />
   return (
     <Box display="flex" flexDirection="column" gap={1}>
       <Messages />
@@ -105,75 +120,62 @@ return <Messages />
 }
 
 interface LogMessage {
-  text: string;
-  type: "general" | "recommendation" | "buy" | "sell"
-  timestamp: Date;
+  text: string
+  type: 'general' | 'recommendation' | 'buy' | 'sell'
+  timestamp: Date
 }
 
 const Messages = () => {
-  const [_, setSocket] = useState<Socket | null>(null);
-  const [messages, setMessages] = useState<LogMessage[]>([]);
-  const accountId = useSymbataStoreUserId();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  const [_, setSocket] = useState<Socket | null>(null)
+  const [messages, setMessages] = useState<LogMessage[]>([])
+  const accountId = useSymbataStoreUserId()
+  const virtuosoRef = useRef<VirtuosoHandle>(null)
 
   useEffect(() => {
     // Connect to WebSocket server
-    const newSocket = io(import.meta.env.VITE_API_HOST);
+    const newSocket = io(import.meta.env.VITE_API_HOST)
 
     newSocket.on('connect', () => {
-      console.log('Connected:', newSocket.id);
+      console.log('Connected:', newSocket.id)
 
       // Register accountId
-      newSocket.emit('register', { accountId });
-    });
+      newSocket.emit('register', { accountId })
+    })
 
-
-
-    newSocket.on('algoLog', (message: {type: "general" | "recommendation" | "buy" | "sell", message: string}) => {
-      console.log('Received:', message);
-      setMessages(prev => [...prev, { text: message.message, type: message.type, timestamp: new Date() }]);
-    });
+    newSocket.on('algoLog', (message: { type: 'general' | 'recommendation' | 'buy' | 'sell'; message: string }) => {
+      console.log('Received:', message)
+      setMessages((prev) => [...prev, { text: message.message, type: message.type, timestamp: new Date() }])
+    })
 
     newSocket.on('registered', (data) => {
-      console.log('Registered:', data);
-    });
+      console.log('Registered:', data)
+    })
 
-    setSocket(newSocket);
+    setSocket(newSocket)
 
     // Cleanup on unmount
     return () => {
-      newSocket.close();
-    };
-  }, [accountId]);
+      newSocket.close()
+    }
+  }, [accountId])
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit', 
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
       second: '2-digit',
-      hour12: false 
-    });
-  };
-
-
-
+      hour12: false,
+    })
+  }
 
   return (
-    <Card 
+    <Card
       elevation={3}
       sx={{
         borderRadius: 2,
         maxHeight: '90vh',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
       }}
     >
       <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
@@ -181,16 +183,15 @@ const Messages = () => {
           <Typography variant="h6" component="div" fontWeight={600} color="text.primary">
             Algo Actions:
           </Typography>
-
         </Box>
-        
-        <Paper 
-          variant="outlined" 
-          sx={{ 
-            // flex: 1,
-            overflowY: 'scroll',
+
+        <Paper
+          variant="outlined"
+          sx={{
+            flex: 1,
+            overflow: 'hidden',
             p: 1,
-            // borderRadius: 1
+            minHeight: 200,
           }}
         >
           {messages.length === 0 ? (
@@ -200,8 +201,12 @@ const Messages = () => {
               </Typography>
             </Box>
           ) : (
-            <Box>
-              {messages.slice().map((msg, index) => (
+            <Virtuoso
+              ref={virtuosoRef}
+              style={{ height: '100%' }}
+              data={messages}
+              followOutput="smooth"
+              itemContent={(index, msg) => (
                 <Paper
                   key={index}
                   elevation={1}
@@ -211,12 +216,6 @@ const Messages = () => {
                     borderLeft: 4,
                     borderRadius: 1,
                     transition: 'all 0.2s ease',
-                    // '&:hover': {
-                    //   boxShadow: 2
-                    // },
-                    // '&:last-child': {
-                    //   mb: 0
-                    // }
                   }}
                 >
                   <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={1}>
@@ -225,21 +224,21 @@ const Messages = () => {
                         <Chip
                           label={formatTime(msg.timestamp)}
                           size="small"
-                          sx={{ 
-                            height: 22, 
+                          sx={{
+                            height: 22,
                             fontSize: '0.75rem',
-                            fontWeight: 600
+                            fontWeight: 600,
                           }}
                         />
                       </Box>
-                      <Typography 
-                        variant="body2" 
-                        sx={{ 
+                      <Typography
+                        variant="body2"
+                        sx={{
                           fontFamily: 'Consolas, Monaco, "Courier New", monospace',
                           fontSize: '0.875rem',
                           lineHeight: 1.6,
                           wordBreak: 'break-word',
-                          color: '#ffffff'
+                          color: '#ffffff',
                         }}
                       >
                         {msg.text}
@@ -247,13 +246,12 @@ const Messages = () => {
                     </Box>
                   </Box>
                 </Paper>
-              ))}
-              <div ref={messagesEndRef} />
-            </Box>
+              )}
+            />
           )}
         </Paper>
       </CardContent>
     </Card>
-  );
+  )
 }
 export default AnalyzedResult
