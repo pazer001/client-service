@@ -405,6 +405,7 @@ const Messages = () => {
             }}
           >
             <MenuItem
+              selected={activeFilter === 'all'}
               onClick={() => {
                 setActiveFilter('all')
                 setFilterMenuAnchor(null)
@@ -413,6 +414,7 @@ const Messages = () => {
               <Chip label="All" size="small" />
             </MenuItem>
             <MenuItem
+              selected={activeFilter === 'general'}
               onClick={() => {
                 setActiveFilter('general')
                 setFilterMenuAnchor(null)
@@ -421,6 +423,7 @@ const Messages = () => {
               <Chip label="General" size="small" color="secondary" />
             </MenuItem>
             <MenuItem
+              selected={activeFilter === 'recommendation'}
               onClick={() => {
                 setActiveFilter('recommendation')
                 setFilterMenuAnchor(null)
@@ -429,6 +432,7 @@ const Messages = () => {
               <Chip label="Recommendation" size="small" color="warning" />
             </MenuItem>
             <MenuItem
+              selected={activeFilter === 'buy'}
               onClick={() => {
                 setActiveFilter('buy')
                 setFilterMenuAnchor(null)
@@ -437,6 +441,7 @@ const Messages = () => {
               <Chip label="Buy" size="small" color="info" />
             </MenuItem>
             <MenuItem
+              selected={activeFilter === 'sell'}
               onClick={() => {
                 setActiveFilter('sell')
                 setFilterMenuAnchor(null)
@@ -445,6 +450,7 @@ const Messages = () => {
               <Chip label="Sell / All" size="small" color="info" />
             </MenuItem>
             <MenuItem
+              selected={activeFilter === 'sell-positive'}
               onClick={() => {
                 setActiveFilter('sell-positive')
                 setFilterMenuAnchor(null)
@@ -453,6 +459,7 @@ const Messages = () => {
               <Chip label="Sell / Positive" size="small" color="success" />
             </MenuItem>
             <MenuItem
+              selected={activeFilter === 'sell-negative'}
               onClick={() => {
                 setActiveFilter('sell-negative')
                 setFilterMenuAnchor(null)
