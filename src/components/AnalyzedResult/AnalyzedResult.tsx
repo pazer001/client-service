@@ -130,19 +130,28 @@ const MessageItem = ({ msg, isNew, formatTime }: MessageItemProps) => {
       >
         <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={1}>
           <Box flex={1}>
-            <Typography
-              variant="body2"
-              mb={1}
-              sx={{
-                fontFamily: 'Consolas, Monaco, "Courier New", monospace',
-                fontSize: '0.875rem',
-                lineHeight: 1.6,
-                wordBreak: 'break-word',
-                color: '#ffffff',
-              }}
-            >
-              {msg.text}
-            </Typography>
+            <Tooltip title={msg.text} placement="top" enterDelay={500}>
+              <Typography
+                variant="body2"
+                mb={1}
+                sx={{
+                  fontFamily: 'Consolas, Monaco, "Courier New", monospace',
+                  fontSize: '0.875rem',
+                  lineHeight: 1.6,
+                  color: '#ffffff',
+                  // Fixed 2-line height with ellipsis for overflow
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  // Height = lineHeight (1.6) * fontSize (0.875rem) * 2 lines
+                  minHeight: 'calc(0.875rem * 1.6 * 2)',
+                }}
+              >
+                {msg.text}
+              </Typography>
+            </Tooltip>
             <Box display="flex" alignItems="center" justifyContent="space-between" gap={1}>
               <Chip
                 label={msg.type.charAt(0).toUpperCase() + msg.type.slice(1)}
@@ -482,19 +491,6 @@ const Messages = () => {
               ref={virtuosoRef}
               data={filteredMessages}
               style={{ flex: 1 }}
-              components={{
-                // Custom Scroller with scroll-snap for item-based scrolling
-                // Using 'proximity' for gentler snap behavior that allows smoother manual scrolling
-                Scroller: ({ style, ...props }) => (
-                  <div
-                    {...props}
-                    style={{
-                      ...style,
-                      scrollSnapType: 'y proximity',
-                    }}
-                  />
-                ),
-              }}
               itemContent={(_index, msg) => {
                 // Check if this message has been rendered before
                 const isNewMessage = !renderedMessagesRef.current.has(msg.id)
