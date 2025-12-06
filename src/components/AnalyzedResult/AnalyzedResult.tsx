@@ -1,6 +1,6 @@
 import FilterListIcon from '@mui/icons-material/FilterList'
 import { Box, Card, CardContent, Chip, IconButton, Menu, MenuItem, Paper, Typography } from '@mui/material'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
 import { io, Socket } from 'socket.io-client'
 import { useSymbataStoreUserId } from '../../stores/symbataStore'
@@ -188,7 +188,7 @@ const Messages = () => {
     })
   }
 
-  const filteredMessages = (() => {
+  const filteredMessages = useMemo(() => {
     switch (activeFilter) {
       case 'all':
         return messages
@@ -201,7 +201,7 @@ const Messages = () => {
       default:
         return messages.filter((m) => m.type === activeFilter)
     }
-  })()
+  }, [messages, activeFilter])
 
   return (
     <Card
