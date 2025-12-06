@@ -275,6 +275,12 @@ const Messages = () => {
     }
   }, [messages, activeFilter])
 
+  // Reset animation tracking when filter changes to prevent stale state
+  // Pre-populate with current filtered messages so only new arrivals animate
+  useEffect(() => {
+    renderedMessagesRef.current = new Set(filteredMessages.map((m) => m.id))
+  }, [activeFilter]) // Only reset on filter change, not on new messages
+
   // Auto-scroll to bottom when enabled and new messages arrive
   useEffect(() => {
     if (autoScrollEnabled && filteredMessages.length > 0) {
@@ -305,7 +311,6 @@ const Messages = () => {
           {/* TODO: Remove mock controls before production */}
           {USE_MOCK_DATA && (
             <Box display="flex" alignItems="center" gap={1}>
-              <Chip label={`${filteredMessages.length} / ${messages.length} messages`} size="small" color="info" />
               <Chip
                 label="+ Add 10"
                 size="small"
