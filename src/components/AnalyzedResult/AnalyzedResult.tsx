@@ -1,3 +1,4 @@
+import FilterListIcon from '@mui/icons-material/FilterList'
 import {
   Avatar,
   Box,
@@ -5,6 +6,9 @@ import {
   CardContent,
   Chip,
   FormControl,
+  IconButton,
+  Menu,
+  MenuItem,
   Paper,
   Table,
   TableBody,
@@ -181,12 +185,13 @@ const getMessageBorderColor = (msg: LogMessage): string => {
     case 'recommendation':
       return 'warning.main'
     case 'general':
+      return 'secondary.main'
     default:
       return 'grey.500'
   }
 }
 
-const getMessageChipColor = (msg: LogMessage): 'default' | 'error' | 'warning' | 'info' | 'success' => {
+const getMessageChipColor = (msg: LogMessage): 'default' | 'error' | 'warning' | 'info' | 'success' | 'secondary' => {
   switch (msg.type) {
     case 'buy':
       return 'info'
@@ -195,6 +200,7 @@ const getMessageChipColor = (msg: LogMessage): 'default' | 'error' | 'warning' |
     case 'recommendation':
       return 'warning'
     case 'general':
+      return 'secondary'
     default:
       return 'default'
   }
@@ -229,6 +235,10 @@ const Messages = () => {
   const [messages, setMessages] = useState<LogMessage[]>(() => (USE_MOCK_DATA ? generateInitialMockMessages(50) : []))
   const accountId = useSymbataStoreUserId()
   const virtuosoRef = useRef<VirtuosoHandle>(null)
+  const [activeFilter, setActiveFilter] = useState<LogMessage['type'] | 'all' | 'sell-positive' | 'sell-negative'>(
+    'all',
+  )
+  const [filterMenuAnchor, setFilterMenuAnchor] = useState<null | HTMLElement>(null)
 
   // Mock: Add a new message every 2 seconds for testing auto-scroll
   useEffect(() => {
@@ -280,6 +290,21 @@ const Messages = () => {
     })
   }
 
+  const filteredMessages = (() => {
+    switch (activeFilter) {
+      case 'all':
+        return messages
+      case 'sell':
+        return messages.filter((m) => m.type === 'sell')
+      case 'sell-positive':
+        return messages.filter((m) => m.type === 'sell' && m.profit !== undefined && m.profit > 0)
+      case 'sell-negative':
+        return messages.filter((m) => m.type === 'sell' && m.profit !== undefined && m.profit < 0)
+      default:
+        return messages.filter((m) => m.type === activeFilter)
+    }
+  })()
+
   return (
     <Card
       elevation={3}
@@ -292,14 +317,14 @@ const Messages = () => {
       }}
     >
       <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
           <Typography variant="h6" component="div" fontWeight={600} color="text.primary">
             Algo Actions:
           </Typography>
           {/* TODO: Remove mock controls before production */}
           {USE_MOCK_DATA && (
             <Box display="flex" alignItems="center" gap={1}>
-              <Chip label={`${messages.length} messages`} size="small" color="info" />
+              <Chip label={`${filteredMessages.length} / ${messages.length} messages`} size="small" color="info" />
               <Chip
                 label="+ Add 10"
                 size="small"
@@ -314,17 +339,118 @@ const Messages = () => {
           )}
         </Box>
 
+        <Box display="flex" alignItems="center" justifyContent="space-between" gap={0.5} mb={1}>
+          <Chip
+            label={(() => {
+              switch (activeFilter) {
+                case 'all':
+                  return 'All'
+                case 'sell':
+                  return 'Sell / All'
+                case 'sell-positive':
+                  return 'Sell / Positive'
+                case 'sell-negative':
+                  return 'Sell / Negative'
+                default:
+                  return activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)
+              }
+            })()}
+            size="small"
+            color={(() => {
+              switch (activeFilter) {
+                case 'all':
+                  return 'default'
+                case 'sell':
+                  return 'info'
+                case 'sell-positive':
+                  return 'success'
+                case 'sell-negative':
+                  return 'error'
+                default:
+                  return getMessageChipColor({ type: activeFilter } as LogMessage)
+              }
+            })()}
+          />
+          <IconButton size="small" onClick={(e) => setFilterMenuAnchor(e.currentTarget)}>
+            <FilterListIcon fontSize="small" />
+          </IconButton>
+          <Menu
+            anchorEl={filterMenuAnchor}
+            open={Boolean(filterMenuAnchor)}
+            onClose={() => setFilterMenuAnchor(null)}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          >
+            <MenuItem
+              onClick={() => {
+                setActiveFilter('all')
+                setFilterMenuAnchor(null)
+              }}
+            >
+              <Chip label="All" size="small" />
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setActiveFilter('general')
+                setFilterMenuAnchor(null)
+              }}
+            >
+              <Chip label="General" size="small" color="secondary" />
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setActiveFilter('recommendation')
+                setFilterMenuAnchor(null)
+              }}
+            >
+              <Chip label="Recommendation" size="small" color="warning" />
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setActiveFilter('buy')
+                setFilterMenuAnchor(null)
+              }}
+            >
+              <Chip label="Buy" size="small" color="info" />
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setActiveFilter('sell')
+                setFilterMenuAnchor(null)
+              }}
+            >
+              <Chip label="Sell / All" size="small" color="info" />
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setActiveFilter('sell-positive')
+                setFilterMenuAnchor(null)
+              }}
+            >
+              <Chip label="Sell / Positive" size="small" color="success" />
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setActiveFilter('sell-negative')
+                setFilterMenuAnchor(null)
+              }}
+            >
+              <Chip label="Sell / Negative" size="small" color="error" />
+            </MenuItem>
+          </Menu>
+        </Box>
+
         <Box display="flex" flex={1} overflow="hidden">
-          {messages.length === 0 ? (
+          {filteredMessages.length === 0 ? (
             <Box p={3} textAlign="center">
               <Typography variant="body2" color="text.secondary" fontStyle="italic">
-                Waiting for messages...
+                {messages.length === 0 ? 'Waiting for messages...' : 'No messages match the filter'}
               </Typography>
             </Box>
           ) : (
             <Virtuoso
               ref={virtuosoRef}
-              data={messages}
+              data={filteredMessages}
               style={{ flex: 1 }}
               followOutput="smooth"
               components={{
