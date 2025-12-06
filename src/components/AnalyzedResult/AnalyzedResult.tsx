@@ -1,7 +1,7 @@
 import FilterListIcon from '@mui/icons-material/FilterList'
-import { Box, Card, CardContent, Chip, IconButton, Menu, MenuItem, Paper, Slide, Typography } from '@mui/material'
+import { Box, Card, CardContent, Chip, IconButton, Menu, MenuItem, Paper, Typography } from '@mui/material'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
+import { Virtuoso } from 'react-virtuoso'
 import { io } from 'socket.io-client'
 import { useSymbataStoreUserId } from '../../stores/symbataStore'
 
@@ -118,43 +118,41 @@ const MessageItem = ({ msg, isNew, formatTime }: MessageItemProps) => {
 
   return (
     <Box sx={{ overflow: 'hidden', mb: 1, scrollSnapAlign: 'start' }}>
-      <Slide direction="left" in={slideIn} timeout={300}>
-        <Paper
-          elevation={0}
-          sx={{
-            p: 1,
-            borderLeft: 4,
-            borderColor: getMessageBorderColor(msg),
-            borderRadius: 1,
-          }}
-        >
-          <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={1}>
-            <Box flex={1}>
-              <Box display="flex" alignItems="center" justifyContent="space-between" gap={1} mb={1}>
-                <Chip
-                  label={msg.type.charAt(0).toUpperCase() + msg.type.slice(1)}
-                  size="small"
-                  color={getMessageChipColor(msg)}
-                  variant="outlined"
-                />
-                <Chip label={formatTime(msg.timestamp)} size="small" />
-              </Box>
-              <Typography
-                variant="body2"
-                sx={{
-                  fontFamily: 'Consolas, Monaco, "Courier New", monospace',
-                  fontSize: '0.875rem',
-                  lineHeight: 1.6,
-                  wordBreak: 'break-word',
-                  color: '#ffffff',
-                }}
-              >
-                {msg.text}
-              </Typography>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 1,
+          borderLeft: 4,
+          borderColor: getMessageBorderColor(msg),
+          borderRadius: 1,
+        }}
+      >
+        <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={1}>
+          <Box flex={1}>
+            <Box display="flex" alignItems="center" justifyContent="space-between" gap={1} mb={1}>
+              <Chip
+                label={msg.type.charAt(0).toUpperCase() + msg.type.slice(1)}
+                size="small"
+                color={getMessageChipColor(msg)}
+                variant="outlined"
+              />
+              <Chip label={formatTime(msg.timestamp)} size="small" />
             </Box>
+            <Typography
+              variant="body2"
+              sx={{
+                fontFamily: 'Consolas, Monaco, "Courier New", monospace',
+                fontSize: '0.875rem',
+                lineHeight: 1.6,
+                wordBreak: 'break-word',
+                color: '#ffffff',
+              }}
+            >
+              {msg.text}
+            </Typography>
           </Box>
-        </Paper>
-      </Slide>
+        </Box>
+      </Paper>
     </Box>
   )
 }
@@ -189,7 +187,6 @@ const Messages = () => {
   const [initialMessages] = useState(() => (USE_MOCK_DATA ? generateInitialMockMessages(50) : []))
   const [messages, setMessages] = useState<LogMessage[]>(initialMessages)
   const accountId = useSymbataStoreUserId()
-  const virtuosoRef = useRef<VirtuosoHandle>(null)
   // Track which messages have been rendered to avoid re-animating on scroll
   // Pre-populate with initial message IDs so they don't animate
   const renderedMessagesRef = useRef<Set<string>>(new Set(initialMessages.map((m) => m.id)))
@@ -204,7 +201,7 @@ const Messages = () => {
 
     const interval = setInterval(() => {
       setMessages((prev) => [...prev, generateMockMessage()])
-    }, 2000)
+    }, 500)
 
     return () => clearInterval(interval)
   }, [])
@@ -274,19 +271,6 @@ const Messages = () => {
     }
   }, [messages, activeFilter])
 
-  // Scroll to bottom when new messages arrive
-  useEffect(() => {
-    if (filteredMessages.length > 0) {
-      // Small timeout to ensure DOM is updated before scrolling
-      requestAnimationFrame(() => {
-        virtuosoRef.current?.scrollToIndex({
-          index: filteredMessages.length - 1,
-          behavior: 'smooth',
-        })
-      })
-    }
-  }, [filteredMessages.length])
-
   return (
     <Card
       elevation={3}
@@ -323,17 +307,18 @@ const Messages = () => {
         <Box display="flex" alignItems="center" justifyContent="space-between" gap={0.5} mb={1}>
           <Chip
             label={(() => {
+              const count = filteredMessages.length
               switch (activeFilter) {
                 case 'all':
-                  return 'All'
+                  return `All (${count})`
                 case 'sell':
-                  return 'Sell / All'
+                  return `Sell / All (${count})`
                 case 'sell-positive':
-                  return 'Sell / Positive'
+                  return `Sell / Positive (${count})`
                 case 'sell-negative':
-                  return 'Sell / Negative'
+                  return `Sell / Negative (${count})`
                 default:
-                  return activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)
+                  return `${activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)} (${count})`
               }
             })()}
             size="small"
@@ -444,7 +429,6 @@ const Messages = () => {
             </Box>
           ) : (
             <Virtuoso
-              ref={virtuosoRef}
               data={filteredMessages}
               style={{ flex: 1 }}
               components={{
