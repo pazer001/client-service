@@ -1,5 +1,5 @@
 import FilterListIcon from '@mui/icons-material/FilterList'
-import { Box, Card, CardContent, Chip, Collapse, IconButton, Menu, MenuItem, Paper, Typography } from '@mui/material'
+import { Box, Card, CardContent, Chip, IconButton, Menu, MenuItem, Paper, Slide, Typography } from '@mui/material'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
 import { io } from 'socket.io-client'
@@ -95,6 +95,68 @@ const getMessageChipColor = (msg: LogMessage): 'default' | 'error' | 'warning' |
     default:
       return 'default'
   }
+}
+
+interface MessageItemProps {
+  msg: LogMessage
+  isNew: boolean
+  formatTime: (date: Date) => string
+}
+
+/** Separate component to handle slide animation state */
+const MessageItem = ({ msg, isNew, formatTime }: MessageItemProps) => {
+  // Start with in={false} for new messages, then animate to in={true}
+  const [slideIn, setSlideIn] = useState(!isNew)
+
+  useEffect(() => {
+    if (isNew && !slideIn) {
+      // Trigger animation after component mounts
+      const timer = requestAnimationFrame(() => setSlideIn(true))
+      return () => cancelAnimationFrame(timer)
+    }
+  }, [isNew, slideIn])
+
+  return (
+    <Box sx={{ overflow: 'hidden', mb: 1, scrollSnapAlign: 'start' }}>
+      <Slide direction="left" in={slideIn} timeout={300}>
+        <Paper
+          elevation={0}
+          sx={{
+            p: 1,
+            borderLeft: 4,
+            borderColor: getMessageBorderColor(msg),
+            borderRadius: 1,
+          }}
+        >
+          <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={1}>
+            <Box flex={1}>
+              <Box display="flex" alignItems="center" justifyContent="space-between" gap={1} mb={1}>
+                <Chip
+                  label={msg.type.charAt(0).toUpperCase() + msg.type.slice(1)}
+                  size="small"
+                  color={getMessageChipColor(msg)}
+                  variant="outlined"
+                />
+                <Chip label={formatTime(msg.timestamp)} size="small" />
+              </Box>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontFamily: 'Consolas, Monaco, "Courier New", monospace',
+                  fontSize: '0.875rem',
+                  lineHeight: 1.6,
+                  wordBreak: 'break-word',
+                  color: '#ffffff',
+                }}
+              >
+                {msg.text}
+              </Typography>
+            </Box>
+          </Box>
+        </Paper>
+      </Slide>
+    </Box>
+  )
 }
 
 const generateInitialMockMessages = (count: number): LogMessage[] => {
@@ -241,7 +303,7 @@ const Messages = () => {
             Algo Actions:
           </Typography>
           {/* TODO: Remove mock controls before production */}
-          {USE_MOCK_DATA && (
+          {USE_MOCK_DATA && false && (
             <Box display="flex" alignItems="center" gap={1}>
               <Chip label={`${filteredMessages.length} / ${messages.length} messages`} size="small" color="info" />
               <Chip
@@ -405,48 +467,7 @@ const Messages = () => {
                   renderedMessagesRef.current.add(msg.id)
                 }
 
-                return (
-                  <Collapse in timeout={isNewMessage ? 300 : 0}>
-                    <Paper
-                      elevation={0}
-                      sx={{
-                        p: 1,
-                        mb: 1,
-                        borderLeft: 4,
-                        borderColor: getMessageBorderColor(msg),
-                        borderRadius: 1,
-                        transition: 'all 0.2s ease',
-                        scrollSnapAlign: 'start',
-                      }}
-                    >
-                      <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={1}>
-                        <Box flex={1}>
-                          <Box display="flex" alignItems="center" justifyContent="space-between" gap={1} mb={1}>
-                            <Chip
-                              label={msg.type.charAt(0).toUpperCase() + msg.type.slice(1)}
-                              size="small"
-                              color={getMessageChipColor(msg)}
-                              variant="outlined"
-                            />
-                            <Chip label={formatTime(msg.timestamp)} size="small" />
-                          </Box>
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              fontFamily: 'Consolas, Monaco, "Courier New", monospace',
-                              fontSize: '0.875rem',
-                              lineHeight: 1.6,
-                              wordBreak: 'break-word',
-                              color: '#ffffff',
-                            }}
-                          >
-                            {msg.text}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </Paper>
-                  </Collapse>
-                )
+                return <MessageItem msg={msg} isNew={isNewMessage} formatTime={formatTime} />
               }}
             />
           )}
