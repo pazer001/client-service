@@ -302,7 +302,7 @@ const Messages = () => {
             Algo Actions:
           </Typography>
           {/* TODO: Remove mock controls before production */}
-          {USE_MOCK_DATA && false && (
+          {USE_MOCK_DATA && (
             <Box display="flex" alignItems="center" gap={1}>
               <Chip label={`${filteredMessages.length} / ${messages.length} messages`} size="small" color="info" />
               <Chip
