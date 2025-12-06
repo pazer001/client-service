@@ -150,10 +150,22 @@ const Messages = () => {
       newSocket.emit('register', { accountId })
     })
 
-    newSocket.on('algoLog', (message: { type: 'general' | 'recommendation' | 'buy' | 'sell'; message: string }) => {
-      console.log('Received:', message)
-      setMessages((prev) => [...prev, { text: message.message, type: message.type, timestamp: new Date() }])
-    })
+    newSocket.on(
+      'algoLog',
+      (message: { type: 'general' | 'recommendation' | 'buy' | 'sell'; message: string; profit?: number }) => {
+        console.log('Received:', message)
+        setMessages((prev) => [
+          ...prev,
+          {
+            text: message.message,
+            type: message.type,
+            timestamp: new Date(),
+            // Include profit for sell messages if provided by server
+            ...(message.type === 'sell' && message.profit !== undefined ? { profit: message.profit } : {}),
+          },
+        ])
+      },
+    )
 
     newSocket.on('registered', (data) => {
       console.log('Registered:', data)
