@@ -18,7 +18,7 @@ interface LogMessage {
 }
 
 // TODO: Remove mock data generation before production - only for testing virtualization
-const USE_MOCK_DATA = false
+const USE_MOCK_DATA = true
 
 const mockMessages: readonly string[] = [
   'Analyzing AAPL - checking RSI indicators...',
@@ -352,12 +352,13 @@ const Messages = () => {
               followOutput="smooth"
               components={{
                 // Custom Scroller with scroll-snap for item-based scrolling
+                // Using 'proximity' for gentler snap behavior that allows smoother manual scrolling
                 Scroller: ({ style, ...props }) => (
                   <div
                     {...props}
                     style={{
                       ...style,
-                      scrollSnapType: 'y mandatory',
+                      scrollSnapType: 'y proximity',
                     }}
                   />
                 ),
