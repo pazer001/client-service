@@ -1,7 +1,7 @@
 import FilterListIcon from '@mui/icons-material/FilterList'
 import { Box, Card, CardContent, Chip, IconButton, Menu, MenuItem, Paper, Typography } from '@mui/material'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
+import { useEffect, useMemo, useState } from 'react'
+import { Virtuoso } from 'react-virtuoso'
 import { io } from 'socket.io-client'
 import { useSymbataStoreUserId } from '../../stores/symbataStore'
 
@@ -119,7 +119,6 @@ const generateInitialMockMessages = (count: number): LogMessage[] => {
 const Messages = () => {
   const [messages, setMessages] = useState<LogMessage[]>(() => (USE_MOCK_DATA ? generateInitialMockMessages(50) : []))
   const accountId = useSymbataStoreUserId()
-  const virtuosoRef = useRef<VirtuosoHandle>(null)
   const [activeFilter, setActiveFilter] = useState<LogMessage['type'] | 'all' | 'sell-positive' | 'sell-negative'>(
     'all',
   )
@@ -357,7 +356,6 @@ const Messages = () => {
             </Box>
           ) : (
             <Virtuoso
-              ref={virtuosoRef}
               data={filteredMessages}
               style={{ flex: 1 }}
               followOutput="smooth"
