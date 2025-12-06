@@ -1,7 +1,8 @@
 import FilterListIcon from '@mui/icons-material/FilterList'
-import { Box, Card, CardContent, Chip, IconButton, Menu, MenuItem, Paper, Typography } from '@mui/material'
+import VerticalAlignBottomIcon from '@mui/icons-material/VerticalAlignBottom'
+import { Box, Card, CardContent, Chip, IconButton, Menu, MenuItem, Paper, Tooltip, Typography } from '@mui/material'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Virtuoso } from 'react-virtuoso'
+import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
 import { io } from 'socket.io-client'
 import { useSymbataStoreUserId } from '../../stores/symbataStore'
 
@@ -190,10 +191,12 @@ const Messages = () => {
   // Track which messages have been rendered to avoid re-animating on scroll
   // Pre-populate with initial message IDs so they don't animate
   const renderedMessagesRef = useRef<Set<string>>(new Set(initialMessages.map((m) => m.id)))
+  const virtuosoRef = useRef<VirtuosoHandle>(null)
   const [activeFilter, setActiveFilter] = useState<LogMessage['type'] | 'all' | 'sell-positive' | 'sell-negative'>(
     'all',
   )
   const [filterMenuAnchor, setFilterMenuAnchor] = useState<null | HTMLElement>(null)
+  const [autoScrollEnabled, setAutoScrollEnabled] = useState(false)
 
   // Mock: Add a new message every 2 seconds for testing auto-scroll
   useEffect(() => {
@@ -271,6 +274,18 @@ const Messages = () => {
     }
   }, [messages, activeFilter])
 
+  // Auto-scroll to bottom when enabled and new messages arrive
+  useEffect(() => {
+    if (autoScrollEnabled && filteredMessages.length > 0) {
+      requestAnimationFrame(() => {
+        virtuosoRef.current?.scrollToIndex({
+          index: filteredMessages.length - 1,
+          behavior: 'smooth',
+        })
+      })
+    }
+  }, [autoScrollEnabled, filteredMessages.length])
+
   return (
     <Card
       elevation={3}
@@ -337,17 +352,38 @@ const Messages = () => {
               }
             })()}
           />
-          <IconButton
-            id="filter-menu-button"
-            size="small"
-            aria-label="Open filter menu"
-            aria-controls={filterMenuAnchor ? 'filter-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={filterMenuAnchor ? 'true' : undefined}
-            onClick={(e) => setFilterMenuAnchor(e.currentTarget)}
-          >
-            <FilterListIcon fontSize="small" />
-          </IconButton>
+          <Box display="flex" alignItems="center">
+            <Tooltip title="Filter messages" placement="top">
+              <IconButton
+                id="filter-menu-button"
+                size="small"
+                aria-label="Open filter menu"
+                aria-controls={filterMenuAnchor ? 'filter-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={filterMenuAnchor ? 'true' : undefined}
+                onClick={(e) => setFilterMenuAnchor(e.currentTarget)}
+              >
+                <FilterListIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={autoScrollEnabled ? 'Disable auto-scroll' : 'Enable auto-scroll'} placement="top">
+              <IconButton
+                size="small"
+                aria-label={autoScrollEnabled ? 'Disable auto-scroll' : 'Enable auto-scroll'}
+                onClick={() => setAutoScrollEnabled((prev) => !prev)}
+                color={autoScrollEnabled ? 'primary' : 'default'}
+                sx={{
+                  transition: 'all 0.2s ease',
+                  bgcolor: autoScrollEnabled ? 'primary.main' : 'transparent',
+                  '&:hover': {
+                    bgcolor: autoScrollEnabled ? 'primary.dark' : 'action.hover',
+                  },
+                }}
+              >
+                <VerticalAlignBottomIcon fontSize="small" sx={{ color: autoScrollEnabled ? 'white' : 'inherit' }} />
+              </IconButton>
+            </Tooltip>
+          </Box>
           <Menu
             id="filter-menu"
             anchorEl={filterMenuAnchor}
@@ -429,6 +465,7 @@ const Messages = () => {
             </Box>
           ) : (
             <Virtuoso
+              ref={virtuosoRef}
               data={filteredMessages}
               style={{ flex: 1 }}
               components={{
