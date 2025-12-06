@@ -130,17 +130,9 @@ const MessageItem = ({ msg, isNew, formatTime }: MessageItemProps) => {
       >
         <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={1}>
           <Box flex={1}>
-            <Box display="flex" alignItems="center" justifyContent="space-between" gap={1} mb={1}>
-              <Chip
-                label={msg.type.charAt(0).toUpperCase() + msg.type.slice(1)}
-                size="small"
-                color={getMessageChipColor(msg)}
-                variant="outlined"
-              />
-              <Chip label={formatTime(msg.timestamp)} size="small" />
-            </Box>
             <Typography
               variant="body2"
+              mb={1}
               sx={{
                 fontFamily: 'Consolas, Monaco, "Courier New", monospace',
                 fontSize: '0.875rem',
@@ -151,6 +143,15 @@ const MessageItem = ({ msg, isNew, formatTime }: MessageItemProps) => {
             >
               {msg.text}
             </Typography>
+            <Box display="flex" alignItems="center" justifyContent="space-between" gap={1}>
+              <Chip
+                label={msg.type.charAt(0).toUpperCase() + msg.type.slice(1)}
+                size="small"
+                color={getMessageChipColor(msg)}
+                variant="outlined"
+              />
+              <Chip label={formatTime(msg.timestamp)} size="small" />
+            </Box>
           </Box>
         </Box>
       </Paper>
