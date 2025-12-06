@@ -268,15 +268,29 @@ const Messages = () => {
               }
             })()}
           />
-          <IconButton size="small" aria-label="Open filter menu" onClick={(e) => setFilterMenuAnchor(e.currentTarget)}>
+          <IconButton
+            id="filter-menu-button"
+            size="small"
+            aria-label="Open filter menu"
+            aria-controls={filterMenuAnchor ? 'filter-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={filterMenuAnchor ? 'true' : undefined}
+            onClick={(e) => setFilterMenuAnchor(e.currentTarget)}
+          >
             <FilterListIcon fontSize="small" />
           </IconButton>
           <Menu
+            id="filter-menu"
             anchorEl={filterMenuAnchor}
             open={Boolean(filterMenuAnchor)}
             onClose={() => setFilterMenuAnchor(null)}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            slotProps={{
+              list: {
+                'aria-labelledby': 'filter-menu-button',
+              },
+            }}
           >
             <MenuItem
               onClick={() => {
