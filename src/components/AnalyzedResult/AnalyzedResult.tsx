@@ -2,7 +2,7 @@ import FilterListIcon from '@mui/icons-material/FilterList'
 import { Box, Card, CardContent, Chip, IconButton, Menu, MenuItem, Paper, Typography } from '@mui/material'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
-import { io, Socket } from 'socket.io-client'
+import { io } from 'socket.io-client'
 import { useSymbataStoreUserId } from '../../stores/symbataStore'
 
 const AnalyzedResult = () => {
@@ -117,7 +117,6 @@ const generateInitialMockMessages = (count: number): LogMessage[] => {
 }
 
 const Messages = () => {
-  const [_, setSocket] = useState<Socket | null>(null)
   const [messages, setMessages] = useState<LogMessage[]>(() => (USE_MOCK_DATA ? generateInitialMockMessages(50) : []))
   const accountId = useSymbataStoreUserId()
   const virtuosoRef = useRef<VirtuosoHandle>(null)
@@ -170,8 +169,6 @@ const Messages = () => {
     newSocket.on('registered', (data) => {
       console.log('Registered:', data)
     })
-
-    setSocket(newSocket)
 
     // Cleanup on unmount
     return () => {
