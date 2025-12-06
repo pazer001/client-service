@@ -18,7 +18,7 @@ interface LogMessage {
 }
 
 // TODO: Remove mock data generation before production - only for testing virtualization
-const USE_MOCK_DATA = true
+const USE_MOCK_DATA = false
 
 const mockMessages: readonly string[] = [
   'Analyzing AAPL - checking RSI indicators...',
