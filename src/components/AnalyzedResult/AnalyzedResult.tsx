@@ -1,5 +1,5 @@
 import FilterListIcon from '@mui/icons-material/FilterList'
-import { Box, Card, CardContent, Chip, IconButton, Menu, MenuItem, Paper, Typography } from '@mui/material'
+import { Box, Card, CardContent, Chip, Collapse, IconButton, Menu, MenuItem, Paper, Typography } from '@mui/material'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
 import { io } from 'socket.io-client'
@@ -10,12 +10,16 @@ const AnalyzedResult = () => {
 }
 
 interface LogMessage {
+  id: string
   text: string
   type: 'general' | 'recommendation' | 'buy' | 'sell'
   timestamp: Date
   /** Only present for 'sell' type messages - positive means profit, negative means loss */
   profit?: number
 }
+
+let messageIdCounter = 0
+const generateMessageId = () => `msg-${++messageIdCounter}`
 
 // TODO: Remove mock data generation before production - only for testing virtualization
 const USE_MOCK_DATA = false
@@ -43,6 +47,7 @@ const generateMockMessage = (): LogMessage => {
   const type = types[Math.floor(Math.random() * types.length)]
 
   const message: LogMessage = {
+    id: generateMessageId(),
     text: mockMessages[Math.floor(Math.random() * mockMessages.length)],
     type,
     timestamp: new Date(),
@@ -100,6 +105,7 @@ const generateInitialMockMessages = (count: number): LogMessage[] => {
     const type = types[Math.floor(Math.random() * types.length)]
 
     const message: LogMessage = {
+      id: generateMessageId(),
       text: `[${i + 1}] ${mockMessages[i % mockMessages.length]}`,
       type,
       // Stagger timestamps by 2 seconds each for realism
@@ -117,9 +123,14 @@ const generateInitialMockMessages = (count: number): LogMessage[] => {
 }
 
 const Messages = () => {
-  const [messages, setMessages] = useState<LogMessage[]>(() => (USE_MOCK_DATA ? generateInitialMockMessages(50) : []))
+  // Generate initial messages and pre-populate rendered set to avoid animating existing messages
+  const [initialMessages] = useState(() => (USE_MOCK_DATA ? generateInitialMockMessages(50) : []))
+  const [messages, setMessages] = useState<LogMessage[]>(initialMessages)
   const accountId = useSymbataStoreUserId()
   const virtuosoRef = useRef<VirtuosoHandle>(null)
+  // Track which messages have been rendered to avoid re-animating on scroll
+  // Pre-populate with initial message IDs so they don't animate
+  const renderedMessagesRef = useRef<Set<string>>(new Set(initialMessages.map((m) => m.id)))
   const [activeFilter, setActiveFilter] = useState<LogMessage['type'] | 'all' | 'sell-positive' | 'sell-negative'>(
     'all',
   )
@@ -156,6 +167,7 @@ const Messages = () => {
         setMessages((prev) => [
           ...prev,
           {
+            id: generateMessageId(),
             text: message.message,
             type: message.type,
             timestamp: new Date(),
@@ -386,46 +398,56 @@ const Messages = () => {
                   />
                 ),
               }}
-              itemContent={(_index, msg) => (
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 1,
-                    mb: 1,
-                    borderLeft: 4,
-                    borderColor: getMessageBorderColor(msg),
-                    borderRadius: 1,
-                    transition: 'all 0.2s ease',
-                    scrollSnapAlign: 'start',
-                  }}
-                >
-                  <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={1}>
-                    <Box flex={1}>
-                      <Box display="flex" alignItems="center" justifyContent="space-between" gap={1} mb={1}>
-                        <Chip
-                          label={msg.type.charAt(0).toUpperCase() + msg.type.slice(1)}
-                          size="small"
-                          color={getMessageChipColor(msg)}
-                          variant="outlined"
-                        />
-                        <Chip label={formatTime(msg.timestamp)} size="small" />
+              itemContent={(_index, msg) => {
+                // Check if this message has been rendered before
+                const isNewMessage = !renderedMessagesRef.current.has(msg.id)
+                if (isNewMessage) {
+                  renderedMessagesRef.current.add(msg.id)
+                }
+
+                return (
+                  <Collapse in timeout={isNewMessage ? 300 : 0}>
+                    <Paper
+                      elevation={0}
+                      sx={{
+                        p: 1,
+                        mb: 1,
+                        borderLeft: 4,
+                        borderColor: getMessageBorderColor(msg),
+                        borderRadius: 1,
+                        transition: 'all 0.2s ease',
+                        scrollSnapAlign: 'start',
+                      }}
+                    >
+                      <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={1}>
+                        <Box flex={1}>
+                          <Box display="flex" alignItems="center" justifyContent="space-between" gap={1} mb={1}>
+                            <Chip
+                              label={msg.type.charAt(0).toUpperCase() + msg.type.slice(1)}
+                              size="small"
+                              color={getMessageChipColor(msg)}
+                              variant="outlined"
+                            />
+                            <Chip label={formatTime(msg.timestamp)} size="small" />
+                          </Box>
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontFamily: 'Consolas, Monaco, "Courier New", monospace',
+                              fontSize: '0.875rem',
+                              lineHeight: 1.6,
+                              wordBreak: 'break-word',
+                              color: '#ffffff',
+                            }}
+                          >
+                            {msg.text}
+                          </Typography>
+                        </Box>
                       </Box>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontFamily: 'Consolas, Monaco, "Courier New", monospace',
-                          fontSize: '0.875rem',
-                          lineHeight: 1.6,
-                          wordBreak: 'break-word',
-                          color: '#ffffff',
-                        }}
-                      >
-                        {msg.text}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Paper>
-              )}
+                    </Paper>
+                  </Collapse>
+                )
+              }}
             />
           )}
         </Box>
