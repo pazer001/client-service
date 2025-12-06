@@ -125,13 +125,99 @@ interface LogMessage {
   timestamp: Date
 }
 
+// TODO: Remove mock data generation before production - only for testing virtualization
+const USE_MOCK_DATA = false
+
+const mockMessages: readonly string[] = [
+  'Analyzing AAPL - checking RSI indicators...',
+  'AAPL RSI at 65.3 - within normal range',
+  'Scanning MSFT for entry opportunities...',
+  'MSFT showing bullish divergence on 4H chart',
+  'Executing BUY order for GOOGL @ $142.50',
+  'Order filled: 50 shares of GOOGL',
+  'Stop loss set at $138.20 for GOOGL position',
+  'NVDA triggered resistance level at $480',
+  'Monitoring META earnings announcement...',
+  'TSLA volatility spike detected - holding position',
+  'Portfolio rebalancing initiated...',
+  'Closing partial position in AMD - taking profits',
+  'AMZN support level holding at $175',
+  'Analyzing sector rotation signals...',
+  'Tech sector showing relative strength',
+]
+
+const generateMockMessage = (): LogMessage => {
+  const types: LogMessage['type'][] = ['general', 'recommendation', 'buy', 'sell']
+  return {
+    text: mockMessages[Math.floor(Math.random() * mockMessages.length)],
+    type: types[Math.floor(Math.random() * types.length)],
+    timestamp: new Date(),
+  }
+}
+
+const getMessageBorderColor = (type: LogMessage['type']): string => {
+  switch (type) {
+    case 'buy':
+      return 'success.main'
+    case 'sell':
+      return 'error.main'
+    case 'recommendation':
+      return 'warning.main'
+    case 'general':
+    default:
+      return 'info.main'
+  }
+}
+
+const getMessageChipColor = (type: LogMessage['type']): 'success' | 'error' | 'warning' | 'info' => {
+  switch (type) {
+    case 'buy':
+      return 'success'
+    case 'sell':
+      return 'error'
+    case 'recommendation':
+      return 'warning'
+    case 'general':
+    default:
+      return 'info'
+  }
+}
+
+const generateInitialMockMessages = (count: number): LogMessage[] => {
+  const messages: LogMessage[] = []
+  const now = Date.now()
+  for (let i = 0; i < count; i++) {
+    const types: LogMessage['type'][] = ['general', 'recommendation', 'buy', 'sell']
+    messages.push({
+      text: `[${i + 1}] ${mockMessages[i % mockMessages.length]}`,
+      type: types[Math.floor(Math.random() * types.length)],
+      // Stagger timestamps by 2 seconds each for realism
+      timestamp: new Date(now - (count - i) * 2000),
+    })
+  }
+  return messages
+}
+
 const Messages = () => {
   const [_, setSocket] = useState<Socket | null>(null)
-  const [messages, setMessages] = useState<LogMessage[]>([])
+  const [messages, setMessages] = useState<LogMessage[]>(() => (USE_MOCK_DATA ? generateInitialMockMessages(50) : []))
   const accountId = useSymbataStoreUserId()
   const virtuosoRef = useRef<VirtuosoHandle>(null)
 
+  // Mock: Add a new message every 2 seconds for testing auto-scroll
   useEffect(() => {
+    if (!USE_MOCK_DATA) return
+
+    const interval = setInterval(() => {
+      setMessages((prev) => [...prev, generateMockMessage()])
+    }, 2000)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    if (USE_MOCK_DATA) return // Skip socket connection when using mock data
+
     // Connect to WebSocket server
     const newSocket = io(import.meta.env.VITE_API_HOST)
 
@@ -171,10 +257,11 @@ const Messages = () => {
   return (
     <Card
       elevation={3}
+      className="bengedi"
       sx={{
         borderRadius: 2,
-        maxHeight: '90vh',
         display: 'flex',
+        height: '100%',
         flexDirection: 'column',
       }}
     >
@@ -183,17 +270,25 @@ const Messages = () => {
           <Typography variant="h6" component="div" fontWeight={600} color="text.primary">
             Algo Actions:
           </Typography>
+          {/* TODO: Remove mock controls before production */}
+          {USE_MOCK_DATA && (
+            <Box display="flex" alignItems="center" gap={1}>
+              <Chip label={`${messages.length} messages`} size="small" color="info" />
+              <Chip
+                label="+ Add 10"
+                size="small"
+                color="primary"
+                onClick={() => {
+                  const newMessages = Array.from({ length: 10 }, () => generateMockMessage())
+                  setMessages((prev) => [...prev, ...newMessages])
+                }}
+                sx={{ cursor: 'pointer' }}
+              />
+            </Box>
+          )}
         </Box>
 
-        <Paper
-          variant="outlined"
-          sx={{
-            flex: 1,
-            overflow: 'hidden',
-            p: 1,
-            minHeight: 200,
-          }}
-        >
+        <Box display="flex" flex={1} overflow="hidden">
           {messages.length === 0 ? (
             <Box p={3} textAlign="center">
               <Typography variant="body2" color="text.secondary" fontStyle="italic">
@@ -203,33 +298,32 @@ const Messages = () => {
           ) : (
             <Virtuoso
               ref={virtuosoRef}
-              style={{ height: '100%' }}
               data={messages}
+              style={{ flex: 1 }}
               followOutput="smooth"
               itemContent={(index, msg) => (
                 <Paper
+                  elevation={0}
                   key={index}
-                  elevation={1}
                   sx={{
                     p: 1,
                     mb: 1,
                     borderLeft: 4,
+                    borderColor: getMessageBorderColor(msg.type),
                     borderRadius: 1,
                     transition: 'all 0.2s ease',
                   }}
                 >
                   <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={1}>
                     <Box flex={1}>
-                      <Box display="flex" alignItems="center" gap={1} mb={1}>
+                      <Box display="flex" alignItems="center" justifyContent="space-between" gap={1} mb={1}>
                         <Chip
-                          label={formatTime(msg.timestamp)}
+                          label={msg.type.charAt(0).toUpperCase() + msg.type.slice(1)}
                           size="small"
-                          sx={{
-                            height: 22,
-                            fontSize: '0.75rem',
-                            fontWeight: 600,
-                          }}
+                          color={getMessageChipColor(msg.type)}
+                          variant="outlined"
                         />
+                        <Chip label={formatTime(msg.timestamp)} size="small" />
                       </Box>
                       <Typography
                         variant="body2"
@@ -249,7 +343,7 @@ const Messages = () => {
               )}
             />
           )}
-        </Paper>
+        </Box>
       </CardContent>
     </Card>
   )
