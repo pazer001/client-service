@@ -301,6 +301,18 @@ const Messages = () => {
               data={messages}
               style={{ flex: 1 }}
               followOutput="smooth"
+              components={{
+                // Custom Scroller with scroll-snap for item-based scrolling
+                Scroller: ({ style, ...props }) => (
+                  <div
+                    {...props}
+                    style={{
+                      ...style,
+                      scrollSnapType: 'y mandatory',
+                    }}
+                  />
+                ),
+              }}
               itemContent={(index, msg) => (
                 <Paper
                   elevation={0}
@@ -312,6 +324,7 @@ const Messages = () => {
                     borderColor: getMessageBorderColor(msg.type),
                     borderRadius: 1,
                     transition: 'all 0.2s ease',
+                    scrollSnapAlign: 'start',
                   }}
                 >
                   <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={1}>
