@@ -123,6 +123,8 @@ interface LogMessage {
   text: string
   type: 'general' | 'recommendation' | 'buy' | 'sell'
   timestamp: Date
+  /** Only present for 'sell' type messages - positive means profit, negative means loss */
+  profit?: number
 }
 
 // TODO: Remove mock data generation before production - only for testing virtualization
@@ -148,38 +150,53 @@ const mockMessages: readonly string[] = [
 
 const generateMockMessage = (): LogMessage => {
   const types: LogMessage['type'][] = ['general', 'recommendation', 'buy', 'sell']
-  return {
+  const type = types[Math.floor(Math.random() * types.length)]
+
+  const message: LogMessage = {
     text: mockMessages[Math.floor(Math.random() * mockMessages.length)],
-    type: types[Math.floor(Math.random() * types.length)],
+    type,
     timestamp: new Date(),
   }
+
+  // Add profit only for sell messages (random between -500 and 500)
+  if (type === 'sell') {
+    message.profit = Math.round((Math.random() - 0.5) * 1000)
+  }
+
+  return message
 }
 
-const getMessageBorderColor = (type: LogMessage['type']): string => {
-  switch (type) {
+const getSellColorByProfit = (profit: number | undefined): { border: string; chip: 'success' | 'error' | 'info' } => {
+  if (profit === undefined || profit === 0) return { border: 'info.main', chip: 'info' }
+  if (profit > 0) return { border: 'success.main', chip: 'success' }
+  return { border: 'error.main', chip: 'error' }
+}
+
+const getMessageBorderColor = (msg: LogMessage): string => {
+  switch (msg.type) {
     case 'buy':
-      return 'success.main'
+      return 'info.main'
     case 'sell':
-      return 'error.main'
+      return getSellColorByProfit(msg.profit).border
     case 'recommendation':
       return 'warning.main'
     case 'general':
     default:
-      return 'info.main'
+      return 'grey.500'
   }
 }
 
-const getMessageChipColor = (type: LogMessage['type']): 'success' | 'error' | 'warning' | 'info' => {
-  switch (type) {
+const getMessageChipColor = (msg: LogMessage): 'default' | 'error' | 'warning' | 'info' | 'success' => {
+  switch (msg.type) {
     case 'buy':
-      return 'success'
+      return 'info'
     case 'sell':
-      return 'error'
+      return getSellColorByProfit(msg.profit).chip
     case 'recommendation':
       return 'warning'
     case 'general':
     default:
-      return 'info'
+      return 'default'
   }
 }
 
@@ -188,12 +205,21 @@ const generateInitialMockMessages = (count: number): LogMessage[] => {
   const now = Date.now()
   for (let i = 0; i < count; i++) {
     const types: LogMessage['type'][] = ['general', 'recommendation', 'buy', 'sell']
-    messages.push({
+    const type = types[Math.floor(Math.random() * types.length)]
+
+    const message: LogMessage = {
       text: `[${i + 1}] ${mockMessages[i % mockMessages.length]}`,
-      type: types[Math.floor(Math.random() * types.length)],
+      type,
       // Stagger timestamps by 2 seconds each for realism
       timestamp: new Date(now - (count - i) * 2000),
-    })
+    }
+
+    // Add profit only for sell messages
+    if (type === 'sell') {
+      message.profit = Math.round((Math.random() - 0.5) * 1000)
+    }
+
+    messages.push(message)
   }
   return messages
 }
@@ -321,7 +347,7 @@ const Messages = () => {
                     p: 1,
                     mb: 1,
                     borderLeft: 4,
-                    borderColor: getMessageBorderColor(msg.type),
+                    borderColor: getMessageBorderColor(msg),
                     borderRadius: 1,
                     transition: 'all 0.2s ease',
                     scrollSnapAlign: 'start',
@@ -333,7 +359,7 @@ const Messages = () => {
                         <Chip
                           label={msg.type.charAt(0).toUpperCase() + msg.type.slice(1)}
                           size="small"
-                          color={getMessageChipColor(msg.type)}
+                          color={getMessageChipColor(msg)}
                           variant="outlined"
                         />
                         <Chip label={formatTime(msg.timestamp)} size="small" />
