@@ -307,7 +307,7 @@ const Messages = () => {
         <Box display="flex" alignItems="center" justifyContent="space-between" gap={0.5} mb={1}>
           <Chip
             label={(() => {
-              const count = filteredMessages.length
+              const count = filteredMessages.length.toLocaleString()
               switch (activeFilter) {
                 case 'all':
                   return `All (${count})`
