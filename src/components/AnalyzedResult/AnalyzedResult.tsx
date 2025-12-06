@@ -206,7 +206,7 @@ const Messages = () => {
     'all',
   )
   const [filterMenuAnchor, setFilterMenuAnchor] = useState<null | HTMLElement>(null)
-  const [autoScrollEnabled, setAutoScrollEnabled] = useState(false)
+  const [autoScrollEnabled, setAutoScrollEnabled] = useState(true)
 
   // Mock: Add a new message every 2 seconds for testing auto-scroll
   useEffect(() => {
