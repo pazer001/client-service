@@ -266,7 +266,8 @@ const Messages = () => {
       case 'sell':
         return messages.filter((m) => m.type === 'sell')
       case 'sell-positive':
-        return messages.filter((m) => m.type === 'sell' && m.profit !== undefined && m.profit > 0)
+        // Include break-even (profit === 0) with positive results since no money was lost
+        return messages.filter((m) => m.type === 'sell' && m.profit !== undefined && m.profit >= 0)
       case 'sell-negative':
         return messages.filter((m) => m.type === 'sell' && m.profit !== undefined && m.profit < 0)
       default:
