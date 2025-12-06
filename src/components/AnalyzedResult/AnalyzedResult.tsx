@@ -268,7 +268,7 @@ const Messages = () => {
               }
             })()}
           />
-          <IconButton size="small" onClick={(e) => setFilterMenuAnchor(e.currentTarget)}>
+          <IconButton size="small" aria-label="Open filter menu" onClick={(e) => setFilterMenuAnchor(e.currentTarget)}>
             <FilterListIcon fontSize="small" />
           </IconButton>
           <Menu
