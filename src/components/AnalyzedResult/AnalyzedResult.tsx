@@ -1,259 +1,510 @@
-import { Avatar, Box, Card, CardContent, Chip, FormControl, Paper, Table, TableBody, TableCell, TableRow, TextField, Typography } from '@mui/material'
-import { startCase } from 'lodash'
-import { ReactElement, useEffect, useRef, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
+import FilterListIcon from '@mui/icons-material/FilterList'
+import VerticalAlignBottomIcon from '@mui/icons-material/VerticalAlignBottom'
+import { Box, Card, CardContent, Chip, IconButton, Menu, MenuItem, Paper, Tooltip, Typography } from '@mui/material'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
+import { io } from 'socket.io-client'
+import { useSymbataStoreUserId } from '../../stores/symbataStore'
 
-import {
-  useSymbataStoreActions,
-  useSymbataStoreProfileValue,
-  useSymbataStoreSymbol,
-  useSymbataStoreUserId
-} from '../../stores/symbataStore.ts'
-import { EAction, ISymbolItem } from '../../stores/symbataStore.types.ts'
-import { formatNumber, getShares } from '../../utils/utils.ts'
-
-function createData(label: string, value: number | string | undefined, renderCell?: () => ReactElement) {
-  return { label, value, renderCell }
+const AnalyzedResult = () => {
+  return <Messages />
 }
 
-const ActionLabel = (action: EAction): ReactElement => {
-  switch (action) {
-    case EAction.BUY:
-      return <Typography color="success">Buy</Typography>
-    case EAction.SELL:
-      return <Typography color="error">Sell</Typography>
-    case EAction.HOLD:
-      return <Typography>Hold</Typography>
-    case EAction.ERROR:
-      return <Typography color="warning">Error</Typography>
+interface LogMessage {
+  id: string
+  text: string
+  type: 'general' | 'recommendation' | 'buy' | 'sell'
+  timestamp: Date
+  /** Only present for 'sell' type messages - positive means profit, negative means loss */
+  profit?: number
+}
+
+let messageIdCounter = 0
+const generateMessageId = () => `msg-${++messageIdCounter}`
+
+// TODO: Remove mock data generation before production - only for testing virtualization
+const USE_MOCK_DATA = false
+
+const mockMessages: readonly string[] = [
+  'Analyzing AAPL - checking RSI indicators...',
+  'AAPL RSI at 65.3 - within normal range',
+  'Scanning MSFT for entry opportunities...',
+  'MSFT showing bullish divergence on 4H chart',
+  'Executing BUY order for GOOGL @ $142.50',
+  'Order filled: 50 shares of GOOGL',
+  'Stop loss set at $138.20 for GOOGL position',
+  'NVDA triggered resistance level at $480',
+  'Monitoring META earnings announcement...',
+  'TSLA volatility spike detected - holding position',
+  'Portfolio rebalancing initiated...',
+  'Closing partial position in AMD - taking profits',
+  'AMZN support level holding at $175',
+  'Analyzing sector rotation signals...',
+  'Tech sector showing relative strength',
+]
+
+const generateMockMessage = (): LogMessage => {
+  const types: LogMessage['type'][] = ['general', 'recommendation', 'buy', 'sell']
+  const type = types[Math.floor(Math.random() * types.length)]
+
+  const message: LogMessage = {
+    id: generateMessageId(),
+    text: mockMessages[Math.floor(Math.random() * mockMessages.length)],
+    type,
+    timestamp: new Date(),
+  }
+
+  // Add profit only for sell messages (random between -500 and 500)
+  if (type === 'sell') {
+    message.profit = Math.round((Math.random() - 0.5) * 1000)
+  }
+
+  return message
+}
+
+const getSellColorByProfit = (profit: number | undefined): { border: string; chip: 'success' | 'error' | 'info' } => {
+  if (profit === undefined || profit === 0) return { border: 'info.main', chip: 'info' }
+  if (profit > 0) return { border: 'success.main', chip: 'success' }
+  return { border: 'error.main', chip: 'error' }
+}
+
+const getMessageBorderColor = (msg: LogMessage): string => {
+  switch (msg.type) {
+    case 'buy':
+      return 'info.main'
+    case 'sell':
+      return getSellColorByProfit(msg.profit).border
+    case 'recommendation':
+      return 'warning.main'
+    case 'general':
+      return 'secondary.main'
     default:
-      return <Typography color="info">Unknown Action</Typography>
+      return 'grey.500'
   }
 }
 
-const AnalyzedResult = () => {
-  const symbol: ISymbolItem | undefined = useSymbataStoreSymbol()
-  const profileValue = useSymbataStoreProfileValue()
-  const { setProfileValue } = useSymbataStoreActions()
+const getMessageChipColor = (msg: LogMessage): 'default' | 'error' | 'warning' | 'info' | 'success' | 'secondary' => {
+  switch (msg.type) {
+    case 'buy':
+      return 'info'
+    case 'sell':
+      return getSellColorByProfit(msg.profit).chip
+    case 'recommendation':
+      return 'warning'
+    case 'general':
+      return 'secondary'
+    default:
+      return 'default'
+  }
+}
 
-  const closeValue =
-    symbol?.recommendation?.symbolRestructurePrices.close[
-      symbol?.recommendation?.symbolRestructurePrices.close.length - 1
-    ] ?? 0
-  const stopLoss = symbol?.recommendation?.stopLoss ?? 0
-  const stopLossDifference = closeValue - stopLoss
+interface MessageItemProps {
+  msg: LogMessage
+  isNew: boolean
+  formatTime: (date: Date) => string
+}
 
-  const stopLossPercentage = (stopLossDifference * 100) / closeValue
-  const shares = getShares(profileValue, symbol?.recommendation?.stopLoss ?? 0, 0.02, closeValue)
+/** Separate component to handle slide animation state */
+const MessageItem = ({ msg, isNew, formatTime }: MessageItemProps) => {
+  // Start with in={false} for new messages, then animate to in={true}
+  const [slideIn, setSlideIn] = useState(!isNew)
 
-  const initRows = [
-    createData('Symbol', symbol?.symbol, () => (
-      <Box height={'100%'} display="flex" alignItems="center" gap={1}>
-        <Avatar sx={{ width: 24, height: 24 }} src={symbol?.logo}>
-          {symbol?.symbol.charAt(0).toUpperCase()}
-        </Avatar>
-        <Typography>{symbol?.symbol}</Typography>
-      </Box>
-    )),
-    createData('Company Name', symbol?.name),
-    createData('Action', symbol?.recommendation?.action, () =>
-      ActionLabel(symbol?.recommendation?.action ?? EAction.ERROR),
-    ),
-  ]
+  useEffect(() => {
+    if (isNew && !slideIn) {
+      // Trigger animation after component mounts
+      const timer = requestAnimationFrame(() => setSlideIn(true))
+      return () => cancelAnimationFrame(timer)
+    }
+  }, [isNew, slideIn])
 
-  const rows =
-    symbol?.recommendation?.action === EAction.BUY
-      ? [
-          ...initRows,
-          createData('Stop Loss', `${formatNumber(stopLossPercentage)}%`),
-          createData('Buy Shares', shares),
-          createData('Strategy', startCase(symbol.recommendation.usedStrategy)),
-        ]
-      : initRows
-return <Messages />
   return (
-    <Box display="flex" flexDirection="column" gap={1}>
-      <Messages />
-      <FormControl>
-        <TextField
-          size="small"
-          type="number"
-          id="component-outlined"
-          value={profileValue}
-          onChange={(e) => setProfileValue(Number(e.target.value))}
-          label="Profile Value"
-        />
-      </FormControl>
-      {symbol?.recommendation ? (
-        <Table size="small" aria-label="a dense table">
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.label}>
-                <TableCell component="th" scope="row">
-                  {row.label}
-                </TableCell>
-                <TableCell>{row?.renderCell ? row?.renderCell() : row.value}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      ) : (
-        <Typography>No symbol selected</Typography>
-      )}
+    <Box sx={{ overflow: 'hidden', mb: 1, scrollSnapAlign: 'start' }}>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 1,
+          borderLeft: 4,
+          borderColor: getMessageBorderColor(msg),
+          borderRadius: 1,
+        }}
+      >
+        <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={1}>
+          <Box flex={1}>
+            <Tooltip title={msg.text} placement="top" enterDelay={500}>
+              <Typography
+                variant="body2"
+                mb={1}
+                sx={{
+                  fontFamily: 'Consolas, Monaco, "Courier New", monospace',
+                  fontSize: '0.875rem',
+                  lineHeight: 1.6,
+                  color: '#ffffff',
+                  // Fixed 2-line height with ellipsis for overflow
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  // Height = lineHeight (1.6) * fontSize (0.875rem) * 2 lines
+                  minHeight: 'calc(0.875rem * 1.6 * 2)',
+                }}
+              >
+                {msg.text}
+              </Typography>
+            </Tooltip>
+            <Box display="flex" alignItems="center" justifyContent="space-between" gap={1}>
+              <Chip
+                label={msg.type.charAt(0).toUpperCase() + msg.type.slice(1)}
+                size="small"
+                color={getMessageChipColor(msg)}
+                variant="outlined"
+              />
+              <Chip label={formatTime(msg.timestamp)} size="small" />
+            </Box>
+          </Box>
+        </Box>
+      </Paper>
     </Box>
   )
 }
 
-interface LogMessage {
-  text: string;
-  type: "general" | "recommendation" | "buy" | "sell"
-  timestamp: Date;
+const generateInitialMockMessages = (count: number): LogMessage[] => {
+  const messages: LogMessage[] = []
+  const now = Date.now()
+  for (let i = 0; i < count; i++) {
+    const types: LogMessage['type'][] = ['general', 'recommendation', 'buy', 'sell']
+    const type = types[Math.floor(Math.random() * types.length)]
+
+    const message: LogMessage = {
+      id: generateMessageId(),
+      text: `[${i + 1}] ${mockMessages[i % mockMessages.length]}`,
+      type,
+      // Stagger timestamps by 2 seconds each for realism
+      timestamp: new Date(now - (count - i) * 2000),
+    }
+
+    // Add profit only for sell messages
+    if (type === 'sell') {
+      message.profit = Math.round((Math.random() - 0.5) * 1000)
+    }
+
+    messages.push(message)
+  }
+  return messages
 }
 
 const Messages = () => {
-  const [_, setSocket] = useState<Socket | null>(null);
-  const [messages, setMessages] = useState<LogMessage[]>([]);
-  const accountId = useSymbataStoreUserId();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  // Generate initial messages and pre-populate rendered set to avoid animating existing messages
+  const [initialMessages] = useState(() => (USE_MOCK_DATA ? generateInitialMockMessages(50) : []))
+  const [messages, setMessages] = useState<LogMessage[]>(initialMessages)
+  const accountId = useSymbataStoreUserId()
+  // Track which messages have been rendered to avoid re-animating on scroll
+  // Pre-populate with initial message IDs so they don't animate
+  const renderedMessagesRef = useRef<Set<string>>(new Set(initialMessages.map((m) => m.id)))
+  const virtuosoRef = useRef<VirtuosoHandle>(null)
+  const [activeFilter, setActiveFilter] = useState<LogMessage['type'] | 'all' | 'sell-positive' | 'sell-negative'>(
+    'all',
+  )
+  const [filterMenuAnchor, setFilterMenuAnchor] = useState<null | HTMLElement>(null)
+  const [autoScrollEnabled, setAutoScrollEnabled] = useState(true)
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  // Mock: Add a new message every 2 seconds for testing auto-scroll
+  useEffect(() => {
+    if (!USE_MOCK_DATA) return
+
+    const interval = setInterval(() => {
+      setMessages((prev) => [...prev, generateMockMessage()])
+    }, 500)
+
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (USE_MOCK_DATA) return // Skip socket connection when using mock data
 
-  useEffect(() => {
     // Connect to WebSocket server
-    const newSocket = io(import.meta.env.VITE_API_HOST);
+    const newSocket = io(import.meta.env.VITE_API_HOST)
 
     newSocket.on('connect', () => {
-      console.log('Connected:', newSocket.id);
+      console.log('Connected:', newSocket.id)
 
       // Register accountId
-      newSocket.emit('register', { accountId });
-    });
+      newSocket.emit('register', { accountId })
+    })
 
-
-
-    newSocket.on('algoLog', (message: {type: "general" | "recommendation" | "buy" | "sell", message: string}) => {
-      console.log('Received:', message);
-      setMessages(prev => [...prev, { text: message.message, type: message.type, timestamp: new Date() }]);
-    });
+    newSocket.on(
+      'algoLog',
+      (message: { type: 'general' | 'recommendation' | 'buy' | 'sell'; message: string; profit?: number }) => {
+        console.log('Received:', message)
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: generateMessageId(),
+            text: message.message,
+            type: message.type,
+            timestamp: new Date(),
+            // Include profit for sell messages if provided by server
+            ...(message.type === 'sell' && message.profit !== undefined ? { profit: message.profit } : {}),
+          },
+        ])
+      },
+    )
 
     newSocket.on('registered', (data) => {
-      console.log('Registered:', data);
-    });
-
-    setSocket(newSocket);
+      console.log('Registered:', data)
+    })
 
     // Cleanup on unmount
     return () => {
-      newSocket.close();
-    };
-  }, [accountId]);
+      newSocket.close()
+    }
+  }, [accountId])
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit', 
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
       second: '2-digit',
-      hour12: false 
-    });
-  };
+      hour12: false,
+    })
+  }
 
+  const filteredMessages = useMemo(() => {
+    switch (activeFilter) {
+      case 'all':
+        return messages
+      case 'sell':
+        return messages.filter((m) => m.type === 'sell')
+      case 'sell-positive':
+        // Include break-even (profit === 0) with positive results since no money was lost
+        return messages.filter((m) => m.type === 'sell' && m.profit !== undefined && m.profit >= 0)
+      case 'sell-negative':
+        return messages.filter((m) => m.type === 'sell' && m.profit !== undefined && m.profit < 0)
+      default:
+        return messages.filter((m) => m.type === activeFilter)
+    }
+  }, [messages, activeFilter])
 
+  // Reset animation tracking when filter changes to prevent stale state
+  // Pre-populate with current filtered messages so only new arrivals animate
+  useEffect(() => {
+    renderedMessagesRef.current = new Set(filteredMessages.map((m) => m.id))
+  }, [activeFilter]) // Only reset on filter change, not on new messages
 
+  // Auto-scroll to bottom when enabled and new messages arrive
+  useEffect(() => {
+    if (autoScrollEnabled && filteredMessages.length > 0) {
+      requestAnimationFrame(() => {
+        virtuosoRef.current?.scrollToIndex({
+          index: filteredMessages.length - 1,
+          behavior: 'smooth',
+        })
+      })
+    }
+  }, [autoScrollEnabled, filteredMessages.length])
 
   return (
-    <Card 
+    <Card
       elevation={3}
       sx={{
         borderRadius: 2,
-        maxHeight: '90vh',
         display: 'flex',
-        flexDirection: 'column'
+        height: '100%',
+        flexDirection: 'column',
       }}
     >
       <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
           <Typography variant="h6" component="div" fontWeight={600} color="text.primary">
             Algo Actions:
           </Typography>
-
+          {/* TODO: Remove mock controls before production */}
+          {USE_MOCK_DATA && (
+            <Box display="flex" alignItems="center" gap={1}>
+              <Chip
+                label="+ Add 10"
+                size="small"
+                color="primary"
+                onClick={() => {
+                  const newMessages = Array.from({ length: 10 }, () => generateMockMessage())
+                  setMessages((prev) => [...prev, ...newMessages])
+                }}
+                sx={{ cursor: 'pointer' }}
+              />
+            </Box>
+          )}
         </Box>
-        
-        <Paper 
-          variant="outlined" 
-          sx={{ 
-            // flex: 1,
-            overflowY: 'scroll',
-            p: 1,
-            // borderRadius: 1
-          }}
-        >
-          {messages.length === 0 ? (
+
+        <Box display="flex" alignItems="center" justifyContent="space-between" gap={0.5} mb={1}>
+          <Chip
+            label={(() => {
+              const count = filteredMessages.length.toLocaleString()
+              switch (activeFilter) {
+                case 'all':
+                  return `All (${count})`
+                case 'sell':
+                  return `Sell / All (${count})`
+                case 'sell-positive':
+                  return `Sell / Positive (${count})`
+                case 'sell-negative':
+                  return `Sell / Negative (${count})`
+                default:
+                  return `${activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)} (${count})`
+              }
+            })()}
+            size="small"
+            color={(() => {
+              switch (activeFilter) {
+                case 'all':
+                  return 'default'
+                case 'sell':
+                  return 'info'
+                case 'sell-positive':
+                  return 'success'
+                case 'sell-negative':
+                  return 'error'
+                default:
+                  return getMessageChipColor({ type: activeFilter } as LogMessage)
+              }
+            })()}
+          />
+          <Box display="flex" alignItems="center">
+            <Tooltip title="Filter messages" placement="top">
+              <IconButton
+                id="filter-menu-button"
+                size="small"
+                aria-label="Open filter menu"
+                aria-controls={filterMenuAnchor ? 'filter-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={filterMenuAnchor ? 'true' : undefined}
+                onClick={(e) => setFilterMenuAnchor(e.currentTarget)}
+              >
+                <FilterListIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={autoScrollEnabled ? 'Disable auto-scroll' : 'Enable auto-scroll'} placement="top">
+              <IconButton
+                size="small"
+                aria-label={autoScrollEnabled ? 'Disable auto-scroll' : 'Enable auto-scroll'}
+                onClick={() => setAutoScrollEnabled((prev) => !prev)}
+                color={autoScrollEnabled ? 'primary' : 'default'}
+                sx={{
+                  transition: 'all 0.2s ease',
+                  bgcolor: autoScrollEnabled ? 'primary.main' : 'transparent',
+                  '&:hover': {
+                    bgcolor: autoScrollEnabled ? 'primary.dark' : 'action.hover',
+                  },
+                }}
+              >
+                <VerticalAlignBottomIcon fontSize="small" sx={{ color: autoScrollEnabled ? 'white' : 'inherit' }} />
+              </IconButton>
+            </Tooltip>
+          </Box>
+          <Menu
+            id="filter-menu"
+            anchorEl={filterMenuAnchor}
+            open={Boolean(filterMenuAnchor)}
+            onClose={() => setFilterMenuAnchor(null)}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            slotProps={{
+              list: {
+                'aria-labelledby': 'filter-menu-button',
+              },
+            }}
+          >
+            <MenuItem
+              selected={activeFilter === 'all'}
+              onClick={() => {
+                setActiveFilter('all')
+                setFilterMenuAnchor(null)
+              }}
+            >
+              <Chip label="All" size="small" />
+            </MenuItem>
+            <MenuItem
+              selected={activeFilter === 'general'}
+              onClick={() => {
+                setActiveFilter('general')
+                setFilterMenuAnchor(null)
+              }}
+            >
+              <Chip label="General" size="small" color="secondary" />
+            </MenuItem>
+            <MenuItem
+              selected={activeFilter === 'recommendation'}
+              onClick={() => {
+                setActiveFilter('recommendation')
+                setFilterMenuAnchor(null)
+              }}
+            >
+              <Chip label="Recommendation" size="small" color="warning" />
+            </MenuItem>
+            <MenuItem
+              selected={activeFilter === 'buy'}
+              onClick={() => {
+                setActiveFilter('buy')
+                setFilterMenuAnchor(null)
+              }}
+            >
+              <Chip label="Buy" size="small" color="info" />
+            </MenuItem>
+            <MenuItem
+              selected={activeFilter === 'sell'}
+              onClick={() => {
+                setActiveFilter('sell')
+                setFilterMenuAnchor(null)
+              }}
+            >
+              <Chip label="Sell / All" size="small" color="info" />
+            </MenuItem>
+            <MenuItem
+              selected={activeFilter === 'sell-positive'}
+              onClick={() => {
+                setActiveFilter('sell-positive')
+                setFilterMenuAnchor(null)
+              }}
+            >
+              <Chip label="Sell / Positive" size="small" color="success" />
+            </MenuItem>
+            <MenuItem
+              selected={activeFilter === 'sell-negative'}
+              onClick={() => {
+                setActiveFilter('sell-negative')
+                setFilterMenuAnchor(null)
+              }}
+            >
+              <Chip label="Sell / Negative" size="small" color="error" />
+            </MenuItem>
+          </Menu>
+        </Box>
+
+        <Box display="flex" flex={1} overflow="hidden">
+          {filteredMessages.length === 0 ? (
             <Box p={3} textAlign="center">
               <Typography variant="body2" color="text.secondary" fontStyle="italic">
-                Waiting for messages...
+                {messages.length === 0 ? 'Waiting for messages...' : 'No messages match the filter'}
               </Typography>
             </Box>
           ) : (
-            <Box>
-              {messages.slice().map((msg, index) => (
-                <Paper
-                  key={index}
-                  elevation={1}
-                  sx={{
-                    p: 1,
-                    mb: 1,
-                    borderLeft: 4,
-                    borderRadius: 1,
-                    transition: 'all 0.2s ease',
-                    // '&:hover': {
-                    //   boxShadow: 2
-                    // },
-                    // '&:last-child': {
-                    //   mb: 0
-                    // }
-                  }}
-                >
-                  <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={1}>
-                    <Box flex={1}>
-                      <Box display="flex" alignItems="center" gap={1} mb={1}>
-                        <Chip
-                          label={formatTime(msg.timestamp)}
-                          size="small"
-                          sx={{ 
-                            height: 22, 
-                            fontSize: '0.75rem',
-                            fontWeight: 600
-                          }}
-                        />
-                      </Box>
-                      <Typography 
-                        variant="body2" 
-                        sx={{ 
-                          fontFamily: 'Consolas, Monaco, "Courier New", monospace',
-                          fontSize: '0.875rem',
-                          lineHeight: 1.6,
-                          wordBreak: 'break-word',
-                          color: '#ffffff'
-                        }}
-                      >
-                        {msg.text}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Paper>
-              ))}
-              <div ref={messagesEndRef} />
-            </Box>
+            <Virtuoso
+              ref={virtuosoRef}
+              data={filteredMessages}
+              style={{ flex: 1 }}
+              itemContent={(_index, msg) => {
+                // Check if this message has been rendered before
+                const isNewMessage = !renderedMessagesRef.current.has(msg.id)
+                if (isNewMessage) {
+                  renderedMessagesRef.current.add(msg.id)
+                }
+
+                return <MessageItem msg={msg} isNew={isNewMessage} formatTime={formatTime} />
+              }}
+            />
           )}
-        </Paper>
+        </Box>
       </CardContent>
     </Card>
-  );
+  )
 }
 export default AnalyzedResult
