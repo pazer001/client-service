@@ -15,22 +15,22 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@fontsource/roboto": "^5.2.9",
-    "@mui/icons-material": "^7.3.5",
-    "@mui/material": "^7.3.5",
-    "@mui/x-data-grid": "8.20.0",
+    "@mui/icons-material": "^7.3.6",
+    "@mui/material": "^7.3.6",
+    "@mui/x-data-grid": "8.21.0",
     "axios": "^1.13.2",
     "echarts": "^6.0.0",
     "lodash": "^4.17.21",
     "millify": "^6.1.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
     "react-gauge-component": "^1.2.64",
-    "react-grid-layout": "^1.5.2",
+    "react-grid-layout": "^1.5.3",
     "react-resizable": "^3.0.5",
     "socket.io-client": "^4.8.1",
     "swiper": "^12.0.3",
     "vite-plugin-svgr": "^4.5.0",
-    "zustand": "^5.0.8"
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.8",
@@ -47,6 +47,6 @@
     "echarts-for-react": "^3.0.5",
     "luxon": "^3.7.2",
     "typescript": "~5.9.3",
-    "vite": "^7.2.4"
+    "vite": "^7.2.6"
   }
 }
