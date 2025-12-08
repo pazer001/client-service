@@ -235,7 +235,7 @@ const Messages = () => {
     newSocket.on(
       'algoLog',
       (message: { type: 'general' | 'recommendation' | 'buy' | 'sell'; message: string; profit?: number }) => {
-        console.log('Received:', message)
+        // console.log('Received:', message)
         setMessages((prev) => [
           ...prev,
           {
@@ -249,6 +249,11 @@ const Messages = () => {
         ])
       },
     )
+
+    newSocket.on("currentOpenPositions", (positions: any) => {
+      // console.log("Received current open positions:", positions)
+    })
+
 
     newSocket.on('registered', (data) => {
       console.log('Registered:', data)
