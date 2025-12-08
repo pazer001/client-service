@@ -44,12 +44,8 @@ export function formatNumber(value: number, fractionDigits: number = 2): string 
 }
 
 export const users = {
-  pazCrypto: {
-    id: '1f71bd6d-be84-456f-89e5-925528431139',
-    name: 'Paz (Crypto)',
-  },
   pazStocks: {
-    id: 'PKSKFIUNFNK5S7UEOOY3WPRXC4',
+    id: 'PA3JJKH42MSA',
     name: 'Paz (Stocks)',
   },
   benStocks: {
