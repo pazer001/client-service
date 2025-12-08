@@ -1,7 +1,7 @@
 import { AppBar, Box, Grid, Paper, type PaperProps, Stack, styled, ToggleButton, Toolbar } from '@mui/material'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { BaseSyntheticEvent } from 'react'
+import { BaseSyntheticEvent, useState } from 'react';
 import Logo from './assets/logos/horizontal-color-logo-no-background.svg'
 import LogoWithoutText from './assets/logos/logo-without-text.svg'
 import { StartAlgo } from './components/Algo/StartAlgo.tsx'
@@ -18,14 +18,20 @@ import {
 } from './stores/symbataStore.ts'
 import Messages from './components/AnalyzedResult/AnalyzedResult';
 import TradingViewWidget from './components/Chart/TradingViewWidget.tsx';
+import { CredentialResponse, GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import axios from './axios';
+
 
 const spacingBetween = 1
 const fullHeightStyleProp = { height: '100%' }
+
+interface IUser {email: string, googleId: string, name: string, picture: string}
 
 // Define custom props interface for styled component
 interface ItemProps extends PaperProps {
   isMobile?: boolean
 }
+
 
 // Item copied from MUI documentation
 // https://mui.com/material-ui/react-grid/#limitations
@@ -74,9 +80,17 @@ const IntervalController = () => {
 
 function App() {
   const isMobile = useMediaQuery('(max-width:900px)')
+  const [user, setUser] = useState<{success?: boolean, user?: IUser}>({});
+
+  const verifyLogin = async (credentials: CredentialResponse) => {
+    const response = await axios.post("/users/google", credentials)
+    console.log(response.data)
+    setUser(response.data)
+  }
 
   return (
     <MainContainer>
+      <GoogleOAuthProvider clientId="244255872191-gjt6ujt551uka46mtklpk1bi49it4tde.apps.googleusercontent.com">
       <AppBar position="static">
         <Toolbar variant="dense">
           <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
@@ -84,6 +98,17 @@ function App() {
             <Box display="flex" alignItems="center" gap={2}>
               <StartAlgo />
               <IntervalController />
+              {!user.success && <GoogleLogin
+                onSuccess={credentialResponse => {
+                  // console.log(credentialResponse);
+                  verifyLogin(credentialResponse)
+                }}
+                onError={() => {
+                  console.log('Login Failed');
+                }}
+                useOneTap
+                auto_select
+              />}
             </Box>
           </Box>
         </Toolbar>
@@ -116,6 +141,7 @@ function App() {
           </Grid>
         </>
       )}
+    </GoogleOAuthProvider>
     </MainContainer>
   )
 }
