@@ -250,7 +250,7 @@ const Messages = () => {
       },
     )
 
-    newSocket.on("currentOpenPositions", (positions: any) => {
+    newSocket.on("currentOpenPositions", () => {
       // console.log("Received current open positions:", positions)
     })
 
