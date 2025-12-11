@@ -1,0 +1,74 @@
+import { useEffect, useRef, useState } from 'react'
+import { Box } from '@mui/material'
+
+interface HighlightedNumberProps {
+  value: number
+}
+
+interface DigitHighlight {
+  index: number
+  color: 'green' | 'red'
+}
+
+const HighlightedNumber = ({ value }: HighlightedNumberProps) => {
+  const [highlights, setHighlights] = useState<DigitHighlight[]>([])
+  const prevValueRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    if (prevValueRef.current !== null && prevValueRef.current !== value) {
+      const prevStr = String(prevValueRef.current)
+      const currentStr = String(value)
+      const newHighlights: DigitHighlight[] = []
+
+      // Compare strings character by character
+      const maxLength = Math.max(prevStr.length, currentStr.length)
+      for (let i = 0; i < maxLength; i++) {
+        const prevChar = prevStr[i] || ''
+        const currentChar = currentStr[i] || ''
+
+        if (prevChar !== currentChar) {
+          // Determine color: green if value increased, red if decreased
+          const color = value > prevValueRef.current ? 'green' : 'red'
+          newHighlights.push({ index: i, color })
+        }
+      }
+
+      setHighlights(newHighlights)
+
+      // Clear highlights after 250ms
+      const timer = setTimeout(() => {
+        setHighlights([])
+      }, 250)
+
+      return () => clearTimeout(timer)
+    }
+
+    prevValueRef.current = value
+  }, [value])
+
+  const valueStr = String(value)
+
+  return (
+    <Box component="span" sx={{ fontFamily: 'monospace' }}>
+      {valueStr.split('').map((char, index) => {
+        const highlight = highlights.find((h) => h.index === index)
+        return (
+          <Box
+            key={index}
+            component="span"
+            sx={{
+              backgroundColor: highlight ? (highlight.color === 'green' ? '#4caf50' : '#f44336') : 'transparent',
+              color: highlight ? '#fff' : 'inherit',
+              transition: 'background-color 0.25s ease, color 0.25s ease',
+              padding: '0 2px',
+            }}
+          >
+            {char}
+          </Box>
+        )
+      })}
+    </Box>
+  )
+}
+
+export default HighlightedNumber

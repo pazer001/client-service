@@ -48,6 +48,10 @@ export const users = {
     id: 'PA3JJKH42MSA',
     name: 'Paz (Stocks)',
   },
+  pazCrypto: {
+    id: 'PA3CAQV2TH7Q',
+    name: 'Paz (Crypto)',
+  },
   benStocks: {
     id: 'AKJP4LLZKKRVLZYJPZHDXZ3TSI',
     name: 'Ben (Stocks)',
