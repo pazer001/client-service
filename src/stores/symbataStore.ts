@@ -37,10 +37,13 @@ export interface ISymbolStore {
 }
 
 const algoApiUrl: Record<Interval, { start: string; stop: string }> = {
-  [Interval['1d']]: { start: 'algo/runSwing/', stop: 'algo/stopSwing/' },
   [Interval['5m']]: { start: 'algo/runIntraday/', stop: 'algo/stopIntraday/' },
   [Interval['15m']]: { start: 'algo/runIntraday/', stop: 'algo/stopIntraday/' },
+  [Interval['1d']]: { start: 'algo/runSwing/', stop: 'algo/stopSwing/' },
 }
+
+// Exported for use in IntervalController - order matches algoApiUrl definition
+export const supportedAlgoIntervals = Object.keys(algoApiUrl) as Interval[]
 
 const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
   interval: Interval['15m'],
