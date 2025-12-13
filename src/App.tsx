@@ -5,7 +5,7 @@ import { BaseSyntheticEvent, useState } from 'react';
 import Logo from './assets/logos/horizontal-color-logo-no-background.svg'
 import LogoWithoutText from './assets/logos/logo-without-text.svg'
 import { StartAlgo } from './components/Algo/StartAlgo.tsx'
-// import AnalyzedResult from './components/AnalyzedResult/AnalyzedResult'
+// import ActionMessages from './components/ActionMessages/ActionMessages.tsx'
 import Balance from './components/Balance/Balance.tsx'
 import { Interval } from './components/interfaces.ts'
 import { MobileView } from './components/MobileView/MobileView.tsx'
@@ -16,7 +16,7 @@ import {
   useSymbataStoreIsAlgoStarted,
   useSymbataStoreUserId,
 } from './stores/symbataStore.ts'
-import Messages from './components/AnalyzedResult/AnalyzedResult';
+import ActionMessages from './components/ActionMessages/ActionMessages.tsx'
 import TradingViewWidget from './components/Chart/TradingViewWidget.tsx';
 import { CredentialResponse, GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import axios from './axios';
@@ -130,7 +130,7 @@ function App() {
             </Grid>
             <Grid size={2}>
               <Item>
-                <Messages />
+                <ActionMessages />
               </Item>
             </Grid>
             <Grid size={4}>
@@ -173,7 +173,7 @@ function App() {
         </div>
         <div key="b">
           <Card pt={{ root: { className: 'h-full' } }} title="Analyzed Result">
-            <AnalyzedResult />
+            <ActionMessages />
           </Card>
         </div>
         <div key="c">
