@@ -78,3 +78,10 @@ export interface IAlpacaBalancesResponse {
   todayProfit: number
   todayROR: number
 }
+
+export interface IAlgoSession {
+  accountId: string
+  interval: string
+  isCryptoMode: boolean
+  includePrePostMarket: boolean
+}

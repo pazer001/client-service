@@ -1,26 +1,19 @@
-import { AppBar, Box, Grid, Paper, type PaperProps, Stack, styled, ToggleButton, Toolbar } from '@mui/material'
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import SettingsIcon from '@mui/icons-material/Settings'
+import { AppBar, Box, Grid, IconButton, Paper, type PaperProps, Stack, styled, Toolbar, Tooltip } from '@mui/material'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { CredentialResponse, GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google'
-import { BaseSyntheticEvent, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Logo from './assets/logos/horizontal-color-logo-no-background.svg'
 import LogoWithoutText from './assets/logos/logo-without-text.svg'
 import axios from './axios'
 import ActionMessages from './components/ActionMessages/ActionMessages.tsx'
+import { AlgoConfigModal } from './components/Algo/AlgoConfigModal.tsx'
 import { StartAlgo } from './components/Algo/StartAlgo.tsx'
-// import ActionMessages from './components/ActionMessages/ActionMessages.tsx'
 import Balance from './components/Balance/Balance.tsx'
 import TradingViewWidget from './components/Chart/TradingViewWidget.tsx'
-import { Interval } from './components/interfaces.ts'
 import { MobileView } from './components/MobileView/MobileView.tsx'
 import { TablesContainer } from './components/TablesContainer/TablesContainer.tsx'
-import {
-  supportedAlgoIntervals,
-  useSymbataStoreActions,
-  useSymbataStoreInterval,
-  useSymbataStoreIsAlgoStarted,
-  useSymbataStoreUserId,
-} from './stores/symbataStore.ts'
+import { useSymbataStoreActions, useSymbataStoreUserId } from './stores/symbataStore.ts'
 
 const spacingBetween = 1
 const fullHeightStyleProp = { height: '100%' }
@@ -56,34 +49,18 @@ const MainContainer = styled(Box)(({ theme }) => ({
   gap: theme.spacing(spacingBetween),
 }))
 
-const IntervalController = () => {
-  const interval = useSymbataStoreInterval()
-  const userId = useSymbataStoreUserId()
-  const isAlgoStared = useSymbataStoreIsAlgoStarted()
-  const { setInterval, setIsAlgoStarted, stopAlgo } = useSymbataStoreActions()
-
-  const onChangeInterval = (event: BaseSyntheticEvent) => {
-    setInterval(event.target.value as Interval)
-    if (isAlgoStared) {
-      setIsAlgoStarted(false)
-      stopAlgo(userId)
-    }
-  }
-
-  return (
-    <ToggleButtonGroup value={interval} size="small" exclusive onChange={onChangeInterval}>
-      {supportedAlgoIntervals.map((intervalValue) => (
-        <ToggleButton key={intervalValue} size="small" value={intervalValue}>
-          {intervalValue}
-        </ToggleButton>
-      ))}
-    </ToggleButtonGroup>
-  )
-}
-
 function App() {
   const isMobile = useMediaQuery('(max-width:900px)')
   const [user, setUser] = useState<{ success?: boolean; user?: IUser }>({})
+  const [isConfigModalOpen, setIsConfigModalOpen] = useState(false)
+
+  const userId = useSymbataStoreUserId()
+  const { getAlgoSession } = useSymbataStoreActions()
+
+  // Fetch algo session config on init and when user changes
+  useEffect(() => {
+    getAlgoSession(userId)
+  }, [userId, getAlgoSession])
 
   const verifyLogin = async (credentials: CredentialResponse) => {
     const response = await axios.post('/users/google', credentials)
@@ -100,7 +77,11 @@ function App() {
               <img alt="Symbata logo" src={isMobile ? LogoWithoutText : Logo} height={isMobile ? '20px' : '30px'} />
               <Box display="flex" alignItems="center" gap={2}>
                 <StartAlgo />
-                <IntervalController />
+                <Tooltip title="Algo Configuration">
+                  <IconButton size="small" onClick={() => setIsConfigModalOpen(true)}>
+                    <SettingsIcon />
+                  </IconButton>
+                </Tooltip>
                 {!user.success && (
                   <GoogleLogin
                     onSuccess={(credentialResponse) => {
@@ -147,6 +128,7 @@ function App() {
           </>
         )}
       </GoogleOAuthProvider>
+      <AlgoConfigModal open={isConfigModalOpen} onClose={() => setIsConfigModalOpen(false)} />
     </MainContainer>
   )
 }
