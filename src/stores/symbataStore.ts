@@ -177,7 +177,7 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
         const { interval } = get()
         const url = algoApiUrl[interval].stop + userId
         const result: AxiosResponse<boolean> = await axios.post(url)
-        set({ isAlgoStarted: result.data })
+        set({ isAlgoStarted: !result.data })
         return result.data
       } catch (error) {
         console.error('Error stopping algo:', error)
