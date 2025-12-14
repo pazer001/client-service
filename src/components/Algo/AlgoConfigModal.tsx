@@ -12,7 +12,6 @@ import {
   Typography,
 } from '@mui/material'
 import { BaseSyntheticEvent } from 'react'
-import { Interval } from '../interfaces.ts'
 import {
   supportedAlgoIntervals,
   useSymbataStoreActions,
@@ -20,6 +19,7 @@ import {
   useSymbataStoreInterval,
   useSymbataStoreIsCryptoMode,
 } from '../../stores/symbataStore.ts'
+import { Interval } from '../interfaces.ts'
 
 interface AlgoConfigModalProps {
   open: boolean
@@ -38,6 +38,7 @@ export const AlgoConfigModal = ({ open, onClose }: AlgoConfigModalProps) => {
     }
   }
 
+  console.log({ interval, isCryptoMode, includePrePostMarket })
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -60,18 +61,13 @@ export const AlgoConfigModal = ({ open, onClose }: AlgoConfigModalProps) => {
           </Stack>
 
           <FormControlLabel
-            control={
-              <Switch checked={isCryptoMode} onChange={(e) => setIsCryptoMode(e.target.checked)} />
-            }
+            control={<Switch checked={isCryptoMode} onChange={(e) => setIsCryptoMode(e.target.checked)} />}
             label="Crypto Mode"
           />
 
           <FormControlLabel
             control={
-              <Switch
-                checked={includePrePostMarket}
-                onChange={(e) => setIncludePrePostMarket(e.target.checked)}
-              />
+              <Switch checked={includePrePostMarket} onChange={(e) => setIncludePrePostMarket(e.target.checked)} />
             }
             label="Include Pre/Post Market"
           />
@@ -80,4 +76,3 @@ export const AlgoConfigModal = ({ open, onClose }: AlgoConfigModalProps) => {
     </Dialog>
   )
 }
-
