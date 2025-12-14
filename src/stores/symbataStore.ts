@@ -126,7 +126,7 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
     },
     getAlgoSession: async (userId: string) => {
       try {
-        const result: AxiosResponse<IAlgoSession> = await axios.get(`algoSession/${userId}`)
+        const result: AxiosResponse<IAlgoSession> = await axios.get(`algo/algoSession/${userId}`)
         set({
           interval: result.data.interval as Interval,
           isCryptoMode: result.data.isCryptoMode,
