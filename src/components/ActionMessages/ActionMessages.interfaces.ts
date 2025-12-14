@@ -113,3 +113,6 @@ interface IDefaultTechnicalAnalysisItem {
   buyReasons: string[]
   sellReasons: string[]
 }
+
+
+

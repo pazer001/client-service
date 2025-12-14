@@ -4,7 +4,13 @@ import { createJSONStorage, devtools, persist } from 'zustand/middleware'
 import axios from '../axios'
 import { Interval } from '../components/interfaces.ts'
 import { users } from '../utils/utils.ts'
-import { IAlpacaBalancesResponse, IOpenPositionsResponse, IRecommendation, ISymbolItem } from './symbataStore.types.ts'
+import {
+  IAlgoSession,
+  IAlpacaBalancesResponse,
+  IOpenPositionsResponse,
+  IRecommendation,
+  ISymbolItem,
+} from './symbataStore.types.ts'
 
 export interface IStoreActions {
   setSymbol: (symbol: ISymbolItem) => void
@@ -14,6 +20,7 @@ export interface IStoreActions {
   getSuggestedSymbols: () => Promise<void>
   getOpenPositions: () => Promise<void>
   getBalance: (userId: string) => Promise<void>
+  getAlgoSession: (userId: string) => Promise<void>
   setProfileValue: (value: number) => void
   setInterval: (interval: Interval) => void
   startAlgo: (userId: string) => Promise<boolean>
@@ -21,6 +28,8 @@ export interface IStoreActions {
   setIsAlgoStarted: (isAlgoStarted: boolean) => void
   setUserId: (userId: string) => void
   setTradingViewSymbol: (symbol: string) => void
+  setIsCryptoMode: (value: boolean) => void
+  setIncludePrePostMarket: (value: boolean) => void
 }
 
 export interface ISymbolStore {
@@ -33,14 +42,19 @@ export interface ISymbolStore {
   balance: IAlpacaBalancesResponse | undefined
   isAlgoStarted: boolean
   userId: string
+  isCryptoMode: boolean
+  includePrePostMarket: boolean
   actions: IStoreActions
 }
 
 const algoApiUrl: Record<Interval, { start: string; stop: string }> = {
-  [Interval['1d']]: { start: 'algo/runSwing/', stop: 'algo/stopSwing/' },
   [Interval['5m']]: { start: 'algo/runIntraday/', stop: 'algo/stopIntraday/' },
   [Interval['15m']]: { start: 'algo/runIntraday/', stop: 'algo/stopIntraday/' },
+  [Interval['1d']]: { start: 'algo/runSwing/', stop: 'algo/stopSwing/' },
 }
+
+// Exported for use in IntervalController - order matches algoApiUrl definition
+export const supportedAlgoIntervals = Object.keys(algoApiUrl) as Interval[]
 
 const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
   interval: Interval['15m'],
@@ -52,12 +66,20 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
   balance: undefined,
   isAlgoStarted: false,
   userId: users.pazStocks.id,
+  isCryptoMode: false,
+  includePrePostMarket: false,
   actions: {
     setTradingViewSymbol: (symbol: string) => {
       set({ tradingViewSymbol: symbol })
     },
     setUserId: (userId: string) => {
       set({ userId })
+    },
+    setIsCryptoMode: (value: boolean) => {
+      set({ isCryptoMode: value })
+    },
+    setIncludePrePostMarket: (value: boolean) => {
+      set({ includePrePostMarket: value })
     },
     setInterval: (interval: Interval) => {
       set({ interval })
@@ -102,6 +124,18 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
         throw error
       }
     },
+    getAlgoSession: async (userId: string) => {
+      try {
+        const result: AxiosResponse<IAlgoSession> = await axios.get(`algoSession/${userId}`)
+        set({
+          interval: result.data.interval as Interval,
+          isCryptoMode: result.data.isCryptoMode,
+          includePrePostMarket: result.data.includePrePostMarket,
+        })
+      } catch (error) {
+        console.error('Error fetching algo session:', error)
+      }
+    },
     getRecommendation: async (rowData) => {
       try {
         const { interval } = get()
@@ -124,9 +158,13 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
     },
     startAlgo: async (userId: string) => {
       try {
-        const { interval } = get()
+        const { interval, isCryptoMode, includePrePostMarket } = get()
         const url = algoApiUrl[interval].start + userId
-        const result: AxiosResponse<boolean> = await axios.post(url)
+        const result: AxiosResponse<boolean> = await axios.post(url, {
+          interval,
+          isCryptoMode,
+          includePrePostMarket,
+        })
         set({ isAlgoStarted: result.data })
         return result.data
       } catch (error) {
@@ -181,3 +219,5 @@ export const useSymbataStoreBalance = () => useSymbataStore((state) => state.bal
 export const useSymbataStoreIsAlgoStarted = () => useSymbataStore((state) => state.isAlgoStarted)
 export const useSymbataStoreUserId = () => useSymbataStore((state) => state.userId)
 export const useSymbataStoreTradingViewSymbol = () => useSymbataStore((state) => state.tradingViewSymbol)
+export const useSymbataStoreIsCryptoMode = () => useSymbataStore((state) => state.isCryptoMode)
+export const useSymbataStoreIncludePrePostMarket = () => useSymbataStore((state) => state.includePrePostMarket)

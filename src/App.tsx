@@ -1,37 +1,34 @@
-import { AppBar, Box, Grid, Paper, type PaperProps, Stack, styled, ToggleButton, Toolbar } from '@mui/material'
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import SettingsIcon from '@mui/icons-material/Settings'
+import { AppBar, Box, Grid, IconButton, Paper, type PaperProps, Stack, styled, Toolbar, Tooltip } from '@mui/material'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { BaseSyntheticEvent, useState } from 'react';
+import { CredentialResponse, GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google'
+import { useEffect, useState } from 'react'
 import Logo from './assets/logos/horizontal-color-logo-no-background.svg'
 import LogoWithoutText from './assets/logos/logo-without-text.svg'
+import axios from './axios'
+import ActionMessages from './components/ActionMessages/ActionMessages.tsx'
+import { AlgoConfigModal } from './components/Algo/AlgoConfigModal.tsx'
 import { StartAlgo } from './components/Algo/StartAlgo.tsx'
-// import AnalyzedResult from './components/AnalyzedResult/AnalyzedResult'
 import Balance from './components/Balance/Balance.tsx'
-import { Interval } from './components/interfaces.ts'
+import TradingViewWidget from './components/Chart/TradingViewWidget.tsx'
 import { MobileView } from './components/MobileView/MobileView.tsx'
 import { TablesContainer } from './components/TablesContainer/TablesContainer.tsx'
-import {
-  useSymbataStoreActions,
-  useSymbataStoreInterval,
-  useSymbataStoreIsAlgoStarted,
-  useSymbataStoreUserId,
-} from './stores/symbataStore.ts'
-import Messages from './components/AnalyzedResult/AnalyzedResult';
-import TradingViewWidget from './components/Chart/TradingViewWidget.tsx';
-import { CredentialResponse, GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
-import axios from './axios';
-
+import { useSymbataStoreActions, useSymbataStoreUserId } from './stores/symbataStore.ts'
 
 const spacingBetween = 1
 const fullHeightStyleProp = { height: '100%' }
 
-interface IUser {email: string, googleId: string, name: string, picture: string}
+interface IUser {
+  email: string
+  googleId: string
+  name: string
+  picture: string
+}
 
 // Define custom props interface for styled component
 interface ItemProps extends PaperProps {
   isMobile?: boolean
 }
-
 
 // Item copied from MUI documentation
 // https://mui.com/material-ui/react-grid/#limitations
@@ -52,38 +49,21 @@ const MainContainer = styled(Box)(({ theme }) => ({
   gap: theme.spacing(spacingBetween),
 }))
 
-const IntervalController = () => {
-  const interval = useSymbataStoreInterval()
-  const userId = useSymbataStoreUserId()
-  const isAlgoStared = useSymbataStoreIsAlgoStarted()
-  const { setInterval, setIsAlgoStarted, stopAlgo } = useSymbataStoreActions()
-
-  const onChangeInterval = (event: BaseSyntheticEvent) => {
-    setInterval(event.target.value as Interval)
-    if (isAlgoStared) {
-      setIsAlgoStarted(false)
-      stopAlgo(userId)
-    }
-  }
-
-  return (
-    <ToggleButtonGroup value={interval} size="small" exclusive onChange={onChangeInterval}>
-      <ToggleButton size="small" value={Interval['1d']}>
-        {Interval['1d']}
-      </ToggleButton>
-      <ToggleButton size="small" value={Interval['15m']}>
-        {Interval['15m']}
-      </ToggleButton>
-    </ToggleButtonGroup>
-  )
-}
-
 function App() {
   const isMobile = useMediaQuery('(max-width:900px)')
-  const [user, setUser] = useState<{success?: boolean, user?: IUser}>({});
+  const [user, setUser] = useState<{ success?: boolean; user?: IUser }>({})
+  const [isConfigModalOpen, setIsConfigModalOpen] = useState(false)
+
+  const userId = useSymbataStoreUserId()
+  const { getAlgoSession } = useSymbataStoreActions()
+
+  // Fetch algo session config on init and when user changes
+  useEffect(() => {
+    getAlgoSession(userId)
+  }, [userId, getAlgoSession])
 
   const verifyLogin = async (credentials: CredentialResponse) => {
-    const response = await axios.post("/users/google", credentials)
+    const response = await axios.post('/users/google', credentials)
     console.log(response.data)
     setUser(response.data)
   }
@@ -91,57 +71,64 @@ function App() {
   return (
     <MainContainer>
       <GoogleOAuthProvider clientId="244255872191-gjt6ujt551uka46mtklpk1bi49it4tde.apps.googleusercontent.com">
-      <AppBar position="static">
-        <Toolbar variant="dense">
-          <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
-            <img alt="Symbata logo" src={isMobile ? LogoWithoutText : Logo} height={isMobile ? '20px' : '30px'} />
-            <Box display="flex" alignItems="center" gap={2}>
-              <StartAlgo />
-              <IntervalController />
-              {!user.success && <GoogleLogin
-                onSuccess={credentialResponse => {
-                  // console.log(credentialResponse);
-                  verifyLogin(credentialResponse)
-                }}
-                onError={() => {
-                  console.log('Login Failed');
-                }}
-                useOneTap
-                auto_select
-              />}
+        <AppBar position="static">
+          <Toolbar variant="dense">
+            <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
+              <img alt="Symbata logo" src={isMobile ? LogoWithoutText : Logo} height={isMobile ? '20px' : '30px'} />
+              <Box display="flex" alignItems="center" gap={2}>
+                <StartAlgo />
+                <Tooltip title="Algo Configuration">
+                  <IconButton size="small" onClick={() => setIsConfigModalOpen(true)}>
+                    <SettingsIcon />
+                  </IconButton>
+                </Tooltip>
+                {!user.success && (
+                  <GoogleLogin
+                    onSuccess={(credentialResponse) => {
+                      // console.log(credentialResponse);
+                      verifyLogin(credentialResponse)
+                    }}
+                    onError={() => {
+                      console.log('Login Failed')
+                    }}
+                    useOneTap
+                    auto_select
+                  />
+                )}
+              </Box>
             </Box>
-          </Box>
-        </Toolbar>
-      </AppBar>
-      {isMobile ? (
-        <MobileView Item={Item} spacingBetween={spacingBetween} />
-      ) : (
-        <>
-          <Grid container spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
-            <Grid size={6}>
-              <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
+          </Toolbar>
+        </AppBar>
+        {isMobile ? (
+          <MobileView Item={Item} spacingBetween={spacingBetween} />
+        ) : (
+          <>
+            <Grid container spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
+              <Grid size={6}>
+                <Stack spacing={spacingBetween} sx={{ ...fullHeightStyleProp }}>
+                  <Item>
+                    <TradingViewWidget />
+                  </Item>
+                  <Item sx={{ height: 'calc(100% / 2)' }}>
+                    <Balance />
+                  </Item>
+                </Stack>
+              </Grid>
+              <Grid size={2}>
                 <Item>
-                  <TradingViewWidget />
+                  <ActionMessages />
                 </Item>
-                <Item sx={{ height: 'calc(100% / 2)' }}>
-                  <Balance />
+              </Grid>
+              <Grid size={4}>
+                <Item sx={{ paddingTop: 0 }}>
+                  <TablesContainer />
                 </Item>
-              </Stack>
+              </Grid>
             </Grid>
-            <Grid size={2}>
-              <Item>
-                <Messages />
-              </Item>
-            </Grid>
-            <Grid size={4}>
-              <Item sx={{ paddingTop: 0 }}>
-                <TablesContainer />
-              </Item>
-            </Grid>
-          </Grid>
-        </>
-      )}
-    </GoogleOAuthProvider>
+          </>
+        )}
+      </GoogleOAuthProvider>
+      <AlgoConfigModal open={isConfigModalOpen} onClose={() => setIsConfigModalOpen(false)} />
     </MainContainer>
   )
 }
@@ -173,7 +160,7 @@ function App() {
         </div>
         <div key="b">
           <Card pt={{ root: { className: 'h-full' } }} title="Analyzed Result">
-            <AnalyzedResult />
+            <ActionMessages />
           </Card>
         </div>
         <div key="c">

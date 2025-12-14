@@ -6,7 +6,7 @@ import CurrencyExchangeRoundedIcon from '@mui/icons-material/CurrencyExchangeRou
 import ScaleIcon from '@mui/icons-material/Scale'
 import WaterfallChartIcon from '@mui/icons-material/WaterfallChart'
 import { BottomNavigation, BottomNavigationAction, Grid, Stack } from '@mui/material'
-import AnalyzedResult from '../AnalyzedResult/AnalyzedResult'
+import ActionMessages from '../ActionMessages/ActionMessages.tsx'
 import Balance from '../Balance/Balance.tsx'
 import Finlogix from '../Chart/Finlogix/Finlogix.tsx'
 import { TablesContainer } from '../TablesContainer/TablesContainer.tsx'
@@ -58,7 +58,7 @@ export const MobileView = ({ Item, spacingBetween }: MobileViewProps) => {
             <Grid size={12} sx={{ height: 'inherit' }}>
               <Stack spacing={spacingBetween} sx={{ height: 'inherit' }}>
                 <Item isMobile={true}>
-                  <AnalyzedResult />
+                  <ActionMessages />
                 </Item>
               </Stack>
             </Grid>
@@ -83,7 +83,7 @@ export const MobileView = ({ Item, spacingBetween }: MobileViewProps) => {
       >
         <BottomNavigationAction label="Chart" icon={<WaterfallChartIcon />} />
         <BottomNavigationAction label="Balance" icon={<ScaleIcon />} />
-        <BottomNavigationAction label="Analyzed Result" icon={<BusinessCenterIcon />} />
+        <BottomNavigationAction label="Actions" icon={<BusinessCenterIcon />} />
         <BottomNavigationAction label="Positions" icon={<CurrencyExchangeRoundedIcon />} />
       </BottomNavigation>
     </>

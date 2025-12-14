@@ -6,7 +6,7 @@ import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
 import { io } from 'socket.io-client'
 import { useSymbataStoreUserId } from '../../stores/symbataStore'
 
-const AnalyzedResult = () => {
+const ActionMessages = () => {
   return <Messages />
 }
 
@@ -512,4 +512,7 @@ const Messages = () => {
     </Card>
   )
 }
-export default AnalyzedResult
+export default ActionMessages
+
+
+
