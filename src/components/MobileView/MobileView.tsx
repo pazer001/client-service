@@ -8,9 +8,9 @@ import WaterfallChartIcon from '@mui/icons-material/WaterfallChart'
 import { BottomNavigation, BottomNavigationAction, Grid, Stack } from '@mui/material'
 import ActionMessages from '../ActionMessages/ActionMessages.tsx'
 import Balance from '../Balance/Balance.tsx'
-import Finlogix from '../Chart/Finlogix/Finlogix.tsx'
 import { TablesContainer } from '../TablesContainer/TablesContainer.tsx'
 import 'swiper/css' // Import Swiper styles
+import TradingViewWidget from '../Chart/TradingViewWidget.tsx'
 
 interface MobileViewProps {
   Item: React.ComponentType<{ isMobile?: boolean; children: React.ReactNode }>
@@ -40,7 +40,7 @@ export const MobileView = ({ Item, spacingBetween }: MobileViewProps) => {
             <Grid size={12} sx={{ height: 'inherit' }}>
               <Stack spacing={spacingBetween} sx={{ height: 'inherit' }}>
                 <Item isMobile={true}>
-                  <Finlogix />
+                  <TradingViewWidget />
                 </Item>
               </Stack>
             </Grid>
