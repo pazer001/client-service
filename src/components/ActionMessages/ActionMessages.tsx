@@ -1,6 +1,6 @@
 import FilterListIcon from '@mui/icons-material/FilterList'
 import VerticalAlignBottomIcon from '@mui/icons-material/VerticalAlignBottom'
-import { Box, Card, CardContent, Chip, IconButton, Menu, MenuItem, Paper, Tooltip, Typography } from '@mui/material'
+import { Box, Chip, IconButton, Menu, MenuItem, Paper, Tooltip, Typography } from '@mui/material'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
 import { io } from 'socket.io-client'
@@ -328,210 +328,200 @@ const Messages = () => {
   }, [autoScrollEnabled, filteredMessages.length])
 
   return (
-    <Card
-      elevation={3}
-      sx={{
-        borderRadius: 2,
-        display: 'flex',
-        height: '100%',
-        flexDirection: 'column',
-      }}
-    >
-      <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-          <Typography variant="h6" component="div" fontWeight={600} color="text.primary">
-            Algo Actions:
-          </Typography>
-          {/* TODO: Remove mock controls before production */}
-          {USE_MOCK_DATA && (
-            <Box display="flex" alignItems="center" gap={1}>
-              <Chip
-                label="+ Add 10"
-                size="small"
-                color="primary"
-                onClick={() => {
-                  const newMessages = Array.from({ length: 10 }, () => generateMockMessage())
-                  setMessages((prev) => {
-                    const updated = [...prev, ...newMessages]
-                    return updated.length > MAX_MESSAGES ? updated.slice(-MAX_MESSAGES) : updated
-                  })
-                }}
-                sx={{ cursor: 'pointer' }}
-              />
-            </Box>
-          )}
-        </Box>
-
-        <Box display="flex" alignItems="center" justifyContent="space-between" gap={0.5} mb={1}>
-          <Chip
-            label={(() => {
-              const count = filteredMessages.length.toLocaleString()
-              switch (activeFilter) {
-                case 'all':
-                  return `All (${count})`
-                case 'sell':
-                  return `Sell / All (${count})`
-                case 'sell-positive':
-                  return `Sell / Positive (${count})`
-                case 'sell-negative':
-                  return `Sell / Negative (${count})`
-                default:
-                  return `${activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)} (${count})`
-              }
-            })()}
-            size="small"
-            color={(() => {
-              switch (activeFilter) {
-                case 'all':
-                  return 'default'
-                case 'sell':
-                  return 'info'
-                case 'sell-positive':
-                  return 'success'
-                case 'sell-negative':
-                  return 'error'
-                default:
-                  return getMessageChipColor({ type: activeFilter } as LogMessage)
-              }
-            })()}
-          />
-          <Box display="flex" alignItems="center">
-            <Tooltip title="Filter messages" placement="top">
-              <IconButton
-                id="filter-menu-button"
-                size="small"
-                aria-label="Open filter menu"
-                aria-controls={filterMenuAnchor ? 'filter-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={filterMenuAnchor ? 'true' : undefined}
-                onClick={(e) => setFilterMenuAnchor(e.currentTarget)}
-              >
-                <FilterListIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={autoScrollEnabled ? 'Disable auto-scroll' : 'Enable auto-scroll'} placement="top">
-              <IconButton
-                size="small"
-                aria-label={autoScrollEnabled ? 'Disable auto-scroll' : 'Enable auto-scroll'}
-                onClick={() => setAutoScrollEnabled((prev) => !prev)}
-                color={autoScrollEnabled ? 'primary' : 'default'}
-                sx={{
-                  transition: 'all 0.2s ease',
-                  bgcolor: autoScrollEnabled ? 'primary.main' : 'transparent',
-                  '&:hover': {
-                    bgcolor: autoScrollEnabled ? 'primary.dark' : 'action.hover',
-                  },
-                }}
-              >
-                <VerticalAlignBottomIcon fontSize="small" sx={{ color: autoScrollEnabled ? 'white' : 'inherit' }} />
-              </IconButton>
-            </Tooltip>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+        <Typography variant="h6" component="div" fontWeight={600} color="text.primary">
+          Algo Actions:
+        </Typography>
+        {/* TODO: Remove mock controls before production */}
+        {USE_MOCK_DATA && (
+          <Box display="flex" alignItems="center" gap={1}>
+            <Chip
+              label="+ Add 10"
+              size="small"
+              color="primary"
+              onClick={() => {
+                const newMessages = Array.from({ length: 10 }, () => generateMockMessage())
+                setMessages((prev) => {
+                  const updated = [...prev, ...newMessages]
+                  return updated.length > MAX_MESSAGES ? updated.slice(-MAX_MESSAGES) : updated
+                })
+              }}
+              sx={{ cursor: 'pointer' }}
+            />
           </Box>
-          <Menu
-            id="filter-menu"
-            anchorEl={filterMenuAnchor}
-            open={Boolean(filterMenuAnchor)}
-            onClose={() => setFilterMenuAnchor(null)}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            slotProps={{
-              list: {
-                'aria-labelledby': 'filter-menu-button',
-              },
+        )}
+      </Box>
+
+      <Box display="flex" alignItems="center" justifyContent="space-between" gap={0.5} mb={1}>
+        <Chip
+          label={(() => {
+            const count = filteredMessages.length.toLocaleString()
+            switch (activeFilter) {
+              case 'all':
+                return `All (${count})`
+              case 'sell':
+                return `Sell / All (${count})`
+              case 'sell-positive':
+                return `Sell / Positive (${count})`
+              case 'sell-negative':
+                return `Sell / Negative (${count})`
+              default:
+                return `${activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)} (${count})`
+            }
+          })()}
+          size="small"
+          color={(() => {
+            switch (activeFilter) {
+              case 'all':
+                return 'default'
+              case 'sell':
+                return 'info'
+              case 'sell-positive':
+                return 'success'
+              case 'sell-negative':
+                return 'error'
+              default:
+                return getMessageChipColor({ type: activeFilter } as LogMessage)
+            }
+          })()}
+        />
+        <Box display="flex" alignItems="center">
+          <Tooltip title="Filter messages" placement="top">
+            <IconButton
+              id="filter-menu-button"
+              size="small"
+              aria-label="Open filter menu"
+              aria-controls={filterMenuAnchor ? 'filter-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={filterMenuAnchor ? 'true' : undefined}
+              onClick={(e) => setFilterMenuAnchor(e.currentTarget)}
+            >
+              <FilterListIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={autoScrollEnabled ? 'Disable auto-scroll' : 'Enable auto-scroll'} placement="top">
+            <IconButton
+              size="small"
+              aria-label={autoScrollEnabled ? 'Disable auto-scroll' : 'Enable auto-scroll'}
+              onClick={() => setAutoScrollEnabled((prev) => !prev)}
+              color={autoScrollEnabled ? 'primary' : 'default'}
+              sx={{
+                transition: 'all 0.2s ease',
+                bgcolor: autoScrollEnabled ? 'primary.main' : 'transparent',
+                '&:hover': {
+                  bgcolor: autoScrollEnabled ? 'primary.dark' : 'action.hover',
+                },
+              }}
+            >
+              <VerticalAlignBottomIcon fontSize="small" sx={{ color: autoScrollEnabled ? 'white' : 'inherit' }} />
+            </IconButton>
+          </Tooltip>
+        </Box>
+        <Menu
+          id="filter-menu"
+          anchorEl={filterMenuAnchor}
+          open={Boolean(filterMenuAnchor)}
+          onClose={() => setFilterMenuAnchor(null)}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          slotProps={{
+            list: {
+              'aria-labelledby': 'filter-menu-button',
+            },
+          }}
+        >
+          <MenuItem
+            selected={activeFilter === 'all'}
+            onClick={() => {
+              setActiveFilter('all')
+              setFilterMenuAnchor(null)
             }}
           >
-            <MenuItem
-              selected={activeFilter === 'all'}
-              onClick={() => {
-                setActiveFilter('all')
-                setFilterMenuAnchor(null)
-              }}
-            >
-              <Chip label="All" size="small" />
-            </MenuItem>
-            <MenuItem
-              selected={activeFilter === 'general'}
-              onClick={() => {
-                setActiveFilter('general')
-                setFilterMenuAnchor(null)
-              }}
-            >
-              <Chip label="General" size="small" color="secondary" />
-            </MenuItem>
-            <MenuItem
-              selected={activeFilter === 'recommendation'}
-              onClick={() => {
-                setActiveFilter('recommendation')
-                setFilterMenuAnchor(null)
-              }}
-            >
-              <Chip label="Recommendation" size="small" color="warning" />
-            </MenuItem>
-            <MenuItem
-              selected={activeFilter === 'buy'}
-              onClick={() => {
-                setActiveFilter('buy')
-                setFilterMenuAnchor(null)
-              }}
-            >
-              <Chip label="Buy" size="small" color="info" />
-            </MenuItem>
-            <MenuItem
-              selected={activeFilter === 'sell'}
-              onClick={() => {
-                setActiveFilter('sell')
-                setFilterMenuAnchor(null)
-              }}
-            >
-              <Chip label="Sell / All" size="small" color="info" />
-            </MenuItem>
-            <MenuItem
-              selected={activeFilter === 'sell-positive'}
-              onClick={() => {
-                setActiveFilter('sell-positive')
-                setFilterMenuAnchor(null)
-              }}
-            >
-              <Chip label="Sell / Positive" size="small" color="success" />
-            </MenuItem>
-            <MenuItem
-              selected={activeFilter === 'sell-negative'}
-              onClick={() => {
-                setActiveFilter('sell-negative')
-                setFilterMenuAnchor(null)
-              }}
-            >
-              <Chip label="Sell / Negative" size="small" color="error" />
-            </MenuItem>
-          </Menu>
-        </Box>
+            <Chip label="All" size="small" />
+          </MenuItem>
+          <MenuItem
+            selected={activeFilter === 'general'}
+            onClick={() => {
+              setActiveFilter('general')
+              setFilterMenuAnchor(null)
+            }}
+          >
+            <Chip label="General" size="small" color="secondary" />
+          </MenuItem>
+          <MenuItem
+            selected={activeFilter === 'recommendation'}
+            onClick={() => {
+              setActiveFilter('recommendation')
+              setFilterMenuAnchor(null)
+            }}
+          >
+            <Chip label="Recommendation" size="small" color="warning" />
+          </MenuItem>
+          <MenuItem
+            selected={activeFilter === 'buy'}
+            onClick={() => {
+              setActiveFilter('buy')
+              setFilterMenuAnchor(null)
+            }}
+          >
+            <Chip label="Buy" size="small" color="info" />
+          </MenuItem>
+          <MenuItem
+            selected={activeFilter === 'sell'}
+            onClick={() => {
+              setActiveFilter('sell')
+              setFilterMenuAnchor(null)
+            }}
+          >
+            <Chip label="Sell / All" size="small" color="info" />
+          </MenuItem>
+          <MenuItem
+            selected={activeFilter === 'sell-positive'}
+            onClick={() => {
+              setActiveFilter('sell-positive')
+              setFilterMenuAnchor(null)
+            }}
+          >
+            <Chip label="Sell / Positive" size="small" color="success" />
+          </MenuItem>
+          <MenuItem
+            selected={activeFilter === 'sell-negative'}
+            onClick={() => {
+              setActiveFilter('sell-negative')
+              setFilterMenuAnchor(null)
+            }}
+          >
+            <Chip label="Sell / Negative" size="small" color="error" />
+          </MenuItem>
+        </Menu>
+      </Box>
 
-        <Box display="flex" flex={1} overflow="hidden">
-          {filteredMessages.length === 0 ? (
-            <Box p={3} textAlign="center">
-              <Typography variant="body2" color="text.secondary" fontStyle="italic">
-                {messages.length === 0 ? 'Waiting for messages...' : 'No messages match the filter'}
-              </Typography>
-            </Box>
-          ) : (
-            <Virtuoso
-              ref={virtuosoRef}
-              data={filteredMessages}
-              style={{ flex: 1 }}
-              itemContent={(_index, msg) => {
-                // Check if this message has been rendered before
-                const isNewMessage = !renderedMessagesRef.current.has(msg.id)
-                if (isNewMessage) {
-                  renderedMessagesRef.current.add(msg.id)
-                }
+      <Box display="flex" flex={1} overflow="hidden">
+        {filteredMessages.length === 0 ? (
+          <Box p={3} textAlign="center">
+            <Typography variant="body2" color="text.secondary" fontStyle="italic">
+              {messages.length === 0 ? 'Waiting for messages...' : 'No messages match the filter'}
+            </Typography>
+          </Box>
+        ) : (
+          <Virtuoso
+            ref={virtuosoRef}
+            data={filteredMessages}
+            style={{ flex: 1 }}
+            itemContent={(_index, msg) => {
+              // Check if this message has been rendered before
+              const isNewMessage = !renderedMessagesRef.current.has(msg.id)
+              if (isNewMessage) {
+                renderedMessagesRef.current.add(msg.id)
+              }
 
-                return <MessageItem msg={msg} isNew={isNewMessage} formatTime={formatTime} />
-              }}
-            />
-          )}
-        </Box>
-      </CardContent>
-    </Card>
+              return <MessageItem msg={msg} isNew={isNewMessage} formatTime={formatTime} />
+            }}
+          />
+        )}
+      </Box>
+    </Box>
   )
 }
 export default ActionMessages
