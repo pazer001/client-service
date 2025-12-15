@@ -25,6 +25,9 @@ const generateMessageId = () => `msg-${++messageIdCounter}`
 // TODO: Remove mock data generation before production - only for testing virtualization
 const USE_MOCK_DATA = false
 
+// Maximum number of messages to keep in memory to prevent memory leaks from WebSocket flooding
+const MAX_MESSAGES = 100
+
 const mockMessages: readonly string[] = [
   'Analyzing AAPL - checking RSI indicators...',
   'AAPL RSI at 65.3 - within normal range',
@@ -208,12 +211,16 @@ const Messages = () => {
   const [filterMenuAnchor, setFilterMenuAnchor] = useState<null | HTMLElement>(null)
   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true)
 
-  // Mock: Add a new message every 2 seconds for testing auto-scroll
+  // Mock: Add a new message every 500ms for testing auto-scroll
   useEffect(() => {
     if (!USE_MOCK_DATA) return
 
     const interval = setInterval(() => {
-      setMessages((prev) => [...prev, generateMockMessage()])
+      setMessages((prev) => {
+        const updated = [...prev, generateMockMessage()]
+        // Remove oldest messages if exceeding limit to prevent memory leak
+        return updated.length > MAX_MESSAGES ? updated.slice(-MAX_MESSAGES) : updated
+      })
     }, 500)
 
     return () => clearInterval(interval)
@@ -236,24 +243,25 @@ const Messages = () => {
       'algoLog',
       (message: { type: 'general' | 'recommendation' | 'buy' | 'sell'; message: string; profit?: number }) => {
         // console.log('Received:', message)
-        setMessages((prev) => [
-          ...prev,
-          {
+        setMessages((prev) => {
+          const newMessage: LogMessage = {
             id: generateMessageId(),
             text: message.message,
             type: message.type,
             timestamp: new Date(),
             // Include profit for sell messages if provided by server
             ...(message.type === 'sell' && message.profit !== undefined ? { profit: message.profit } : {}),
-          },
-        ])
+          }
+          const updated = [...prev, newMessage]
+          // Remove oldest messages if exceeding limit to prevent memory leak
+          return updated.length > MAX_MESSAGES ? updated.slice(-MAX_MESSAGES) : updated
+        })
       },
     )
 
-    newSocket.on("currentOpenPositions", () => {
+    newSocket.on('currentOpenPositions', () => {
       // console.log("Received current open positions:", positions)
     })
-
 
     newSocket.on('registered', (data) => {
       console.log('Registered:', data)
@@ -296,6 +304,17 @@ const Messages = () => {
     renderedMessagesRef.current = new Set(filteredMessages.map((m) => m.id))
   }, [activeFilter]) // Only reset on filter change, not on new messages
 
+  // Clean up renderedMessagesRef when messages are removed to prevent memory leak
+  // This syncs the Set with current message IDs, removing stale entries
+  useEffect(() => {
+    const currentIds = new Set(messages.map((m) => m.id))
+    for (const id of renderedMessagesRef.current) {
+      if (!currentIds.has(id)) {
+        renderedMessagesRef.current.delete(id)
+      }
+    }
+  }, [messages])
+
   // Auto-scroll to bottom when enabled and new messages arrive
   useEffect(() => {
     if (autoScrollEnabled && filteredMessages.length > 0) {
@@ -332,7 +351,10 @@ const Messages = () => {
                 color="primary"
                 onClick={() => {
                   const newMessages = Array.from({ length: 10 }, () => generateMockMessage())
-                  setMessages((prev) => [...prev, ...newMessages])
+                  setMessages((prev) => {
+                    const updated = [...prev, ...newMessages]
+                    return updated.length > MAX_MESSAGES ? updated.slice(-MAX_MESSAGES) : updated
+                  })
                 }}
                 sx={{ cursor: 'pointer' }}
               />
@@ -513,6 +535,3 @@ const Messages = () => {
   )
 }
 export default ActionMessages
-
-
-
