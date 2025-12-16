@@ -53,10 +53,12 @@ export const OpenPositions = () => {
   const positionsArray = useMemo(() => {
     if (!openPositions) return []
     // Add symbol as id for DataGrid row identification
-    return Object.values(openPositions).map((position) => ({
-      ...position,
-      id: position.symbol,
-    }))
+    // Filter out positions without a symbol to prevent DataGrid errors
+    return Object.values(openPositions)
+      .map((position) => ({
+        ...position,
+        id: position.symbol,
+      }))
   }, [openPositions])
 
   // DataGrid column definitions matching PositionItem display
