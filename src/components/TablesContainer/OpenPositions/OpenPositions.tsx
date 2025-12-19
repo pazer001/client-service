@@ -104,8 +104,18 @@ export const OpenPositions = () => {
   }, [openPositions])
 
   // Custom hook handles polling and change detection for flash animations
-  // Pass the actual store positions for polling (mock data doesn't need polling but keeps UI consistent)
-  const { animationKey, remainingSeconds, refreshOpenPositions } = useOpenPositionsPolling(storeOpenPositions)
+  const { animationKey, refreshOpenPositions } = useOpenPositionsPolling(storeOpenPositions)
+
+  // Simple countdown for display - resets when animationKey changes
+  const [remainingSeconds, setRemainingSeconds] = useState(Math.ceil(POLLING_INTERVAL / 1000))
+
+  useEffect(() => {
+    setRemainingSeconds(Math.ceil(POLLING_INTERVAL / 1000))
+    const interval = setInterval(() => {
+      setRemainingSeconds((prev) => Math.max(prev - 1, 0))
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [animationKey])
 
   /**
    * Toggle row expansion state. When expanded, shows the detail panel with full info.
