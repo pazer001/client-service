@@ -235,7 +235,7 @@ export const OpenPositions = () => {
       },
       {
         field: 'profit',
-        headerName: 'Profit/Loss',
+        headerName: 'P/L',
         width: 120,
         type: 'number',
         align: 'left',
@@ -274,7 +274,7 @@ export const OpenPositions = () => {
       },
       {
         field: 'buyPrice',
-        headerName: 'Buy Price',
+        headerName: 'Buy at',
         width: 100,
         type: 'number',
         align: 'left',
@@ -287,7 +287,7 @@ export const OpenPositions = () => {
       },
       {
         field: 'currentPrice',
-        headerName: 'Current Price',
+        headerName: 'Price',
         width: 120,
         type: 'number',
         align: 'left',
