@@ -318,14 +318,7 @@ export const OpenPositions = () => {
       },
     ]
 
-    // On mobile, hide columns that are shown in the detail panel
-    // Keep: expand, symbol, profit, ROR, currentPrice
-    // if (isMobile) {
-    // const mobileVisibleFields = ['expand', 'symbol', 'profit', 'currentROR', 'currentPrice']
-    // return baseColumns.filter((col) => mobileVisibleFields.includes(col.field))
-    // }
-
-    return baseColumns
+    return baseColumns.filter((col) => col.field !== 'expand')
   }, [expandedRows, isMobile, toggleRowExpand])
 
   if (!openPositions) {
