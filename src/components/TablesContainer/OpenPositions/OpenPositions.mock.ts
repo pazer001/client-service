@@ -5,7 +5,7 @@ import { IOpenPosition, IOpenPositionsResponse } from '../../../stores/symbataSt
  * When enabled, the component will use mock data instead of real API data.
  * Only works in development mode for safety.
  */
-export const USE_MOCK_OPEN_POSITIONS = false
+export const USE_MOCK_OPEN_POSITIONS = true
 
 // Sample mock positions with varied scenarios (profitable, losing, different strategies)
 const mockPositions: IOpenPosition[] = [

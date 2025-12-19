@@ -320,10 +320,10 @@ export const OpenPositions = () => {
 
     // On mobile, hide columns that are shown in the detail panel
     // Keep: expand, symbol, profit, ROR, currentPrice
-    if (isMobile) {
-      const mobileVisibleFields = ['expand', 'symbol', 'profit', 'currentROR', 'currentPrice']
-      return baseColumns.filter((col) => mobileVisibleFields.includes(col.field))
-    }
+    // if (isMobile) {
+    // const mobileVisibleFields = ['expand', 'symbol', 'profit', 'currentROR', 'currentPrice']
+    // return baseColumns.filter((col) => mobileVisibleFields.includes(col.field))
+    // }
 
     return baseColumns
   }, [expandedRows, isMobile, toggleRowExpand])
@@ -337,7 +337,7 @@ export const OpenPositions = () => {
   }
 
   return (
-    <Box sx={{ pt: 1, height: 'calc(100dvh - 75px)', overflow: isMobile ? 'visible' : 'auto' }}>
+    <Box sx={{ pt: 1, height: 'calc(100dvh - 130px)', overflow: isMobile ? 'visible' : 'auto' }}>
       {/* Progress bar indicating time until next fetch */}
       <Box
         display="flex"
