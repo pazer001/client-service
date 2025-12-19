@@ -1,9 +1,14 @@
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import RefreshIconOutlined from '@mui/icons-material/RefreshOutlined'
 import TrendingDownIcon from '@mui/icons-material/TrendingDown'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import {
   Box,
+  Chip,
   CircularProgress,
+  Collapse,
+  chipClasses,
   IconButton,
   LinearProgress,
   linearProgressClasses,
@@ -11,12 +16,13 @@ import {
   useMediaQuery,
 } from '@mui/material'
 import { green, red } from '@mui/material/colors'
-import { DataGrid, GridColDef, GridRenderCellParams, gridClasses } from '@mui/x-data-grid'
-import { useMemo } from 'react'
+import { DataGrid, GridColDef, GridRenderCellParams, GridRowHeightParams, gridClasses } from '@mui/x-data-grid'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { POLLING_INTERVAL, useOpenPositionsPolling } from '../../../hooks/useOpenPositionsPolling.ts'
 import { useSymbataStoreActions, useSymbataStoreOpenPositions } from '../../../stores/symbataStore.ts'
 import { IOpenPosition } from '../../../stores/symbataStore.types.ts'
 import { formatNumber } from '../../../utils/utils.ts'
+import { mockOpenPositionsData, USE_MOCK_OPEN_POSITIONS } from './OpenPositions.mock.ts'
 
 const EmptyState = () => (
   <Box
@@ -42,65 +48,179 @@ const LoadingState = () => (
   </Box>
 )
 
+// Height constants for expanded row calculation
+const COLLAPSED_ROW_HEIGHT = 52
+const EXPANDED_ROW_HEIGHT = 100
+
+interface IPositionDetailPanelProps {
+  position: IOpenPosition
+}
+
+/**
+ * Detail panel component that displays the strategy when row is expanded.
+ */
+const PositionDetailPanel = ({ position }: IPositionDetailPanelProps) => (
+  <Box
+    sx={{
+      py: 1,
+    }}
+  >
+    <Box display="flex" alignItems="center" gap={1} width="100%">
+      <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem' }}>
+        Strategy:
+      </Typography>
+      <Chip
+        label={position.usedStrategy}
+        size="small"
+        sx={{
+          height: 20,
+          fontSize: '0.7rem',
+          backgroundColor: 'rgba(144, 202, 249, 0.16)',
+          maxWidth: 'none',
+          [`& .${chipClasses.label}`]: {
+            whiteSpace: 'nowrap',
+          },
+        }}
+      />
+    </Box>
+  </Box>
+)
+
 export const OpenPositions = () => {
-  const openPositions = useSymbataStoreOpenPositions()
+  const storeOpenPositions = useSymbataStoreOpenPositions()
   const { setTradingViewSymbol } = useSymbataStoreActions()
   const isMobile = useMediaQuery('(max-width:900px)')
 
+  // Track which rows are expanded to show detail panel (all expanded by default)
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
+
+  // Use mock data when enabled in development mode
+  const openPositions = import.meta.env.DEV && USE_MOCK_OPEN_POSITIONS ? mockOpenPositionsData : storeOpenPositions
+
+  // Initialize all rows as expanded by default when positions data loads
+  useEffect(() => {
+    if (openPositions) {
+      const allSymbols = Object.keys(openPositions)
+      setExpandedRows(new Set(allSymbols))
+    }
+  }, [openPositions])
+
   // Custom hook handles polling and change detection for flash animations
-  const { progress, refreshOpenPositions } = useOpenPositionsPolling(openPositions)
+  // Pass the actual store positions for polling (mock data doesn't need polling but keeps UI consistent)
+  const { progress, refreshOpenPositions } = useOpenPositionsPolling(storeOpenPositions)
+
+  /**
+   * Toggle row expansion state. When expanded, shows the detail panel with full info.
+   */
+  const toggleRowExpand = useCallback((rowId: string) => {
+    setExpandedRows((prev) => {
+      const next = new Set(prev)
+      if (next.has(rowId)) {
+        next.delete(rowId)
+      } else {
+        next.add(rowId)
+      }
+      return next
+    })
+  }, [])
+
+  /**
+   * Dynamic row height based on expansion state.
+   * Expanded rows need more height to accommodate the detail panel.
+   */
+  const getRowHeight = useCallback(
+    (params: GridRowHeightParams) => {
+      return expandedRows.has(params.id as string) ? EXPANDED_ROW_HEIGHT : COLLAPSED_ROW_HEIGHT
+    },
+    [expandedRows],
+  )
 
   const positionsArray = useMemo(() => {
     if (!openPositions) return []
     // Add symbol as id for DataGrid row identification
     // Filter out positions without a symbol to prevent DataGrid errors
-    return Object.values(openPositions)
-      .map((position) => ({
-        ...position,
-        id: position.symbol,
-      }))
+    return Object.values(openPositions).map((position) => ({
+      ...position,
+      id: position.symbol,
+    }))
   }, [openPositions])
 
+  // Type alias for row data with id field
+  type TPositionRow = IOpenPosition & { id: string }
+
   // DataGrid column definitions matching PositionItem display
-  const columns: GridColDef<IOpenPosition & { id: string }>[] = useMemo(
-    () => [
+  const columns: GridColDef<TPositionRow>[] = useMemo(() => {
+    const baseColumns: GridColDef<TPositionRow>[] = [
+      // Expand/collapse column - always first
+      {
+        field: 'expand',
+        headerName: '',
+        width: 40,
+        sortable: false,
+        filterable: false,
+        disableColumnMenu: true,
+        renderCell: (params: GridRenderCellParams<TPositionRow>) => {
+          const isExpanded = expandedRows.has(params.row.id)
+          return (
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation() // Prevent row click from firing
+                toggleRowExpand(params.row.id)
+              }}
+              sx={{ p: 0.5 }}
+            >
+              {isExpanded ? <ExpandLessIcon sx={{ fontSize: 18 }} /> : <ExpandMoreIcon sx={{ fontSize: 18 }} />}
+            </IconButton>
+          )
+        },
+      },
+      // Symbol column with optional detail panel
       {
         field: 'symbol',
         headerName: 'Symbol',
         width: 100,
-        renderCell: (params: GridRenderCellParams<IOpenPosition & { id: string }>) => {
+        renderCell: (params: GridRenderCellParams<TPositionRow>) => {
           const isProfit = params.row.profit > 0
           const profitColor = isProfit ? green[700] : red[700]
           const profitBgColor = isProfit ? green[50] : red[50]
+          const isExpanded = expandedRows.has(params.row.id)
 
           return (
-            <Box display="flex" alignItems="center" gap={1}>
-              <Box
-                sx={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: '50%',
-                  bgcolor: profitBgColor,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                }}
-              >
-                {isProfit ? (
-                  <TrendingUpIcon sx={{ color: profitColor, fontSize: 16 }} />
-                ) : (
-                  <TrendingDownIcon sx={{ color: profitColor, fontSize: 16 }} />
-                )}
+            <Box display="flex" flexDirection="column" width="100%" height="100%">
+              {/* Main symbol content */}
+              <Box display="flex" alignItems="center" gap={1} height={COLLAPSED_ROW_HEIGHT} py={1}>
+                <Box
+                  sx={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: '50%',
+                    bgcolor: profitBgColor,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
+                  {isProfit ? (
+                    <TrendingUpIcon sx={{ color: profitColor, fontSize: 16 }} />
+                  ) : (
+                    <TrendingDownIcon sx={{ color: profitColor, fontSize: 16 }} />
+                  )}
+                </Box>
+                <Box display="flex" flexDirection="column">
+                  <Typography variant="caption" fontWeight="bold" sx={{ fontSize: '0.7rem' }}>
+                    {params.row.symbol}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.5rem' }}>
+                    {params.row.tradeType.toUpperCase()}
+                  </Typography>
+                </Box>
               </Box>
-              <Box display="flex" flexDirection="column">
-                <Typography variant="caption" fontWeight="bold" sx={{ fontSize: '0.7rem' }}>
-                  {params.row.symbol}
-                </Typography>
-                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.5rem' }}>
-                  {params.row.tradeType.toUpperCase()}
-                </Typography>
-              </Box>
+              {/* Detail panel - shown when expanded */}
+              <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+                <PositionDetailPanel position={params.row} />
+              </Collapse>
             </Box>
           )
         },
@@ -112,13 +232,15 @@ export const OpenPositions = () => {
         type: 'number',
         align: 'left',
         headerAlign: 'left',
-        renderCell: (params: GridRenderCellParams<IOpenPosition & { id: string }>) => {
+        renderCell: (params: GridRenderCellParams<TPositionRow>) => {
           const isProfit = params.row.profit > 0
           const profitColor = isProfit ? green[400] : red[400]
           return (
-            <Typography variant="body2" sx={{ color: profitColor, fontWeight: 700 }}>
-              {isProfit ? '+' : ''}${Math.abs(params.row.profit).toFixed(2)}
-            </Typography>
+            <Box display="flex" alignItems="flex-start" height="100%" pt={2}>
+              <Typography variant="body2" sx={{ color: profitColor, fontWeight: 700 }}>
+                {isProfit ? '+' : ''}${Math.abs(params.row.profit).toFixed(2)}
+              </Typography>
+            </Box>
           )
         },
       },
@@ -129,14 +251,16 @@ export const OpenPositions = () => {
         type: 'number',
         align: 'left',
         headerAlign: 'left',
-        renderCell: (params: GridRenderCellParams<IOpenPosition & { id: string }>) => {
+        renderCell: (params: GridRenderCellParams<TPositionRow>) => {
           const isProfit = params.row.currentROR > 0
           const profitColor = isProfit ? green[400] : red[400]
           return (
-            <Typography variant="body2" sx={{ color: profitColor, fontWeight: 700 }}>
-              {params.row.currentROR > 0 ? '+' : ''}
-              {params.row.currentROR.toFixed(2)}%
-            </Typography>
+            <Box display="flex" alignItems="flex-start" height="100%" pt={2}>
+              <Typography variant="body2" sx={{ color: profitColor, fontWeight: 700 }}>
+                {params.row.currentROR > 0 ? '+' : ''}
+                {params.row.currentROR.toFixed(2)}%
+              </Typography>
+            </Box>
           )
         },
       },
@@ -147,8 +271,10 @@ export const OpenPositions = () => {
         type: 'number',
         align: 'left',
         headerAlign: 'left',
-        renderCell: (params: GridRenderCellParams<IOpenPosition & { id: string }>) => (
-          <Typography variant="body2">${params.row.buyPrice}</Typography>
+        renderCell: (params: GridRenderCellParams<TPositionRow>) => (
+          <Box display="flex" alignItems="flex-start" height="100%" pt={2}>
+            <Typography variant="body2">${params.row.buyPrice}</Typography>
+          </Box>
         ),
       },
       {
@@ -158,8 +284,10 @@ export const OpenPositions = () => {
         type: 'number',
         align: 'left',
         headerAlign: 'left',
-        renderCell: (params: GridRenderCellParams<IOpenPosition & { id: string }>) => (
-          <Typography variant="body2">${params.row.currentPrice}</Typography>
+        renderCell: (params: GridRenderCellParams<TPositionRow>) => (
+          <Box display="flex" alignItems="flex-start" height="100%" pt={2}>
+            <Typography variant="body2">${params.row.currentPrice}</Typography>
+          </Box>
         ),
       },
       {
@@ -169,8 +297,10 @@ export const OpenPositions = () => {
         type: 'number',
         align: 'left',
         headerAlign: 'left',
-        renderCell: (params: GridRenderCellParams<IOpenPosition & { id: string }>) => (
-          <Typography variant="body2">{formatNumber(params.row.shares)}</Typography>
+        renderCell: (params: GridRenderCellParams<TPositionRow>) => (
+          <Box display="flex" alignItems="flex-start" height="100%" pt={2}>
+            <Typography variant="body2">{formatNumber(params.row.shares)}</Typography>
+          </Box>
         ),
       },
       {
@@ -180,23 +310,23 @@ export const OpenPositions = () => {
         type: 'number',
         align: 'left',
         headerAlign: 'left',
-        renderCell: (params: GridRenderCellParams<IOpenPosition & { id: string }>) => (
-          <Typography variant="body2">${formatNumber(params.row.buyAmount)}</Typography>
+        renderCell: (params: GridRenderCellParams<TPositionRow>) => (
+          <Box display="flex" alignItems="flex-start" height="100%" pt={2}>
+            <Typography variant="body2">${formatNumber(params.row.buyAmount)}</Typography>
+          </Box>
         ),
       },
-      {
-        field: 'usedStrategy',
-        headerName: 'Strategy',
-        width: 140,
-        align: 'left',
-        headerAlign: 'left',
-        renderCell: (params: GridRenderCellParams<IOpenPosition & { id: string }>) => (
-          <Typography variant="body2">{params.row.usedStrategy}</Typography>
-        ),
-      },
-    ],
-    [],
-  )
+    ]
+
+    // On mobile, hide columns that are shown in the detail panel
+    // Keep: expand, symbol, profit, ROR, currentPrice
+    if (isMobile) {
+      const mobileVisibleFields = ['expand', 'symbol', 'profit', 'currentROR', 'currentPrice']
+      return baseColumns.filter((col) => mobileVisibleFields.includes(col.field))
+    }
+
+    return baseColumns
+  }, [expandedRows, isMobile, toggleRowExpand])
 
   if (!openPositions) {
     return <LoadingState />
@@ -253,7 +383,8 @@ export const OpenPositions = () => {
           rows={positionsArray}
           columns={columns}
           disableColumnMenu
-          disableRowSelectionOnClick={false}
+          disableRowSelectionOnClick
+          getRowHeight={getRowHeight}
           onRowClick={(params) => setTradingViewSymbol(params.row.symbol)}
           density="compact"
           sx={{
@@ -262,11 +393,18 @@ export const OpenPositions = () => {
               '&:hover': {
                 backgroundColor: 'action.hover',
               },
+              // Align cells to top when row is expanded
+              alignItems: 'flex-start',
             },
             [`& .${gridClasses.cell}`]: {
-              display: 'flex',
-              alignItems: 'center',
               padding: '0 8px',
+              // Allow content to overflow for expanded rows
+              overflow: 'visible',
+            },
+            // First column (expand icon) should stay top-aligned
+            [`& .${gridClasses.cell}:first-of-type`]: {
+              alignItems: 'flex-start',
+              pt: 1.5,
             },
           }}
           initialState={{
