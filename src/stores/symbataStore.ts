@@ -1,6 +1,13 @@
 import { AxiosResponse } from 'axios'
 import { create, StateCreator } from 'zustand'
 import { createJSONStorage, devtools, persist } from 'zustand/middleware'
+
+/**
+ * Toggle to enable/disable Zustand Redux DevTools integration.
+ * Only works in development mode.
+ */
+const ENABLE_DEVTOOLS = false
+
 import axios from '../axios'
 import { Interval } from '../components/interfaces.ts'
 import { users } from '../utils/utils.ts'
@@ -202,18 +209,12 @@ export const useSymbataStore = import.meta.env.DEV
           partialize: (state) => ({
             // symbols: state.symbols,
             interval: state.interval,
-            profileValue: state.profileValue,
           }),
         }),
+        { name: 'symbataStore', enabled: ENABLE_DEVTOOLS },
       ),
     )
-  : create<ISymbolStore>()(
-      devtools(symbataStore, {
-        name: 'symbataStore',
-        enabled: false, // import.meta.env.DEV, // disable devtools on PRODUCTIONS
-        anonymousActionType: 'Unknown',
-      }),
-    )
+  : create<ISymbolStore>()(symbataStore)
 export const useSymbataStoreActions = () => useSymbataStore((state) => state.actions)
 export const useSymbataStoreSymbol = () => useSymbataStore((state) => state.symbol)
 export const useSymbataStoreSymbols = () => useSymbataStore((state) => state.symbols)
