@@ -210,7 +210,7 @@ export const useSymbataStore = import.meta.env.DEV
   : create<ISymbolStore>()(
       devtools(symbataStore, {
         name: 'symbataStore',
-        enabled: import.meta.env.DEV, // disable devtools on PRODUCTIONS
+        enabled: false, // import.meta.env.DEV, // disable devtools on PRODUCTIONS
         anonymousActionType: 'Unknown',
       }),
     )
