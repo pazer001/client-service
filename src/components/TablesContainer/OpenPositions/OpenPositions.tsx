@@ -10,8 +10,6 @@ import {
   Collapse,
   chipClasses,
   IconButton,
-  LinearProgress,
-  linearProgressClasses,
   Typography,
   useMediaQuery,
 } from '@mui/material'
@@ -106,8 +104,18 @@ export const OpenPositions = () => {
   }, [openPositions])
 
   // Custom hook handles polling and change detection for flash animations
-  // Pass the actual store positions for polling (mock data doesn't need polling but keeps UI consistent)
-  const { progress, refreshOpenPositions } = useOpenPositionsPolling(storeOpenPositions)
+  const { animationKey, refreshOpenPositions } = useOpenPositionsPolling(storeOpenPositions)
+
+  // Simple countdown for display - resets when animationKey changes
+  const [remainingSeconds, setRemainingSeconds] = useState(Math.ceil(POLLING_INTERVAL / 1000))
+
+  useEffect(() => {
+    setRemainingSeconds(Math.ceil(POLLING_INTERVAL / 1000))
+    const interval = setInterval(() => {
+      setRemainingSeconds((prev) => Math.max(prev - 1, 0))
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [animationKey])
 
   /**
    * Toggle row expansion state. When expanded, shows the detail panel with full info.
@@ -227,7 +235,7 @@ export const OpenPositions = () => {
       },
       {
         field: 'profit',
-        headerName: 'Profit/Loss',
+        headerName: 'P/L',
         width: 120,
         type: 'number',
         align: 'left',
@@ -266,7 +274,7 @@ export const OpenPositions = () => {
       },
       {
         field: 'buyPrice',
-        headerName: 'Buy Price',
+        headerName: 'Buy at',
         width: 100,
         type: 'number',
         align: 'left',
@@ -279,7 +287,7 @@ export const OpenPositions = () => {
       },
       {
         field: 'currentPrice',
-        headerName: 'Current Price',
+        headerName: 'Price',
         width: 120,
         type: 'number',
         align: 'left',
@@ -318,14 +326,7 @@ export const OpenPositions = () => {
       },
     ]
 
-    // On mobile, hide columns that are shown in the detail panel
-    // Keep: expand, symbol, profit, ROR, currentPrice
-    if (isMobile) {
-      const mobileVisibleFields = ['expand', 'symbol', 'profit', 'currentROR', 'currentPrice']
-      return baseColumns.filter((col) => mobileVisibleFields.includes(col.field))
-    }
-
-    return baseColumns
+    return baseColumns.filter((col) => col.field !== 'expand')
   }, [expandedRows, isMobile, toggleRowExpand])
 
   if (!openPositions) {
@@ -337,7 +338,7 @@ export const OpenPositions = () => {
   }
 
   return (
-    <Box sx={{ pt: 1, height: 'calc(100dvh - 75px)', overflow: isMobile ? 'visible' : 'auto' }}>
+    <Box sx={{ pt: 1, height: 'calc(100dvh - 130px)', overflow: isMobile ? 'visible' : 'auto' }}>
       {/* Progress bar indicating time until next fetch */}
       <Box
         display="flex"
@@ -353,22 +354,33 @@ export const OpenPositions = () => {
         }}
       >
         <Box flex={1}>
-          <LinearProgress
-            variant="determinate"
-            value={progress}
+          {/* CSS-animated progress bar - smoother than JS-controlled updates */}
+          <Box
             sx={{
               height: 6,
               borderRadius: 1,
               backgroundColor: 'rgba(0, 0, 0, 0.1)',
-              [`& .${linearProgressClasses.bar}`]: {
-                borderRadius: 1,
-                transition: 'transform 0.1s linear',
-              },
+              overflow: 'hidden',
             }}
-          />
+          >
+            <Box
+              key={animationKey}
+              sx={{
+                height: '100%',
+                borderRadius: 1,
+                backgroundColor: 'primary.main',
+                // CSS animation from 0% to 100% width over POLLING_INTERVAL
+                animation: `progressFill ${POLLING_INTERVAL}ms linear forwards`,
+                '@keyframes progressFill': {
+                  from: { width: '0%' },
+                  to: { width: '100%' },
+                },
+              }}
+            />
+          </Box>
           <Box display="flex" justifyContent="space-between" alignItems="center" mt={0.5}>
             <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-              Next update: {Math.ceil((POLLING_INTERVAL - (progress / 100) * POLLING_INTERVAL) / 1000)}s
+              Next update: {remainingSeconds}s
             </Typography>
             <IconButton size="small" onClick={refreshOpenPositions} sx={{ display: 'flex', alignItems: 'center' }}>
               <RefreshIconOutlined sx={{ fontSize: '1rem' }} />
