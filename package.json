@@ -17,8 +17,8 @@
     "@fontsource/roboto": "^5.2.9",
     "@mui/icons-material": "^7.3.6",
     "@mui/material": "^7.3.6",
-    "@mui/x-data-grid": "8.22.0",
-    "@react-oauth/google": "^0.12.2",
+    "@mui/x-data-grid": "8.22.1",
+    "@react-oauth/google": "^0.13.0",
     "axios": "^1.13.2",
     "lodash": "^4.17.21",
     "react": "^19.2.3",
@@ -30,7 +30,7 @@
     "zustand": "^5.0.9"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.8",
+    "@biomejs/biome": "^2.3.10",
     "@types/lodash": "^4.17.21",
     "@types/luxon": "^3.7.1",
     "@types/react": "^19.2.7",
@@ -40,6 +40,6 @@
     "babel-plugin-react-compiler": "^1.0.0",
     "luxon": "^3.7.2",
     "typescript": "~5.9.3",
-    "vite": "^7.2.7"
+    "vite": "^7.3.0"
   }
 }
