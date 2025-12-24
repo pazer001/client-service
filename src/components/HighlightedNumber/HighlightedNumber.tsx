@@ -49,7 +49,7 @@ const HighlightedNumber = ({ value }: HighlightedNumberProps) => {
   const valueStr = String(value)
 
   return (
-    <Box component="span" sx={{ fontFamily: 'monospace' }}>
+    <>
       {valueStr.split('').map((char, index) => {
         const highlight = highlights.find((h) => h.index === index)
         return (
@@ -68,7 +68,7 @@ const HighlightedNumber = ({ value }: HighlightedNumberProps) => {
           </Typography>
         )
       })}
-    </Box>
+    </>
   )
 }
 
