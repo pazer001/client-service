@@ -21,6 +21,7 @@ import { useSymbataStoreActions, useSymbataStoreOpenPositions } from '../../../s
 import { IOpenPosition } from '../../../stores/symbataStore.types.ts'
 import { formatNumber } from '../../../utils/utils.ts'
 import { mockOpenPositionsData, USE_MOCK_OPEN_POSITIONS } from './OpenPositions.mock.ts'
+import HighlightedNumber from '../../HighlightedNumber';
 
 const EmptyState = () => (
   <Box
@@ -294,7 +295,8 @@ export const OpenPositions = () => {
         headerAlign: 'left',
         renderCell: (params: GridRenderCellParams<TPositionRow>) => (
           <Box display="flex" alignItems="flex-start" height="100%" pt={2}>
-            <Typography variant="body2">${params.row.currentPrice}</Typography>
+            {/*<Typography variant="body2">${params.row.currentPrice}</Typography>*/}
+            <HighlightedNumber value={params.row.currentPrice} />
           </Box>
         ),
       },
@@ -321,6 +323,19 @@ export const OpenPositions = () => {
         renderCell: (params: GridRenderCellParams<TPositionRow>) => (
           <Box display="flex" alignItems="flex-start" height="100%" pt={2}>
             <Typography variant="body2">${formatNumber(params.row.buyAmount)}</Typography>
+          </Box>
+        ),
+      },
+      {
+        field: 'stopLoss',
+        headerName: 'Stop Loss',
+        width: 110,
+        type: 'number',
+        align: 'left',
+        headerAlign: 'left',
+        renderCell: (params: GridRenderCellParams<TPositionRow>) => (
+          <Box display="flex" alignItems="flex-start" height="100%" pt={2}>
+            <Typography variant="body2">${formatNumber(params.row.stopLoss)}</Typography>
           </Box>
         ),
       },

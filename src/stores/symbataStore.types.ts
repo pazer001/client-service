@@ -64,6 +64,7 @@ export interface IOpenPosition {
   tradeType: 'long' | 'short'
   buyAmount: number
   shares: number
+  stopLoss: number
 }
 
 // Response is an object with symbol keys mapping to position data

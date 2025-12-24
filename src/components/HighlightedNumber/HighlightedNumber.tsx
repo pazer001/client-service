@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Box } from '@mui/material'
+import { Box, Typography } from '@mui/material';
 
 interface HighlightedNumberProps {
   value: number
@@ -53,18 +53,19 @@ const HighlightedNumber = ({ value }: HighlightedNumberProps) => {
       {valueStr.split('').map((char, index) => {
         const highlight = highlights.find((h) => h.index === index)
         return (
-          <Box
+          <Typography
             key={index}
             component="span"
+            variant="body2"
             sx={{
               backgroundColor: highlight ? (highlight.color === 'green' ? '#4caf50' : '#f44336') : 'transparent',
               color: highlight ? '#fff' : 'inherit',
               transition: 'background-color 0.25s ease, color 0.25s ease',
-              padding: '0 2px',
+              // padding: '0 2px',
             }}
           >
             {char}
-          </Box>
+          </Typography>
         )
       })}
     </Box>
