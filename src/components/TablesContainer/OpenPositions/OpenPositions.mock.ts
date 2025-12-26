@@ -19,6 +19,7 @@ const mockPositions: IOpenPosition[] = [
     tradeType: 'long',
     buyAmount: 17525.0,
     shares: 100,
+    stopLoss: 1
   },
   {
     symbol: 'TSLA',
@@ -30,6 +31,7 @@ const mockPositions: IOpenPosition[] = [
     tradeType: 'long',
     buyAmount: 12290.0,
     shares: 50,
+    stopLoss: 1
   },
   {
     symbol: 'NVDA',
@@ -41,6 +43,7 @@ const mockPositions: IOpenPosition[] = [
     tradeType: 'long',
     buyAmount: 24000.0,
     shares: 50,
+    stopLoss: 1
   },
   {
     symbol: 'MSFT',
@@ -52,6 +55,7 @@ const mockPositions: IOpenPosition[] = [
     tradeType: 'long',
     buyAmount: 18925.0,
     shares: 50,
+    stopLoss: 1
   },
   {
     symbol: 'META',
@@ -63,6 +67,7 @@ const mockPositions: IOpenPosition[] = [
     tradeType: 'long',
     buyAmount: 15150.0,
     shares: 30,
+    stopLoss: 1
   },
   {
     symbol: 'AMZN',
@@ -74,6 +79,7 @@ const mockPositions: IOpenPosition[] = [
     tradeType: 'long',
     buyAmount: 17820.0,
     shares: 100,
+    stopLoss: 1
   },
   {
     symbol: 'GOOGL',
@@ -85,6 +91,7 @@ const mockPositions: IOpenPosition[] = [
     tradeType: 'long',
     buyAmount: 14150.0,
     shares: 100,
+    stopLoss: 1
   },
   {
     symbol: 'AMD',
@@ -96,6 +103,7 @@ const mockPositions: IOpenPosition[] = [
     tradeType: 'short',
     buyAmount: 7750.0,
     shares: 50,
+    stopLoss: 1
   },
   {
     symbol: 'SPY',
@@ -107,6 +115,7 @@ const mockPositions: IOpenPosition[] = [
     tradeType: 'long',
     buyAmount: 24250.0,
     shares: 50,
+    stopLoss: 1
   },
   {
     symbol: 'QQQ',
@@ -118,6 +127,7 @@ const mockPositions: IOpenPosition[] = [
     tradeType: 'long',
     buyAmount: 21037.5,
     shares: 50,
+    stopLoss: 1
   },
 ]
 

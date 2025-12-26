@@ -5,7 +5,7 @@ import { CredentialResponse, GoogleLogin, GoogleOAuthProvider } from '@react-oau
 import { useEffect, useState } from 'react'
 import Logo from './assets/logos/horizontal-color-logo-no-background.svg'
 import LogoWithoutText from './assets/logos/logo-without-text.svg'
-import axios from './axios'
+import axios from 'axios'
 import ActionMessages from './components/ActionMessages/ActionMessages.tsx'
 import { AlgoConfigModal } from './components/Algo/AlgoConfigModal.tsx'
 import { StartAlgo } from './components/Algo/StartAlgo.tsx'
