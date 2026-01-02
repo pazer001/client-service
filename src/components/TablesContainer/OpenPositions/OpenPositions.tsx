@@ -17,11 +17,16 @@ import { green, red } from '@mui/material/colors'
 import { DataGrid, GridColDef, GridRenderCellParams, GridRowHeightParams, gridClasses } from '@mui/x-data-grid'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { POLLING_INTERVAL, useOpenPositionsPolling } from '../../../hooks/useOpenPositionsPolling.ts'
-import { useSymbataStoreActions, useSymbataStoreOpenPositions } from '../../../stores/symbataStore.ts'
+import {
+  useSymbataStoreActions,
+  // useSymbataStoreOpenPositions,
+  useSymbataStoreUserId,
+} from '../../../stores/symbataStore.ts';
 import { IOpenPosition } from '../../../stores/symbataStore.types.ts'
 import { formatNumber } from '../../../utils/utils.ts'
 import { mockOpenPositionsData, USE_MOCK_OPEN_POSITIONS } from './OpenPositions.mock.ts'
 import HighlightedNumber from '../../HighlightedNumber';
+import { io } from 'socket.io-client';
 
 const EmptyState = () => (
   <Box
@@ -86,9 +91,11 @@ const PositionDetailPanel = ({ position }: IPositionDetailPanelProps) => (
 )
 
 export const OpenPositions = () => {
-  const storeOpenPositions = useSymbataStoreOpenPositions()
+  // const storeOpenPositions = useSymbataStoreOpenPositions()
+  const [storeOpenPositions, setStoreOpenPositions] = useState()
   const { setTradingViewSymbol } = useSymbataStoreActions()
   const isMobile = useMediaQuery('(max-width:900px)')
+  const accountId = useSymbataStoreUserId()
 
   // Track which rows are expanded to show detail panel (all expanded by default)
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
@@ -103,6 +110,24 @@ export const OpenPositions = () => {
       setExpandedRows(new Set(allSymbols))
     }
   }, [openPositions])
+
+  useEffect(() => {
+    const newSocket = io(import.meta.env.VITE_API_HOST)
+    newSocket.on('connect', () => {
+      console.log('Connected:', newSocket.id)
+
+      // Register accountId
+      newSocket.emit('register', { accountId })
+    })
+
+    newSocket.on('currentOpenPositions', (positions) => {
+      // console.log("Received current open positions:", positions)
+      setStoreOpenPositions(positions)
+    })
+    return () => {
+      newSocket.close()
+    }
+  }, []);
 
   // Custom hook handles polling and change detection for flash animations
   const { animationKey, refreshOpenPositions } = useOpenPositionsPolling(storeOpenPositions)
@@ -243,11 +268,14 @@ export const OpenPositions = () => {
         headerAlign: 'left',
         renderCell: (params: GridRenderCellParams<TPositionRow>) => {
           const isProfit = params.row.profit > 0
-          const profitColor = isProfit ? green[400] : red[400]
+          // const profitColor = isProfit ? green[400] : red[400]
           return (
             <Box display="flex" alignItems="flex-start" height="100%" pt={2}>
-              <Typography variant="body2" sx={{ color: profitColor, fontWeight: 700 }}>
-                {isProfit ? '+' : ''}${Math.abs(params.row.profit).toFixed(2)}
+              {/*<Typography variant="body2" sx={{ color: profitColor, fontWeight: 700 }}>*/}
+
+              {/*</Typography>*/}
+              <Typography>
+              {isProfit ? '+' : ''}<HighlightedNumber value={Number(formatNumber(params.row.profit))} />
               </Typography>
             </Box>
           )
@@ -261,13 +289,16 @@ export const OpenPositions = () => {
         align: 'left',
         headerAlign: 'left',
         renderCell: (params: GridRenderCellParams<TPositionRow>) => {
-          const isProfit = params.row.currentROR > 0
-          const profitColor = isProfit ? green[400] : red[400]
+          // const isProfit = params.row.currentROR > 0
+          // const profitColor = isProfit ? green[400] : red[400]
           return (
             <Box display="flex" alignItems="flex-start" height="100%" pt={2}>
-              <Typography variant="body2" sx={{ color: profitColor, fontWeight: 700 }}>
-                {params.row.currentROR > 0 ? '+' : ''}
-                {params.row.currentROR.toFixed(2)}%
+              {/*<Typography variant="body2" sx={{ color: profitColor, fontWeight: 700 }}>*/}
+              {/*  {params.row.currentROR > 0 ? '+' : ''}*/}
+
+              {/*</Typography>*/}
+              <Typography>
+              <HighlightedNumber value={Number(formatNumber(params.row.currentROR))} />%
               </Typography>
             </Box>
           )
@@ -335,7 +366,8 @@ export const OpenPositions = () => {
         headerAlign: 'left',
         renderCell: (params: GridRenderCellParams<TPositionRow>) => (
           <Box display="flex" alignItems="flex-start" height="100%" pt={2}>
-            <Typography variant="body2">${formatNumber(params.row.stopLoss)}</Typography>
+            {/*<Typography variant="body2">${formatNumber(params.row.stopLoss)}</Typography>*/}
+            <HighlightedNumber value={Number(formatNumber(params.row.stopLoss))} />
           </Box>
         ),
       },

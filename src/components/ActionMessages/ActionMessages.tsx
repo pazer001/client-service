@@ -259,9 +259,7 @@ const Messages = () => {
       },
     )
 
-    newSocket.on('currentOpenPositions', () => {
-      // console.log("Received current open positions:", positions)
-    })
+   
 
     newSocket.on('registered', (data) => {
       console.log('Registered:', data)

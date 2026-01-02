@@ -5,10 +5,11 @@ import { useSymbataStoreTradingViewSymbol } from '../../stores/symbataStore.ts';
 function TradingViewWidget() {
   const symbol = useSymbataStoreTradingViewSymbol();
   const container = useRef<HTMLDivElement>(null);
+  const widgetCreated = useRef(false);
 
   useEffect(
     () => {
-      if (!container.current) return;
+      if (!container.current || widgetCreated.current) return;
 
       // Clear previous widget
       container.current.innerHTML = '';
@@ -46,13 +47,20 @@ function TradingViewWidget() {
           "autosize": true
         }`;
       container.current.appendChild(script);
+      widgetCreated.current = true;
+      return () => {
+        if (container.current) {
+          container.current.innerHTML = '';
+        }
+        widgetCreated.current = false;
+      };
     },
-    [symbol] // Add symbol as dependency
+    [] // Add symbol as dependency
   );
 
   return (
     <div className="tradingview-widget-container" ref={container} style={{ height: "100%", width: "100%" }}>
-      <div className="tradingview-widget-container__widget" style={{ height: "calc(100% - 32px)", width: "100%" }}></div>
+    <div className="tradingview-widget-container__widget" style={{ height: "calc(100% - 32px)", width: "100%" }}></div>
       <div className="tradingview-widget-copyright"><a href="https://www.tradingview.com/symbols/NASDAQ-AAPL/" rel="noopener nofollow" target="_blank"><span className="blue-text">AAPL stock chart</span></a><span className="trademark"> by TradingView</span></div>
     </div>
   );
