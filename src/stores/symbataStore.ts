@@ -201,7 +201,8 @@ const symbataStore: StateCreator<ISymbolStore> = (set, get) => ({
 
 // TODO: Remove "persist" before going to PRODUCTION!!! (it is just for development usage)
 export const useSymbataStore = import.meta.env.DEV
-  ? create<ISymbolStore>()(
+  ? create<ISymbolStore>()
+  (
       devtools(
         persist(symbataStore, {
           name: 'symbataStore',
