@@ -243,7 +243,7 @@ export const OpenPositions = () => {
                   )}
                 </Box>
                 <Box display="flex" flexDirection="column">
-                  <Typography variant="caption" fontWeight="bold" sx={{ fontSize: '0.7rem' }}>
+                  <Typography variant="caption" fontWeight="bold" sx={{color: profitColor, fontSize: '0.7rem' }}>
                     {params.row.symbol}
                   </Typography>
                   <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.5rem' }}>
