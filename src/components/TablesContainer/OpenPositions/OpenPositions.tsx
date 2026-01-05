@@ -103,6 +103,10 @@ export const OpenPositions = () => {
   // Use mock data when enabled in development mode
   const openPositions = import.meta.env.DEV && USE_MOCK_OPEN_POSITIONS ? mockOpenPositionsData : storeOpenPositions
 
+  useEffect(() => {
+    setStoreOpenPositions(undefined)
+  }, [accountId]);
+
   // Initialize all rows as expanded by default when positions data loads
   useEffect(() => {
     if (openPositions) {
