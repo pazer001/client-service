@@ -118,7 +118,6 @@ export const OpenPositions = () => {
   useEffect(() => {
     const newSocket = io(import.meta.env.VITE_API_HOST)
     newSocket.on('connect', () => {
-      console.log('Connected:', newSocket.id)
 
       // Register accountId
       newSocket.emit('register', { accountId })
