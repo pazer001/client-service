@@ -19,14 +19,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { POLLING_INTERVAL, useOpenPositionsPolling } from '../../../hooks/useOpenPositionsPolling.ts'
 import {
   useSymbataStoreActions,
-  // useSymbataStoreOpenPositions,
-  useSymbataStoreUserId,
 } from '../../../stores/symbataStore.ts';
-import { IOpenPosition } from '../../../stores/symbataStore.types.ts'
+import { IOpenPosition, IOpenPositionsResponse } from '../../../stores/symbataStore.types.ts';
 import { formatNumber } from '../../../utils/utils.ts'
 import { mockOpenPositionsData, USE_MOCK_OPEN_POSITIONS } from './OpenPositions.mock.ts'
 import HighlightedNumber from '../../HighlightedNumber';
-import { io } from 'socket.io-client';
 
 const EmptyState = () => (
   <Box
@@ -60,9 +57,6 @@ interface IPositionDetailPanelProps {
   position: IOpenPosition
 }
 
-/**
- * Detail panel component that displays the strategy when row is expanded.
- */
 const PositionDetailPanel = ({ position }: IPositionDetailPanelProps) => (
   <Box
     sx={{
@@ -90,22 +84,21 @@ const PositionDetailPanel = ({ position }: IPositionDetailPanelProps) => (
   </Box>
 )
 
-export const OpenPositions = () => {
+interface IOpenPositionsProps {
+  openPositions: IOpenPositionsResponse
+}
+
+export const OpenPositions = (props:IOpenPositionsProps) => {
   // const storeOpenPositions = useSymbataStoreOpenPositions()
-  const [storeOpenPositions, setStoreOpenPositions] = useState()
+
   const { setTradingViewSymbol } = useSymbataStoreActions()
   const isMobile = useMediaQuery('(max-width:900px)')
-  const accountId = useSymbataStoreUserId()
 
   // Track which rows are expanded to show detail panel (all expanded by default)
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
 
   // Use mock data when enabled in development mode
-  const openPositions = import.meta.env.DEV && USE_MOCK_OPEN_POSITIONS ? mockOpenPositionsData : storeOpenPositions
-
-  useEffect(() => {
-    setStoreOpenPositions(undefined)
-  }, [accountId]);
+  const openPositions = import.meta.env.DEV && USE_MOCK_OPEN_POSITIONS ? mockOpenPositionsData : props.openPositions
 
   // Initialize all rows as expanded by default when positions data loads
   useEffect(() => {
@@ -115,25 +108,10 @@ export const OpenPositions = () => {
     }
   }, [openPositions])
 
-  useEffect(() => {
-    const newSocket = io(import.meta.env.VITE_API_HOST)
-    newSocket.on('connect', () => {
 
-      // Register accountId
-      newSocket.emit('register', { accountId })
-    })
-
-    newSocket.on('currentOpenPositions', (positions) => {
-      // console.log("Received current open positions:", positions)
-      setStoreOpenPositions(positions)
-    })
-    return () => {
-      newSocket.close()
-    }
-  }, []);
 
   // Custom hook handles polling and change detection for flash animations
-  const { animationKey, refreshOpenPositions } = useOpenPositionsPolling(storeOpenPositions)
+  const { animationKey, refreshOpenPositions } = useOpenPositionsPolling(props.openPositions)
 
   // Simple countdown for display - resets when animationKey changes
   const [remainingSeconds, setRemainingSeconds] = useState(Math.ceil(POLLING_INTERVAL / 1000))

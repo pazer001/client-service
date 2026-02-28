@@ -6,14 +6,16 @@ import { useEffect, useState } from 'react'
 import Logo from './assets/logos/horizontal-color-logo-no-background.svg'
 import LogoWithoutText from './assets/logos/logo-without-text.svg'
 import axios from 'axios'
-import ActionMessages from './components/ActionMessages/ActionMessages.tsx'
+import ActionMessages, { LogMessage } from './components/ActionMessages/ActionMessages.tsx';
 import { AlgoConfigModal } from './components/Algo/AlgoConfigModal.tsx'
 import { StartAlgo } from './components/Algo/StartAlgo.tsx'
 import Balance from './components/Balance/Balance.tsx'
 import TradingViewWidget from './components/Chart/TradingViewWidget.tsx'
 import { MobileView } from './components/MobileView/MobileView.tsx'
-import { TablesContainer } from './components/TablesContainer/TablesContainer.tsx'
 import { useSymbataStoreActions, useSymbataStoreUserId } from './stores/symbataStore.ts'
+import { io } from 'socket.io-client';
+import { OpenPositions } from './components/TablesContainer/OpenPositions/OpenPositions.tsx';
+import { IOpenPositionsResponse } from './stores/symbataStore.types.ts';
 
 const spacingBetween = 1
 const fullHeightStyleProp = { height: '100%' }
@@ -29,6 +31,8 @@ interface IUser {
 interface ItemProps extends PaperProps {
   isMobile?: boolean
 }
+
+const MAX_MESSAGES = 100
 
 // Item copied from MUI documentation
 // https://mui.com/material-ui/react-grid/#limitations
@@ -49,10 +53,16 @@ const MainContainer = styled(Box)(({ theme }) => ({
   gap: theme.spacing(spacingBetween),
 }))
 
+let messageIdCounter = 0
+const generateMessageId = () => `msg-${++messageIdCounter}`
+
 function App() {
   const isMobile = useMediaQuery('(max-width:900px)')
   const [user, setUser] = useState<{ success?: boolean; user?: IUser }>({})
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false)
+  const [messages, setMessages] = useState<LogMessage[]>([])
+  const accountId = useSymbataStoreUserId()
+  const [storeOpenPositions, setStoreOpenPositions] = useState<IOpenPositionsResponse>({})
 
   const userId = useSymbataStoreUserId()
   const { getAlgoSession } = useSymbataStoreActions()
@@ -64,9 +74,54 @@ function App() {
 
   const verifyLogin = async (credentials: CredentialResponse) => {
     const response = await axios.post('/users/google', credentials)
-    console.log(response.data)
     setUser(response.data)
   }
+
+  useEffect(() => {
+
+    // Connect to WebSocket server
+    const newSocket = io(import.meta.env.VITE_API_HOST)
+
+    newSocket.on('connect', () => {      // Register accountId
+      newSocket.emit('register', { accountId })
+    })
+
+    newSocket.on('currentOpenPositions', (positions) => {
+      // console.log("Received current open positions:", positions)
+      setStoreOpenPositions(positions)
+    })
+
+    newSocket.on(
+      'algoLog',
+      (message: { type: 'general' | 'recommendation' | 'buy' | 'sell'; message: string; profit?: number }) => {
+        // console.log('Received:', message)
+        setMessages((prev) => {
+          const newMessage: LogMessage = {
+            id: generateMessageId(),
+            text: message.message,
+            type: message.type,
+            timestamp: new Date(),
+            // Include profit for sell messages if provided by server
+            ...(message.type === 'sell' && message.profit !== undefined ? { profit: message.profit } : {}),
+          }
+          const updated = [...prev, newMessage]
+          // Remove oldest messages if exceeding limit to prevent memory leak
+          return updated.length > MAX_MESSAGES ? updated.slice(-MAX_MESSAGES) : updated
+        })
+      },
+    )
+
+
+
+    newSocket.on('registered', (data) => {
+      console.log('Registered:', data)
+    })
+
+    // Cleanup on unmount
+    return () => {
+      newSocket.close()
+    }
+  }, [accountId])
 
   return (
     <MainContainer>
@@ -116,12 +171,12 @@ function App() {
               </Grid>
               <Grid size={2}>
                 <Item>
-                  <ActionMessages />
+                  <ActionMessages messages={messages} />
                 </Item>
               </Grid>
               <Grid size={4}>
                 <Item sx={{ paddingTop: 0 }}>
-                  <TablesContainer />
+                  <OpenPositions openPositions={storeOpenPositions} />
                 </Item>
               </Grid>
             </Grid>

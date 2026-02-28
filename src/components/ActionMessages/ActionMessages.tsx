@@ -3,66 +3,22 @@ import VerticalAlignBottomIcon from '@mui/icons-material/VerticalAlignBottom'
 import { Box, Chip, IconButton, Menu, MenuItem, Paper, Tooltip, Typography } from '@mui/material'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
-import { io } from 'socket.io-client'
-import { useSymbataStoreUserId } from '../../stores/symbataStore'
 
-const ActionMessages = () => {
-  return <Messages />
+interface IActionMessagesProps {
+  messages: LogMessage[]
 }
 
-interface LogMessage {
+const ActionMessages = (props:IActionMessagesProps) => {
+  return <Messages messages={props.messages} />
+}
+
+export interface LogMessage {
   id: string
   text: string
   type: 'general' | 'recommendation' | 'buy' | 'sell'
   timestamp: Date
   /** Only present for 'sell' type messages - positive means profit, negative means loss */
   profit?: number
-}
-
-let messageIdCounter = 0
-const generateMessageId = () => `msg-${++messageIdCounter}`
-
-// TODO: Remove mock data generation before production - only for testing virtualization
-const USE_MOCK_DATA = false
-
-// Maximum number of messages to keep in memory to prevent memory leaks from WebSocket flooding
-const MAX_MESSAGES = 100
-
-const mockMessages: readonly string[] = [
-  'Analyzing AAPL - checking RSI indicators...',
-  'AAPL RSI at 65.3 - within normal range',
-  'Scanning MSFT for entry opportunities...',
-  'MSFT showing bullish divergence on 4H chart',
-  'Executing BUY order for GOOGL @ $142.50',
-  'Order filled: 50 shares of GOOGL',
-  'Stop loss set at $138.20 for GOOGL position',
-  'NVDA triggered resistance level at $480',
-  'Monitoring META earnings announcement...',
-  'TSLA volatility spike detected - holding position',
-  'Portfolio rebalancing initiated...',
-  'Closing partial position in AMD - taking profits',
-  'AMZN support level holding at $175',
-  'Analyzing sector rotation signals...',
-  'Tech sector showing relative strength',
-]
-
-const generateMockMessage = (): LogMessage => {
-  const types: LogMessage['type'][] = ['general', 'recommendation', 'buy', 'sell']
-  const type = types[Math.floor(Math.random() * types.length)]
-
-  const message: LogMessage = {
-    id: generateMessageId(),
-    text: mockMessages[Math.floor(Math.random() * mockMessages.length)],
-    type,
-    timestamp: new Date(),
-  }
-
-  // Add profit only for sell messages (random between -500 and 500)
-  if (type === 'sell') {
-    message.profit = Math.round((Math.random() - 0.5) * 1000)
-  }
-
-  return message
 }
 
 const getSellColorByProfit = (profit: number | undefined): { border: string; chip: 'success' | 'error' | 'info' } => {
@@ -171,36 +127,15 @@ const MessageItem = ({ msg, isNew, formatTime }: MessageItemProps) => {
   )
 }
 
-const generateInitialMockMessages = (count: number): LogMessage[] => {
-  const messages: LogMessage[] = []
-  const now = Date.now()
-  for (let i = 0; i < count; i++) {
-    const types: LogMessage['type'][] = ['general', 'recommendation', 'buy', 'sell']
-    const type = types[Math.floor(Math.random() * types.length)]
-
-    const message: LogMessage = {
-      id: generateMessageId(),
-      text: `[${i + 1}] ${mockMessages[i % mockMessages.length]}`,
-      type,
-      // Stagger timestamps by 2 seconds each for realism
-      timestamp: new Date(now - (count - i) * 2000),
-    }
-
-    // Add profit only for sell messages
-    if (type === 'sell') {
-      message.profit = Math.round((Math.random() - 0.5) * 1000)
-    }
-
-    messages.push(message)
-  }
-  return messages
+interface IMessagesProps {
+  messages: LogMessage[]
 }
 
-const Messages = () => {
+const Messages = (props: IMessagesProps) => {
   // Generate initial messages and pre-populate rendered set to avoid animating existing messages
-  const [initialMessages] = useState(() => (USE_MOCK_DATA ? generateInitialMockMessages(50) : []))
-  const [messages, setMessages] = useState<LogMessage[]>(initialMessages)
-  const accountId = useSymbataStoreUserId()
+  const [initialMessages] = useState<LogMessage[]>([])
+
+
   // Track which messages have been rendered to avoid re-animating on scroll
   // Pre-populate with initial message IDs so they don't animate
   const renderedMessagesRef = useRef<Set<string>>(new Set(initialMessages.map((m) => m.id)))
@@ -211,65 +146,6 @@ const Messages = () => {
   const [filterMenuAnchor, setFilterMenuAnchor] = useState<null | HTMLElement>(null)
   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true)
 
-  // Mock: Add a new message every 500ms for testing auto-scroll
-  useEffect(() => {
-    if (!USE_MOCK_DATA) return
-
-    const interval = setInterval(() => {
-      setMessages((prev) => {
-        const updated = [...prev, generateMockMessage()]
-        // Remove oldest messages if exceeding limit to prevent memory leak
-        return updated.length > MAX_MESSAGES ? updated.slice(-MAX_MESSAGES) : updated
-      })
-    }, 500)
-
-    return () => clearInterval(interval)
-  }, [])
-
-  useEffect(() => {
-    if (USE_MOCK_DATA) return // Skip socket connection when using mock data
-
-    // Connect to WebSocket server
-    const newSocket = io(import.meta.env.VITE_API_HOST)
-
-    newSocket.on('connect', () => {
-      console.log('Connected:', newSocket.id)
-
-      // Register accountId
-      newSocket.emit('register', { accountId })
-    })
-
-    newSocket.on(
-      'algoLog',
-      (message: { type: 'general' | 'recommendation' | 'buy' | 'sell'; message: string; profit?: number }) => {
-        // console.log('Received:', message)
-        setMessages((prev) => {
-          const newMessage: LogMessage = {
-            id: generateMessageId(),
-            text: message.message,
-            type: message.type,
-            timestamp: new Date(),
-            // Include profit for sell messages if provided by server
-            ...(message.type === 'sell' && message.profit !== undefined ? { profit: message.profit } : {}),
-          }
-          const updated = [...prev, newMessage]
-          // Remove oldest messages if exceeding limit to prevent memory leak
-          return updated.length > MAX_MESSAGES ? updated.slice(-MAX_MESSAGES) : updated
-        })
-      },
-    )
-
-   
-
-    newSocket.on('registered', (data) => {
-      console.log('Registered:', data)
-    })
-
-    // Cleanup on unmount
-    return () => {
-      newSocket.close()
-    }
-  }, [accountId])
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('en-US', {
@@ -283,18 +159,18 @@ const Messages = () => {
   const filteredMessages = useMemo(() => {
     switch (activeFilter) {
       case 'all':
-        return messages
+        return props.messages
       case 'sell':
-        return messages.filter((m) => m.type === 'sell')
+        return props.messages.filter((m) => m.type === 'sell')
       case 'sell-positive':
         // Include break-even (profit === 0) with positive results since no money was lost
-        return messages.filter((m) => m.type === 'sell' && m.profit !== undefined && m.profit >= 0)
+        return props.messages.filter((m) => m.type === 'sell' && m.profit !== undefined && m.profit >= 0)
       case 'sell-negative':
-        return messages.filter((m) => m.type === 'sell' && m.profit !== undefined && m.profit < 0)
+        return props.messages.filter((m) => m.type === 'sell' && m.profit !== undefined && m.profit < 0)
       default:
-        return messages.filter((m) => m.type === activeFilter)
+        return props.messages.filter((m) => m.type === activeFilter)
     }
-  }, [messages, activeFilter])
+  }, [props.messages, activeFilter])
 
   // Reset animation tracking when filter changes to prevent stale state
   // Pre-populate with current filtered messages so only new arrivals animate
@@ -305,13 +181,13 @@ const Messages = () => {
   // Clean up renderedMessagesRef when messages are removed to prevent memory leak
   // This syncs the Set with current message IDs, removing stale entries
   useEffect(() => {
-    const currentIds = new Set(messages.map((m) => m.id))
+    const currentIds = new Set(props.messages.map((m) => m.id))
     for (const id of renderedMessagesRef.current) {
       if (!currentIds.has(id)) {
         renderedMessagesRef.current.delete(id)
       }
     }
-  }, [messages])
+  }, [props.messages])
 
   // Auto-scroll to bottom when enabled and new messages arrive
   useEffect(() => {
@@ -331,24 +207,6 @@ const Messages = () => {
         <Typography variant="h6" component="div" fontWeight={600} color="text.primary">
           Algo Actions:
         </Typography>
-        {/* TODO: Remove mock controls before production */}
-        {USE_MOCK_DATA && (
-          <Box display="flex" alignItems="center" gap={1}>
-            <Chip
-              label="+ Add 10"
-              size="small"
-              color="primary"
-              onClick={() => {
-                const newMessages = Array.from({ length: 10 }, () => generateMockMessage())
-                setMessages((prev) => {
-                  const updated = [...prev, ...newMessages]
-                  return updated.length > MAX_MESSAGES ? updated.slice(-MAX_MESSAGES) : updated
-                })
-              }}
-              sx={{ cursor: 'pointer' }}
-            />
-          </Box>
-        )}
       </Box>
 
       <Box display="flex" alignItems="center" justifyContent="space-between" gap={0.5} mb={1}>
@@ -499,7 +357,7 @@ const Messages = () => {
         {filteredMessages.length === 0 ? (
           <Box p={3} textAlign="center">
             <Typography variant="body2" color="text.secondary" fontStyle="italic">
-              {messages.length === 0 ? 'Waiting for messages...' : 'No messages match the filter'}
+              {props.messages.length === 0 ? 'Waiting for messages...' : 'No messages match the filter'}
             </Typography>
           </Box>
         ) : (
